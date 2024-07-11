@@ -57,6 +57,7 @@ $(document).ready(function () {
     // Open lyric specified in URL
     const pathName = window.location.pathname;
     try { 
+	console.log("Trying...");
 	const sbnr = pathName.split(",");
 	console.log("SBNR: " + sbnr);
 	const nSbnr = sbnr[0].replace("/?", "");
@@ -64,7 +65,7 @@ $(document).ready(function () {
 	createSearchArray(nSbnr,sbnr[1]);
     }
     catch (e) {
-	console.log("Error: " + e);
+	console.log("It's an Error: " + e);
     }
 
     // Reset Font Size
