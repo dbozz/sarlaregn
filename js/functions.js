@@ -58,7 +58,7 @@ $(document).ready(function () {
     const pathName = window.location.pathname;
     try { 
 	const sbnr = pathName.split(",");
-	const nSbnr = sbnr[0].replace("/\?", "");
+	const nSbnr = sbnr[0].replace("/?", "");
 	createSearchArray(nSbnr,sbnr[1]);
     }
     catch (e) {
