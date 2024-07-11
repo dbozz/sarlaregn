@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+<head>
+<base href="/">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N8G16WFMLV"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-N8G16WFMLV', {
+    send_page_view: false
+});
+//if (location.protocol != 'https:') {
+//    location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+//}
+if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
+    var head = document.getElementsByTagName("head")[0];
+    var script = document.createElement("script");
+    script.setAttribute("type", "text/javascript");
+    script.setAttribute("src", "js/indexeddbshim.min.js");
+    head.appendChild(script);
+}
+</script>
+
+	<title>Särlaregn</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="description" content="Maranatafolkets sångbok. Utkom i sin första utgåva 1965 och innehåller idag 684 sånger.">
+	<link rel="manifest" href="manifest2.json">
+ 	<link rel="icon" sizes="192x192" href="/images/sr192.png">
+	<link rel="icon" sizes="144x144" href="/images/sr144.png">
+	<link rel="apple-touch-icon" sizes="192x192" href="/images/sr192.png">
+	<link rel="stylesheet" type="text/css" href="/style.css">
+	<link rel="stylesheet" href="/jquery-ui.min.css">
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+        <script src="js.cookie.js"></script>
+        <script src="js/jquery.touchSwipe.min.js"></script>
+        <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+	<script type="text/javascript" src="js/functions.js"></script>
+</head>
+
+
+<body>
+
+
+<div id=everything>
+	<div id=bottom></div>
+	<div id=bottom2></div>
+	<div id=line></div>
+	<div class=head>
+		<div id=headercontainer>
+			<div id=logo><span class=logo></span>
+			<!--img class=logo src=images/sr_logo70.png-->
+			<!--img class=logo src=images/sr01.png-->
+			</div>
+		</div>
+		<div id=search>
+		<input onclick="this.value=''; setFocusTo('sok');" id=sok type=text name=sok class="sokcss typeahead tt-query" autocomplete=off placeholder="Nr eller fritext">
+		</div>
+	<div class="browsemenu"><a href="javascript:selectPrev(5000);" class=navPrev id=sPrev><img src=images/arrowleft.png class=arrowleft></a> <!--a href="javascript:bookmarks();" class=navBookmarks>Bokmärken</a--> <a href="javascript:selectNext(1000);" class=navNext id=sNext><img src=images/arrowright.png class=arrowright></a></div>
+	</div>
+
+	<div class="body">
+
+	<div class="container">
+		<div id=lyric_head style="float:right; margin-right:30px; margin-top:10px;"></div>
+		<div class="fontSize">
+		<a class=decreaseFont><img style="width:20px; margin-left:10px; margin-top:10px;" src=images/fontsizedown.png></a>&nbsp;&nbsp;&nbsp;
+		<a class=increaseFont><img style="width:20px; margin-left:5px; margin-top:10px;" src=images/fontsizeup.png></a>
+                <!--img id=toggle style="width:25px; margin-left:5px; margin-top:10px;" src=images/off.png-->
+		</div>
+
+
+
+
+
+<script>
+/*
+    var noSleep = new NoSleep();
+    var wakeLockEnabled = false;
+    var toggleEl = document.querySelector("#toggle");
+    toggleEl.addEventListener('click', function() {
+      if (!wakeLockEnabled) {
+        noSleep.enable(); // keep the screen on!
+        wakeLockEnabled = true;
+        toggleEl.src = "images/on.png";
+      } else {
+        noSleep.disable(); // let the screen turn off.
+        wakeLockEnabled = false;
+        toggleEl.src = "images/off.png";
+      }
+    }, false);
+*/
+</script>
+
+		<div id=lyric><h2>Välkommen!</h2> <p>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan. 
+<br><br>
+</div>	</div>
+
+	<div id=moten>
+		<div class="textwidget">
+		<h3>
+                <a href="javascript:bookmarks();">Bokmärken</a><br>
+		<a href="javascript:loadPage('about');">Om Särlaregn</a><br> 
+		<a href="javascript:loadPage('help');">Hjälp</a><br>
+		<a href="javascript:loadPage('settings');">Inst&auml;llningar</a><br>
+		<a id=sNext href="javascript:selectNext(1000);"></a>
+		<a id=sPrev href="javascript:selectPrev(5000);"></a>
+		</h3>
+		</div>
+	</div>
+	</div>
+</div>
+<script>
+var timeoutId;
+$(document).ready(function() {
+        $('#key1').on('input propertychange change', function() {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function() {
+                        updateKey1();
+                        }, 100);
+                });
+        });
+
+function updateKey1() {
+        var key1 = $('#key1').val();
+        Cookies.set('key1', key1);
+        }
+</script>
+
+</body>
+</html>
+

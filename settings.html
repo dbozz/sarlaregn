@@ -1,0 +1,26 @@
+<br><br>	
+<h4>Nyckel</h4>
+<input onclick="setFocusTo('key1');" style="border:none;" type=password id=key1 placeholder="Nyckel" name=autkey>
+<br><em>Om du f&aring;tt en nyckel, ange den h&auml;r</em>
+<p>
+Då du angett din nyckel så måste du ladda om databasen.
+<br><a href="javascript:clearSite();">Ladda om</a>
+<script>
+var thekey = Cookies.get('key1');
+$("#key1").val(thekey);
+
+var timeoutId;
+$(document).ready(function() {
+        $('#key1').on('input propertychange change', function() {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function() {
+                        updateKey2();
+                        }, 100);
+                });
+        });
+
+function updateKey2() {
+        var key1 = $('#key1').val();
+        Cookies.set('key1', key1, { expires: 3650 });
+        }
+</script>

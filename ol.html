@@ -1,0 +1,74 @@
+<html>
+
+<head>
+
+	<title>Särlaregn</title>
+
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" href="jquery-ui.min.css">
+
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/indexeddbshim.min.js"></script>
+	<script type="text/javascript" src="js/jquery.indexeddb.js"></script>
+	<script type="text/javascript" src="js/ol.js"></script>
+
+</head>
+
+
+<body>
+
+
+<div id=everything>
+<div>
+<div id=logo>
+<h1>
+SärlaRegn
+</h1>
+</div>
+<div id=search>
+<input onclick="this.value='';" id=sok class=sokcss type=text name=sok class="typeahead tt-query" autocomplete=off placeholder="Nr eller fritext">
+</div>
+<div id=line></div>
+<div id=bottom>
+</div>
+<div class="container">
+<div class="fontSize">
+<a class=decreaseFont><img style="width:25px; margin-left:10px; margin-top:10px;" src=images/fontsizedown.png></a>
+<a class=increaseFont><img style="width:25px; margin-left:5px; margin-top:10px;" src=images/fontsizeup.png></a>
+</div>
+<div id=lyric><h2>Välkommen!</h2> <p>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan.</div>
+</div>
+<div id=moten>
+<div class="textwidget">
+<h4>
+
+<a href=om.html class=pageFetcher>Om SärlaRegn</a><br> 
+<a href = 'javascript:deleteDB()'>Delete DB</a>
+<script>
+/*$("a").click(function(){
+    $("#lyric").load($(this).attr("href"));
+    return false;
+});*/
+</script>
+</h4>
+</div>
+
+</div>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-64780663-1', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
