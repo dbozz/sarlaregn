@@ -58,7 +58,7 @@ $(document).ready(function () {
     const pathName = window.location.pathname;
     try { 
 	const sbnr = pathName.split(",");
-	const nSbnr = sbnr[0].replace("/", "");
+	const nSbnr = sbnr[0].replace("/\?", "");
 	createSearchArray(nSbnr,sbnr[1]);
     }
     catch (e) {
@@ -263,7 +263,7 @@ function getLyric(id) {
 	var fs = Cookies.get('FontSize');
 	$('#thelyric').css('font-size', fs);
 	if ( item.sb == "1" || item.sb == "2" ) { var upt2 = ""; } else { var upt2 = "," + b[item.sb]; }
-	history.pushState({}, "", "/" + item.nr + upt2);
+	history.pushState({}, "", "/?" + item.nr + upt2);
 //	document.getElementById('urlDisplay').innerHTML = window.location.href;
 	document.title = "Särlaregn nr. " + item.nr; //+ " " + item.sb;
         //gAnalytics(item.nr,item.sb,"ViewLyric");
