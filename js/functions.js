@@ -56,6 +56,7 @@ var changeFontSize = function (increaseFont) {
 $(document).ready(function () {
     // Open lyric specified in URL
     const pathName = window.location.pathname;
+    console.log("Pathname: " + pathName);
     try { 
 	console.log("Trying...");
 	const sbnr = pathName.split(",");
