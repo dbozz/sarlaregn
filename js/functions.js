@@ -283,7 +283,7 @@ function updateLyrics() {
     });
 }
 
-updateLyrics();
+//updateLyrics();
 
 function checkBookmark(id) {
     // Return bookmark id if bookmark exist
