@@ -143,7 +143,7 @@ db.version(6).stores( {
 // Function to populate Indexed DB from sql
 function ajaxSR (key1) {
     return new Dexie.Promise(function (resolve, reject) {
-        $.ajax("https://api.xn--srlaregn-0za.se/sr.json", {
+        $.ajax("sr.json", {
             type: 'get',
             dataType: 'json',
             error: function (xhr, textStatus) {
