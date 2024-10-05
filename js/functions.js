@@ -187,6 +187,7 @@ function ajaxUpdateSR (key1,curVer) {
     return new Dexie.Promise(function (resolve, reject) {
 //	console.log("Current Version: " + curVer);
         $.ajax("https://api.xn--srlaregn-0za.se/update.json.php?key=" + key1 + "&curts=" + curVer, {
+
             type: 'get',
 	    dataType: 'json',
 	    error: function (xhr, textStatus) {
