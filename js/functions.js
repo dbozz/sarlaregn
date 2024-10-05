@@ -141,7 +141,68 @@ db.version(6).stores( {
 
 
 // Function to populate Indexed DB from sql
-function ajaxSR (key1) {
+
+function ajaxSR(key1) {
+    return new Dexie.Promise(function (resolve, reject) {
+        $.ajax("/sr.json", {
+            type: 'get',
+            dataType: 'json',
+            error: function (xhr, textStatus) {
+                reject(textStatus);
+            },
+            success: function (data) {
+                resolve(data);
+            }
+        });
+    }).then(function (data) {
+        $('#lyric').html("Databasen uppdateras nu... var god vänta...");
+        return db.transaction('rw', db.lyrics, function () {
+            data.forEach(function (item) {
+                // Check if the item has encrypted fields
+                if (item.encrypted) {
+                    try {
+                        // Attempt to decrypt specific fields
+                        item.label = decryptField(item.label, key1);  // Decrypt label
+                        item.value = decryptField(item.value, key1);  // Decrypt value
+                        item.search = decryptField(item.search, key1);  // Decrypt search
+                    } catch (error) {
+                        // If decryption fails, skip adding this item
+                        console.error("Decryption failed for item:", item, "Error:", error);
+                        return;  // Skip to the next item
+                    }
+                }
+                // Add the item to the database after processing
+                db.lyrics.add(item);
+            });
+        });
+    }).then(function () {
+        $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
+    });
+}
+
+// Function to generate the key in JavaScript (same logic as in Python)
+function generateKey(password) {
+    let hash = CryptoJS.SHA256(password);  // Generate SHA256 hash of the password
+    let key = hash.toString(CryptoJS.enc.Base64);  // Convert to base64 encoding
+    return key;
+}
+
+// Decryption function using the Fernet algorithm
+function decryptField(encryptedValue, password) {
+    let key = generateKey(password);  // Generate the key based on the password
+    let secret = new fernet.Secret(key);  // Create a Fernet Secret using the key
+    
+    let token = new fernet.Token({
+        secret: secret,
+        token: encryptedValue,
+        ttl: 0  // Token lifetime (set to 0 to ignore expiration for now)
+    });
+
+    return token.decode();  // Return the decrypted value
+}
+
+
+/*function ajaxSR (key1) {
     return new Dexie.Promise(function (resolve, reject) {
         $.ajax("https://api.xn--srlaregn-0za.se/sr.json.php?key=" + key1, {
             type: 'get',
@@ -163,7 +224,7 @@ function ajaxSR (key1) {
     }).then(function (){
         $( '#lyric' ).html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
     }); 
-}
+}*/
 
 
 // Populate DB if empty
@@ -176,10 +237,6 @@ db.on('ready', function () {
         }
     });
 });
-
-
-
-//db.open();
 
 
 function ajaxUpdateSR (key1,curVer) {
