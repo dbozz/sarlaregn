@@ -254,7 +254,7 @@ function ajaxUpdateSR(key1, curVer) {
     }).then(function (data) {
         // Assuming db_version.json contains an object like { "version": "unixtimestamp" }
         var newVersion = parseInt(data.version, 10); // Convert the version to an integer (Unix timestamp)
-        
+        console.log("There is a new database: " + newVersion)
         if (newVersion > curVer) {
             // The new version is newer than the current version, update the page
             $( '#lyric' ).html('Det finns en ny sångdatabas. <a href="javascript:clearSite();">Klicka här för att uppdatera.</a>');
