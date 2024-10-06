@@ -275,15 +275,15 @@ function ajaxUpdateSR (key1,curVer) {
 function updateLyrics() {
     db.lyrics.orderBy("ts").reverse().limit(1).toArray(function(version) {
         var curVer = version.map(function (v) { return v.ts });
-//        console.log ("Database Version: " + curVer);
+        console.log ("Database Version: " + curVer);
         if (navigator.onLine) {
-//	    console.log("Navigator IS online and current db version is " + curVer);
-	    ajaxUpdateSR(Cookies.get('key1'),curVer);
+	    console.log("Navigator IS online and current db version is " + curVer);
+//	    ajaxUpdateSR(Cookies.get('key1'),curVer);
         }
     });
 }
 
-//updateLyrics();
+updateLyrics();
 
 function checkBookmark(id) {
     // Return bookmark id if bookmark exist
