@@ -254,7 +254,7 @@ function ajaxUpdateSR(key1, curVer) {
     }).then(function (data) {
         // Assuming db_version.json contains an object like { "version": "unixtimestamp" }
         var newVersion = parseInt(data.version, 10); // Convert the version to an integer (Unix timestamp)
-        console.log("There is a new database: " + newVersion)
+        console.log("Current Online DB version is: " + newVersion)
         if (newVersion > curVer) {
             // The new version is newer than the current version, update the page
             $( '#lyric' ).html('Det finns en ny sångdatabas. <a href="javascript:clearSite();">Klicka här för att uppdatera.</a>');
@@ -303,9 +303,9 @@ function ajaxUpdateSR (key1,curVer) {
 function updateLyrics() {
     db.lyrics.orderBy("ts").reverse().limit(1).toArray(function(version) {
         var curVer = version.map(function (v) { return v.ts });
-        console.log ("Database Version: " + curVer);
+//        console.log ("Browser database version: " + curVer);
         if (navigator.onLine) {
-	    console.log("Navigator IS online and current db version is " + curVer);
+	    console.log("Navigator is online and current downloaded DB version is " + curVer);
 	    ajaxUpdateSR(Cookies.get('key1'),curVer);
         }
     });
