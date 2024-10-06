@@ -151,6 +151,7 @@ function setTimestampCookie(cookieName) {
 }
 
 function updateDbVersionCookie() {
+    console.log('Updating Cookie db_version.')
     fetch('/db_version.json')
         .then(response => {
             if (!response.ok) {
