@@ -239,11 +239,39 @@ db.on('ready', function () {
 });
 
 
+function ajaxUpdateSR(key1, curVer) {
+    return new Dexie.Promise(function (resolve, reject) {
+        $.ajax("db_version.json", {
+            type: 'get',
+            dataType: 'json',
+            error: function (xhr, textStatus) {
+                reject(textStatus);
+            },
+            success: function (data) {
+                resolve(data);
+            }
+        });
+    }).then(function (data) {
+        // Assuming db_version.json contains an object like { "version": "unixtimestamp" }
+        var newVersion = parseInt(data.version, 10); // Convert the version to an integer (Unix timestamp)
+        
+        if (newVersion > curVer) {
+            // The new version is newer than the current version, update the page
+            $( '#lyric' ).html('Det finns en ny sångdatabas. <a href="javascript:clearSite();">Klicka här för att uppdatera.</a>');
+        }
+        // If the new version is not newer, do nothing
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+
+/*
 function ajaxUpdateSR (key1,curVer) {
 //    console.log("Looking for text updates ...");
     return new Dexie.Promise(function (resolve, reject) {
 //	console.log("Current Version: " + curVer);
-        $.ajax("https://api.xn--srlaregn-0za.se/update.json.php?key=" + key1 + "&curts=" + curVer, {
+        $.ajax("db_version.json", {
 
             type: 'get',
 	    dataType: 'json',
@@ -268,7 +296,7 @@ function ajaxUpdateSR (key1,curVer) {
         console.log(error);
     });
 }
-
+*/
 
 
 // Version check and update lyrics db
