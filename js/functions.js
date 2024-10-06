@@ -207,6 +207,7 @@ function ajaxSR(key1) {
     }).then(function () {
         //setTimestampCookie('db_version');
         updateDbVersionCookie();
+        console.log('Done inserting data into DB.')
         $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
     });
 }
