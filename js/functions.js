@@ -472,8 +472,8 @@ $(function() {
     $( "#sok" ).autocomplete({
         minLength: 1,
         source: function( request, response ) {
-	    var theSearchLC = request.term.toLowerCase().replace(/\s+/g, '');
-	    var i = 0;
+            var theSearchLC = request.term.toLowerCase().replace(/\s+|-/g, '');
+            var i = 0;
 	    if($.isNumeric(theSearchLC) == false) {
 		db.lyrics.where("id").above(0).each(function(item) {
 		    if (item && i < 10) {
