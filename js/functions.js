@@ -142,6 +142,14 @@ db.version(6).stores( {
 
 // Function to populate Indexed DB from sql
 
+function setTimestampCookie(cookieName) {
+    var timestamp = Math.floor(Date.now() / 1000);
+    var date = new Date();
+    date.setTime(date.getTime() + (100 * 365 * 24 * 60 * 60 * 1000)); 
+    var expires = "; expires=" + date.toUTCString();
+    document.cookie = cookieName + "=" + timestamp + expires + "; path=/;";
+}
+
 function ajaxSR(key1) {
     return new Dexie.Promise(function (resolve, reject) {
         $.ajax("/sr.json", {
@@ -176,6 +184,7 @@ function ajaxSR(key1) {
             });
         });
     }).then(function () {
+        setTimestampCookie('db_version');
         $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
     });
 }
@@ -201,30 +210,6 @@ function decryptField(encryptedValue, password) {
     return token.decode();  // Return the decrypted value
 }
 
-
-/*function ajaxSR (key1) {
-    return new Dexie.Promise(function (resolve, reject) {
-        $.ajax("https://api.xn--srlaregn-0za.se/sr.json.php?key=" + key1, {
-            type: 'get',
-            dataType: 'json',
-            error: function (xhr, textStatus) {
-                reject(textStatus);
-            },
-            success: function (data) {
-                resolve(data);
-            }
-        });
-    }).then(function (data) {
-        $( '#lyric' ).html("Databasen uppdateras nu... var god vänta...");
-        return db.transaction('rw', db.lyrics, function () {
-            data.forEach(function (item) {
-                db.lyrics.add(item);
-            });
-        });
-    }).then(function (){
-        $( '#lyric' ).html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
-    }); 
-}*/
 
 
 // Populate DB if empty
@@ -266,41 +251,19 @@ function ajaxUpdateSR(key1, curVer) {
 }
 
 
-/*
-function ajaxUpdateSR (key1,curVer) {
-//    console.log("Looking for text updates ...");
-    return new Dexie.Promise(function (resolve, reject) {
-//	console.log("Current Version: " + curVer);
-        $.ajax("db_version.json", {
-
-            type: 'get',
-	    dataType: 'json',
-	    error: function (xhr, textStatus) {
-		reject(textStatus);
-	    },
-	    success: function (data) {
-		resolve(data);
-	    }
-	});
-    }).then(function (data) {
-//	console.log("Uppdaterar databasen med nya objekt... vänligen vänta.");
-	return db.transaction('rw', db.lyrics, function () {
-	    data.forEach(function (item) {
-		//console.log("Uppdaterar objekt med ID: " + JSON.stringify(item.id));
-		db.lyrics.update(item.id, item);
-		//db.lyrics.delete(item.id);
-		//db.lyrics.add(item);
-	    });
-	});
-    }).catch(function (error) {
-        console.log(error);
-    });
-}
-*/
-
-
 // Version check and update lyrics db
 function updateLyrics() {
+    // Get the current version from the 'db_version' cookie
+    var curVer = Cookies.get('db_version');
+    var key1 = Cookies.get('key1');
+
+    if (navigator.onLine) {
+        console.log("Navigator is online and current downloaded DB version is " + curVer);
+        ajaxUpdateSR(key1, curVer);
+    }
+}
+
+/*function updateLyrics() {
     db.lyrics.orderBy("ts").reverse().limit(1).toArray(function(version) {
         var curVer = version.map(function (v) { return v.ts });
 //        console.log ("Browser database version: " + curVer);
@@ -309,7 +272,7 @@ function updateLyrics() {
 	    ajaxUpdateSR(Cookies.get('key1'),curVer);
         }
     });
-}
+}*/
 
 updateLyrics();
 
