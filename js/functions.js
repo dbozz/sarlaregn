@@ -150,6 +150,26 @@ function setTimestampCookie(cookieName) {
     document.cookie = cookieName + "=" + timestamp + expires + "; path=/; SameSite=None; Secure";
 }
 
+function updateDbVersionCookie() {
+    fetch('/db_version.json')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            var version = data.version;
+            var date = new Date();
+            date.setTime(date.getTime() + (100 * 365 * 24 * 60 * 60 * 1000));  // 100 years
+            var expires = "expires=" + date.toUTCString();
+            document.cookie = "db_version=" + version + "; " + expires + "; path=/; SameSite=None; Secure";
+        })
+        .catch(error => {
+            console.error('Failed to fetch db_version.json:', error);
+        });
+}
+
 function ajaxSR(key1) {
     return new Dexie.Promise(function (resolve, reject) {
         $.ajax("/sr.json", {
@@ -184,7 +204,8 @@ function ajaxSR(key1) {
             });
         });
     }).then(function () {
-        setTimestampCookie('db_version');
+        //setTimestampCookie('db_version');
+        updateDbVersionCookie();
         $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
     });
 }
