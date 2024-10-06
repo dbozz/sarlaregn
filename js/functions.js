@@ -306,7 +306,7 @@ function updateLyrics() {
         console.log ("Database Version: " + curVer);
         if (navigator.onLine) {
 	    console.log("Navigator IS online and current db version is " + curVer);
-//	    ajaxUpdateSR(Cookies.get('key1'),curVer);
+	    ajaxUpdateSR(Cookies.get('key1'),curVer);
         }
     });
 }
