@@ -197,7 +197,7 @@ function ajaxSR(key1) {
                         item.search = decryptField(item.search, key1);  // Decrypt search
                     } catch (error) {
                         // If decryption fails, skip adding this item
-                        console.error("Decryption failed for item:", item, "Error:", error);
+                        //console.error("Decryption failed for item:", item, "Error:", error);
                         return;  // Skip to the next item
                     }
                 }
