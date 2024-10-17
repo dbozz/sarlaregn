@@ -39,15 +39,21 @@ var changeFontSize = function (increaseFont) {
 
     if (increaseFont) {
       $element.css('font-size', 0);
-      newFontSize = currentFontSizeNum * 1.2;
+      newFontSize = currentFontSizeNum + 1;
     } else {
-      newFontSize = currentFontSizeNum * 0.8;
+      newFontSize = currentFontSizeNum - 1;
     }
 
     $element.css('font-size', newFontSize);
-    Cookies.set('FontSize', newFontSize, { 
+    var date = new Date();
+    date.setTime(date.getTime() + (100 * 365 * 24 * 60 * 60 * 1000));  // 100 years
+    var expires = "expires=" + date.toUTCString();
+    document.cookie = "FontSize=" + newFontSize + "; " + expires + "; path=/; SameSite=None; Secure";
+
+
+    /*Cookies.set('FontSize', newFontSize, { 
       expires: 3650 
-    });
+    });*/
     console.log(newFontSize); 
   });
 };
@@ -66,10 +72,20 @@ $(document).ready(function () {
     }
 
     // Reset Font Size
-    var originalFontSize = $('html').css('font-size');
+    try {
+        var FontSize = Cookies.get('FontSize');
+    } catch {
+        var FontSize = 14;
+    } finally {
+        console.log("Font Size is: " + FontSize)
 
+    }
+    //var originalFontSize = $('html').css('font-size');
+
+
+    console.log("Original fontsize: " + FontSize);
     $(".resetFont").click(function () {
-        $('html').css('font-size', originalFontSize);
+        $('html').css('font-size', FontSize);
     });
     // Increase Font Size
     $(".increaseFont").on('click', function () {
@@ -336,12 +352,11 @@ function getLyric(id) {
 	$( '#sNext' ).attr("href", "javascript:selectNext(" + item.browse + ");");
 	$( '#sPrev' ).attr("href", "javascript:selectPrev(" + item.browse + ");");
 	var fs = Cookies.get('FontSize');
-	$('#thelyric').css('font-size', fs);
+    console.log("Fontsize in cookie: " + fs)
+	$( '#thelyric' ).css("font-size", fs + "px");
 	if ( item.sb == "1" || item.sb == "2" ) { var upt2 = ""; } else { var upt2 = "," + b[item.sb]; }
 	history.pushState({}, "", "/?" + item.nr + upt2);
-//	document.getElementById('urlDisplay').innerHTML = window.location.href;
-	document.title = "Särlaregn nr. " + item.nr; //+ " " + item.sb;
-        //gAnalytics(item.nr,item.sb,"ViewLyric");
+	document.title = "Särlaregn nr. " + item.nr; 
         if(item.bookmarked == "true") {
             $( '#lyric_head').html('<a href=\"javascript:delete_bookmark(\'' + id + '\');\">Ta bort bokmärke</a><br>Kopiera <a href=\"javascript:ttc()\">text</a> | <a href=\"javascript:copyLink()\">länk</a>');
         } else {
