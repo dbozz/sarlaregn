@@ -1,5 +1,4 @@
 /* For smartphones */
-/* Test */
 @media (max-width: 480px) {
 .arrowleft {
 height:30px;
@@ -71,6 +70,10 @@ padding:0;
 padding-top:5px;
 /*margin-left: -8px;
 margin-right: -8px;*/
+}
+#moten {
+width:300px;
+padding:0 0 100px 0px;
 }
 #content {
 margin-left: 10px;
@@ -177,6 +180,10 @@ padding-right: 0;
 /*margin-left: -18px;*/
 margin-right: -18px;
 padding-top:10px;
+}
+#moten {
+width:300px;
+padding:0 0 100px 0px;
 }
 h1 {
 font-size:2.8em;
@@ -288,6 +295,11 @@ width: 324px;
 margin: 10px;
 padding-top:5px;
 }
+#moten {
+width:300px;
+margin: 10px;
+padding:0 0 100px 0px;
+}
 h1 {
 font-size:3em;
 }
@@ -394,11 +406,19 @@ padding:0;
 float:left;
 border-right: solid 1px #ccc;
 }
+#moten {
+width:300px;
+margin: 10px;
+padding:0 0 100px 0px;
+}
 #content {
 margin-left: 10px;
 margin-right: 10px;
 }
 #moten {
+width:300px;
+margin: 10px;
+padding:0 0 100px 0px;
 float:right;
 }
 h1 {
@@ -549,11 +569,6 @@ color: #666666;
 a:hover {
 text-decoration:none;
 color:#000;
-}
-#moten {
-width:300px;
-margin: 10px;
-padding:0 0 100px 0px;
 }
 #twitter {
 width:200px;
