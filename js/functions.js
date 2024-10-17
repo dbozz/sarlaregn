@@ -151,8 +151,9 @@ function setTimestampCookie(cookieName) {
 }
 
 function updateDbVersionCookie() {
+    var now = Math.floor(Date.now() / 1000);
     console.log('Updating Cookie db_version.')
-    fetch('/db_version.json')
+    fetch('/db_version.json?t=' + now )
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
