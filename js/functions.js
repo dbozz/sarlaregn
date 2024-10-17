@@ -250,7 +250,8 @@ db.on('ready', function () {
 
 function ajaxUpdateSR(key1, curVer) {
     return new Dexie.Promise(function (resolve, reject) {
-        $.ajax("db_version.json", {
+        var now = Math.floor(Date.now() / 1000);
+        $.ajax("db_version.json?t=" + now, {
             type: 'get',
             dataType: 'json',
             error: function (xhr, textStatus) {
