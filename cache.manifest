@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2024-10-06 :1
+# 2024-10-17 :1
 NETWORK:
 /robots.txt
 CACHE:
@@ -24,14 +24,14 @@ CACHE:
 /images/ui-bg_flat_75_ffffff_40x100.png
 /images/ui-bg_glass_75_dadada_1x400.png
 /images/sr_logo70.png
-/images/sr192.png
-/images/sr144.png
-/images/sr96.png
-/images/sr72.png
-/images/sr48.png
-/images/sr36.png
-/images/sr32.png
-/images/sr16.png
+/images/SR192.png
+/images/SR144.png
+/images/SR96.png
+/images/SR72.png
+/images/SR48.png
+/images/SR36.png
+/images/SR32.png
+/images/SR16.png
 /js.cookie.js
 /images/off.png
 /images/on.png
@@ -39,4 +39,3 @@ CACHE:
 /js/jquery.touchSwipe.min.js
 /manifest2.json
 /sr.json
-/db_version.json
