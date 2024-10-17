@@ -69,8 +69,8 @@ width: auto;
 width: auto;
 padding:0;
 padding-top:5px;
-margin-left: -8px;
-margin-right: -8px;
+/*margin-left: -8px;
+margin-right: -8px;*/
 }
 #content {
 margin-left: 10px;
@@ -174,7 +174,7 @@ width:94%;
 width: auto;
 padding-left: 0;
 padding-right: 0;
-margin-left: -18px;
+/*margin-left: -18px;*/
 margin-right: -18px;
 padding-top:10px;
 }
@@ -284,7 +284,8 @@ width:760px;
 }
 .container {
 width: 324px;
-margin: 20px auto;
+/*margin: 20px auto;*/
+margin: 10px;
 padding-top:5px;
 }
 h1 {
@@ -493,7 +494,7 @@ margin-top:30px;
 overflow-x:hidden;
 }
 #lyric {
-margin:10px;
+/*margin:10px;*/
 }
 #content img {
 padding: 5px;
@@ -551,7 +552,7 @@ color:#000;
 }
 #moten {
 width:300px;
-margin-top: -10px;
+margin: 10px;
 padding:0 0 100px 0px;
 }
 #twitter {
