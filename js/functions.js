@@ -284,7 +284,7 @@ function ajaxUpdateSR(key1, curVer) {
         console.log("Current Online DB version is: " + newVersion)
         if (newVersion > curVer) {
             // The new version is newer than the current version, update the page
-            $( '#lyric' ).html('Det finns en ny sångdatabas. <a href="javascript:clearSite();">Klicka här för att uppdatera.</a>');
+            $( '#lyric' ).html('<p><p><strong><a href="javascript:clearSite();">Det finns en ny sångdatabas. Klicka här för att uppdatera.</a></strong>');
         }
         // If the new version is not newer, do nothing
     }).catch(function (error) {
