@@ -37,7 +37,7 @@ width:96%;
 #searchCast {
 position:relative;
 left:108px;
-z-indez:3;
+z-index:3;
 top:-51px;
 width:158px;
 }
@@ -54,7 +54,7 @@ height:58px;
 background-color:white;
 opacity:0.4;
 border:solid 0px #ccc;
-font-face: Verdana;
+font-family: Verdana;
 color: #000;
 font-size: 1.8em;
 padding-left:5px;
@@ -66,7 +66,7 @@ font-size:2em;
 width: auto;
 }
 .container {
-width: auto
+width: auto;
 padding:0;
 padding-top:5px;
 margin-left: -8px;
@@ -138,14 +138,14 @@ top:80px;
 #search {
 position:relative;
 left:240px;
-width:200;
+width:200px;
 z-index:3;
 top:5px;
 }
 #searchCast {
 position:relative;
 left:240px;
-width:200;
+width:200px;
 z-index:3;
 top:-42px;
 }
@@ -155,7 +155,7 @@ height:35px;
 background-color:white;
 opacity:0.4;
 border:solid 1px #ccc;
-font-face: Verdana;
+font-family: Verdana;
 color: #000;
 font-size: 1.8em;
 padding-left:5px
@@ -171,7 +171,7 @@ padding-right: 10px;
 width:94%;
 }
 .container {
-width: auto
+width: auto;
 padding-left: 0;
 padding-right: 0;
 margin-left: -18px;
@@ -202,7 +202,8 @@ opacity:0.5;
 background-color:white;
 border-left: solid 1px;
 height:91px;
-border-radius-top: 10px;
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
 }
 .social {
 padding-bottom:15px;
@@ -270,7 +271,7 @@ height:35px;
 background-color:white;
 opacity:0.4;
 border:solid 1px #ccc;
-font-face: Verdana;
+font-family: Verdana;
 color: #000;
 font-size: 1.8em;
 padding-left:5px;
@@ -282,9 +283,8 @@ width: 760px;
 width:760px;
 }
 .container {
-width: 324px
-#margin-left:0px;
-margin: 20 auto;
+width: 324px;
+margin: 20px auto;
 padding-top:5px;
 }
 h1 {
@@ -311,8 +311,8 @@ opacity:0.5;
 background-color:white;
 border-left: solid 1px;
 height:91px;
-border-radius-top: 10px;
-#padding:2px;
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
 }
 .social {
 padding-bottom:15px;
@@ -363,7 +363,6 @@ left:550px;
 z-index:3;
 width:250px;
 top:23px;
-#border:solid 1px;
 }
 #searchCast {
 position:relative;
@@ -371,7 +370,6 @@ left:550px;
 z-index:3;
 width:250px;
 top:-50px;
-#border:solid 1px;
 }
 .sokcss {
 width:250px;
@@ -379,14 +377,13 @@ height:35px;
 background-color:white;
 opacity:0.4;
 border:solid 1px #ccc;
-font-face: Verdana;
+font-family: Verdana;
 color: #000;
 font-size: 1.8em;
 padding-left:5px
 }
 #everything {
 padding-left: 20px;
-#padding-right: 20px;
 width: 1180px;
 }
 .container {
@@ -423,8 +420,8 @@ opacity:0.5;
 background-color:white;
 border-left: solid 1px;
 height:91px;
-border-radius-top: 10px;
-#padding:2px;
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
 }
 #line {
 background: linear-gradient(to right, rgba(225,225,225,1), rgba(255,255,255,0));
@@ -461,7 +458,7 @@ margin:0;
 padding:0;
 padding-bottom: 5px;
 float:left;
-font-face:verdant;
+font-family:verdant;
 font-size:1.8em;
 z-index:-3;
 }
@@ -475,7 +472,7 @@ float:right;
 width:auto;
 }
 .head {
-height:1;
+height:1px;
 position:fixed;
 z-index:1;
 width: 100%;
@@ -494,44 +491,36 @@ body {
 padding-top:0px;
 margin-top:30px;
 overflow-x:hidden;
-#overflow: hidden;
 }
 #lyric {
 margin:10px;
 }
 #content img {
-padding: 5;
+padding: 5px;
 }
 #everything {
-#background-color:red;
 margin-left:auto;
 margin-right:auto;
-#border:solid 4px;
 height:500px;
 }
 h1 {
 font-family: 'Verdana', sans-serif; font-weight: 400;
-#text-shadow: 2px 0px 20px #fff;
 color:#fff;
 }
 h1 a:link {
 font-family: 'Verdana', sans-serif; font-weight: 400;
-#text-shadow: 2px 0px 20px #fff;
 color:#fff;
 }
 h1 a:hover {
 font-family: 'Verdana', sans-serif; font-weight: 400;
-#text-shadow: 2px 0px 20px #fff;
 color:#fff;
 }
 h1 a:visited {
 font-family: 'Verdana', sans-serif; font-weight: 400;
-#text-shadow: 2px 0px 20px #fff;
 color:#fff;
 }
 h1 a {
 font-family: 'Verdana', sans-serif; font-weight: 400;
-#text-shadow: 2px 0px 20px #fff;
 color:#fff;
 }
 h2 {
@@ -546,9 +535,7 @@ margin-top:0px;
 }
 h4 {
 font-family: 'Verdana', sans-serif;
-#font-family:Verdana;
 font-size:1.2em;
-#text-shadow:0px 0px 2px #000000;
 margin-top:0px;
 }
 a:link {
@@ -586,14 +573,11 @@ width:100%;
 left:0px;
 background-image: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
 background-repeat:repeat-y;
-#background-color: white;
-#box-shadow: 0px 1px 5px #888888;
 }
 p {
 font-family: Verdana; 
 color: black; 
 position: relative; 
-#margin-top: 20px;
 }
 #header { 
 opacity: 1.0; 
