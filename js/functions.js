@@ -191,7 +191,7 @@ function updateDbVersionCookie() {
 function ajaxSR(key1) {
     return new Dexie.Promise(function (resolve, reject) {
         var now = Math.floor(Date.now() / 1000);
-        $.ajax("/sr.json?t=" + now, {
+        $.ajax("/sr.json" , {
             type: 'get',
             dataType: 'json',
             error: function (xhr, textStatus) {
