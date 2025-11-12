@@ -206,6 +206,9 @@ margin-left:-500px;
 top:61px;
 }
 }
+
+
+
 /* For tablets & smart phones */
 @media (min-width: 479px) and (max-width: 767px) {
 .arrowleft {
@@ -228,7 +231,7 @@ position:relative;
 left:0px;
 }
 .head {
-top:23px;
+top:0px;
 }
 .body {
 position:relative;
@@ -236,10 +239,10 @@ top:80px;
 }
 #search {
 position:relative;
-left:240px;
-width:200px;
+left:0px;
+width:100vw;
 z-index:3;
-top:15px;
+top:0px;
 }
 #searchCast {
 position:relative;
@@ -249,8 +252,8 @@ z-index:3;
 top:-42px;
 }
 .sokcss {
-width:200px;
-height:35px;
+width:100vw;
+height:100px;
 background-color:white;
 opacity:0.4;
 border:solid 1px #ccc;
