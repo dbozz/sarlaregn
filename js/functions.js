@@ -255,7 +255,7 @@ function ajaxSR(key1) {
         $('#lyric').html("Databasen uppdateras nu... var god vänta...");
         return db.transaction('rw', db.lyrics, function () {
             data.forEach(function (item) {
-                if (item.encrypted) {
+                /*if (item.encrypted) {
                     try {
                         item.label = decryptField(item.label, key1);
                         item.value = decryptField(item.value, key1);
@@ -264,7 +264,7 @@ function ajaxSR(key1) {
                         console.log("Valid nyckel saknas för att låsa upp sång med id: ", item.id);
                         return;  // Skip this item
                     }
-                }
+                }*/
                 db.lyrics.add(item);
             });
         });
