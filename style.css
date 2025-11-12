@@ -41,6 +41,8 @@
     letter-spacing: 0.1em;
     text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.7);
     z-index: 2;
+    text-align: center;
+    line-height: 1.2;
   }
 
   /* När intro ska försvinna */
