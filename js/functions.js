@@ -265,7 +265,7 @@ function ajaxSR(key1) {
                         return;  // Skip this item
                     }
                 }*/
-                console.log("Inserting item with id: ", item.id);
+                console.log("Inserting item with id: ", item.id); 
                 db.lyrics.add(item);
             });
         });
