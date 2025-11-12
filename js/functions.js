@@ -190,6 +190,7 @@ function updateDbVersionCookie() {
         });
 }
 
+/*
 function ajaxSR(key1) {
     return new Dexie.Promise(function (resolve, reject) {
         var now = Math.floor(Date.now() / 1000);
@@ -232,6 +233,48 @@ function ajaxSR(key1) {
         $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
     });
 }
+*/
+function ajaxSR(key1) {
+    return new Dexie.Promise(function (resolve, reject) {
+        var now = Math.floor(Date.now() / 1000);
+
+        // Här är din nya JSON-länk från Apps Script
+        const url = "https://script.google.com/macros/s/AKfycbxJ0K2QDyjJccpKFltLTVeh1-U1y9BcaCZANx3DBsvORkqGG_3boRxDum7wdohYvOgN/exec";
+
+        $.ajax(url, {
+            type: 'get',
+            dataType: 'json',
+            error: function (xhr, textStatus) {
+                reject(textStatus);
+            },
+            success: function (data) {
+                resolve(data);
+            }
+        });
+    }).then(function (data) {
+        $('#lyric').html("Databasen uppdateras nu... var god vänta...");
+        return db.transaction('rw', db.lyrics, function () {
+            data.forEach(function (item) {
+                if (item.encrypted) {
+                    try {
+                        item.label = decryptField(item.label, key1);
+                        item.value = decryptField(item.value, key1);
+                        item.search = decryptField(item.search, key1);
+                    } catch (error) {
+                        console.log("Valid nyckel saknas för att låsa upp sång med id: ", item.id);
+                        return;  // Skip this item
+                    }
+                }
+                db.lyrics.add(item);
+            });
+        });
+    }).then(function () {
+        updateDbVersionCookie();
+        console.log('Done inserting data into DB.')
+        $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
+    });
+}
+
 
 // Function to generate the key in JavaScript (same logic as in Python)
 function generateKey(password) {
