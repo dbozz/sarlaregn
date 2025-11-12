@@ -1,3 +1,7 @@
+
+// Base URL for DB:
+const base_url = "https://script.google.com/macros/s/AKfycbwbFsR030BbU2PHHWmHrEJWxMjXDihCbGXz3tVNZNCeDKXxnDYPobwjEjjcjawPt2ZG/exec"
+
 var b = {
   "js": 6,
   6: "js",
@@ -171,7 +175,7 @@ function setTimestampCookie(cookieName) {
 function updateDbVersionCookie() {
     var now = Math.floor(Date.now() / 1000);
     console.log('Updating Cookie db_version.')
-    fetch('https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLiJQMgJdTvCwkQmcuaGgX8ZwG8f7WTXWuBhY6rgWDCIIp1N2K0yXYb1OjsgVF5A11ZVptAZRA7zU-mwPIbS6L-tE0NilxGBKWl3Nvqvk1DIPSWQvfLIehRNMbLedMqw3dXTGfN7YSZH6yC7FAaQ_GAQDrNQ1p2CRZ0moYGektN3p3GUnoa91As6v-_N7kdT2YLVAg8VWNFLxlxhiIsH725Wz6yE3Oz4gtq1XhLoBziDQM2H0vIV7Iu57Awm5Fi9jEjyLbphvKe58MgnRswgBpPAsb_UEQ&lib=MnqJq34DnQAXUV9XLEf7WcXQa-NNQ1Z9i')
+    fetch(base_url + "?action=ts&key=" + key1)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -239,7 +243,7 @@ function ajaxSR(key1) {
         var now = Math.floor(Date.now() / 1000);
 
         // Här är din nya JSON-länk från Apps Script
-        const url = "https://script.google.com/macros/s/AKfycbxJ0K2QDyjJccpKFltLTVeh1-U1y9BcaCZANx3DBsvORkqGG_3boRxDum7wdohYvOgN/exec";
+        const url = base_url + "?action=lyrics&key=" + key1;
 
         $.ajax(url, {
             type: 'get',
@@ -315,7 +319,7 @@ db.on('ready', function () {
 function ajaxUpdateSR(key1, curVer) {
     return new Dexie.Promise(function (resolve, reject) {
         var now = Math.floor(Date.now() / 1000);
-        $.ajax("https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLiJQMgJdTvCwkQmcuaGgX8ZwG8f7WTXWuBhY6rgWDCIIp1N2K0yXYb1OjsgVF5A11ZVptAZRA7zU-mwPIbS6L-tE0NilxGBKWl3Nvqvk1DIPSWQvfLIehRNMbLedMqw3dXTGfN7YSZH6yC7FAaQ_GAQDrNQ1p2CRZ0moYGektN3p3GUnoa91As6v-_N7kdT2YLVAg8VWNFLxlxhiIsH725Wz6yE3Oz4gtq1XhLoBziDQM2H0vIV7Iu57Awm5Fi9jEjyLbphvKe58MgnRswgBpPAsb_UEQ&lib=MnqJq34DnQAXUV9XLEf7WcXQa-NNQ1Z9i", {
+        $.ajax(base_url + "?action=ts&key=" + key1, {
             type: 'get',
             dataType: 'json',
             error: function (xhr, textStatus) {
