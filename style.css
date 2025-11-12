@@ -125,6 +125,7 @@ top:0px;
 .body {
 position:relative;
 top:40px;
+padding:10px
 }
 .browsemenu {
 width:100vw;
@@ -236,6 +237,7 @@ top:0px;
 .body {
 position:relative;
 top:80px;
+padding:10px;
 }
 #search {
 position:relative;
@@ -360,6 +362,7 @@ margin-right:0px;
 .body {
 position:relative;
 top:130px;
+padding:10px;
 }
 #search {
 position:relative;
@@ -472,6 +475,7 @@ width:100vw;
 position:relative;
 top:150px;
 z-index:0;
+padding:10px;
 }
 #search {
 position:relative;
@@ -617,7 +621,7 @@ margin-top:30px;
 overflow-x:hidden;
 }
 #lyric {
-margin:10px;
+margin:0px;
 }
 #content img {
 padding: 5px;
