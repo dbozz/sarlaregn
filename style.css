@@ -1,25 +1,38 @@
-.logo-container {
-  width: 400px;       /*  bredd på log gan */
-  height: 200px;      /* höjd på loggan */
-  position: relative;
-  overflow: hidden;   /* klipper allt utanför container */
-}
-
-.logo-video {
-  width: 100%;
-  /*height: 100%;*/
-  object-fit: cover;  /* fyller hela rutan, bibehåller proportioner */
-}
-
 .logobg {
-  width: 100vw;          /* fyller hela fönstrets bredd */
-  height: 300px;         /* fast höjd */
-  object-fit: cover;     /* beskär så att den fyller */
-  object-position: center;
-  display: block;        /* tar bort ev. mellanrum */
+  position: relative;     /* viktigt för att overlay ska kunna positioneras relativt videon */
+  width: 100vw;           /* fyller hela fönstrets bredd */
+  height: 300px;          /* fast höjd */
+  overflow: hidden;       /* beskär videon utanför ramen */
   margin: 0;
   padding: 0;
 }
+
+.logobg video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.overlay-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 64px;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 4px;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+  z-index: 2; /* säkrar att texten ligger ovanpå videon */
+}
+
 
 /* For smartphones */
 @media (max-width: 480px) {
