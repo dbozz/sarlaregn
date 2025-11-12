@@ -20,7 +20,7 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 }
 </script>
 
-	<title>Särlaregn</title>
+	<title>SÄRLAREGN</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 	<meta name="mobile-web-app-capable" content="yes">
@@ -48,14 +48,22 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 
 <div id=everything>
-	<div id=bottom></div>
+	<div id=bottom>
+		<div class="logobg"></div>
+		  <video autoplay muted loop class="background-video">
+    		<source src="video.webm" type="video/webm">
+  		  </video>
+		</div>
+  <div class="overlay-text">
+    SÄRLAREGN
+  </div>
+	</div>
 	<div id=bottom2></div>
-	<div id=line></div>
+	<!--div id=line></div-->
 	<div class=head>
 		<div id=headercontainer>
-			<div id=logo><span class=logo>  <video autoplay loop muted playsinline class="logo-video">
-    <source src="/sr.webm" type="video/webm">
-  </video></span>
+			<div id=logo><span class=logo>  
+			</span>
 			</div>
 		</div>
 		<div id=search>

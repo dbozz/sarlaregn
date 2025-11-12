@@ -1,5 +1,5 @@
 .logo-container {
-  width: 400px;       /* bredd på loggan */
+  width: 400px;       /*  bredd på log gan */
   height: 200px;      /* höjd på loggan */
   position: relative;
   overflow: hidden;   /* klipper allt utanför container */
@@ -7,9 +7,20 @@
 
 .logo-video {
   width: 100%;
-  height: 100%;
+  /*height: 100%;*/
   object-fit: cover;  /* fyller hela rutan, bibehåller proportioner */
 }
+
+.logovideo {
+  width: 100vw;          /* fyller hela fönstrets bredd */
+  height: 300px;         /* fast höjd */
+  object-fit: cover;     /* beskär så att den fyller */
+  object-position: center;
+  display: block;        /* tar bort ev. mellanrum */
+  margin: 0;
+  padding: 0;
+}
+
 /* For smartphones */
 @media (max-width: 480px) {
 .arrowleft {
@@ -54,10 +65,10 @@ width:158px;
 }
 #search {
 position:relative;
-left:75px;
+left:65%;
 z-index:3;
-top:-11px;
-width:70%;
+top:0px;
+width:35%;
 }
 .sokcss {
 width:100%;
@@ -155,7 +166,7 @@ position:relative;
 left:240px;
 width:200px;
 z-index:3;
-top:5px;
+top:15px;
 }
 #searchCast {
 position:relative;
@@ -249,7 +260,7 @@ height:36px;
 #logo {
 width:300px;
 height:90px;
-margin-top:0px;
+margin-top:10px;
 background-image:url("/sr.webm");
 background-size:contain;
 background-repeat:no-repeat;
@@ -361,8 +372,8 @@ height:36px;
 #logo {
 width:320px;
 height:90px;
-margin-top:0px;
-background-image:url("/sr.webm");
+margin-top:10px;
+/*background-image:url("/sr.webm");*/
 background-size:contain;
 background-repeat:no-repeat;
 }
@@ -472,7 +483,7 @@ box-shadow: 2px 2px 15px #fff;
 outline:none; 
 }
 #headercontainer {
-top: 0px;
+top: 10px;
 position: absolute;
 }
 #thelyric {
