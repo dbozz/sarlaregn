@@ -1,3 +1,57 @@
+ /* Nollställ marginaler */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* för att dölja scroll under intro */
+  }
+
+  /* Videobakgrund */
+  #intro {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+  }
+
+  #intro video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    object-position: center;
+  }
+
+  #intro h1 {
+    position: relative;
+    color: white;
+    font-size: 8vw;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-shadow: 4px 4px 12px rgba(0, 0, 0, 0.7);
+    z-index: 2;
+  }
+
+  /* När intro ska försvinna */
+  #intro.fade-out {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+
+
+
 .logobg {
   position: relative;     /* viktigt för att overlay ska kunna positioneras relativt videon */
   width: 100vw;           /* fyller hela fönstrets bredd */
