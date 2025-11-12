@@ -44,17 +44,7 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 	<script type="text/javascript" src="js/functions.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/fernet@0.3.2/fernetBrowser.min.js"></script>
-	<script>
-  // Klick på videon eller var som helst på introt
-  const intro = document.getElementById('intro');
-  intro.addEventListener('click', () => {
-    intro.classList.add('fade-out');
-    setTimeout(() => {
-      intro.style.display = 'none';
-      document.body.style.overflow = 'auto'; // återaktivera scroll
-    }, 800); // matchar transition-tiden
-  });
-</script>
+	
 </head>
 
 
@@ -131,6 +121,17 @@ function updateKey1() {
         var key1 = $('#key1').val();
         Cookies.set('key1', key1);
         }
+</script>
+<script>
+  // Klick på videon eller var som helst på introt
+  const intro = document.getElementById('intro');
+  intro.addEventListener('click', () => {
+    intro.classList.add('fade-out');
+    setTimeout(() => {
+      intro.style.display = 'none';
+      document.body.style.overflow = 'auto'; // återaktivera scroll
+    }, 800); // matchar transition-tiden
+  });
 </script>
 
 </body>
