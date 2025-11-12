@@ -1,3 +1,15 @@
+.logo-container {
+  width: 400px;       /* bredd på loggan */
+  height: 200px;      /* höjd på loggan */
+  position: relative;
+  overflow: hidden;   /* klipper allt utanför container */
+}
+
+.logo-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  /* fyller hela rutan, bibehåller proportioner */
+}
 /* For smartphones */
 @media (max-width: 480px) {
 .arrowleft {
