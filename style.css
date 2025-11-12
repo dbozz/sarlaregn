@@ -1,4 +1,4 @@
- /* Nollställ marginaler v2 */
+ /* Nollställ marginaler v3 */
   body, html {
     margin: 0;
     padding: 0;
@@ -120,7 +120,7 @@ width: 130px;
 left:0px;
 }
 .head {
-top:10px;
+top:0px;
 }
 .body {
 position:relative;
@@ -138,10 +138,10 @@ width:158px;
 }
 #search {
 position:relative;
-left:65%;
+left:0px;
 z-index:3;
 top:0px;
-width:35%;
+width:100vw;
 }
 .sokcss {
 width:100%;
