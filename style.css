@@ -26,12 +26,14 @@
   transform: translate(-50%, -50%);
   color: white;
   font-size: 64px;
-  font-weight: bold;
+  font-weight: 700; /* Bold */
+  font-family: 'Source Sans 3', sans-serif;
   text-align: center;
   letter-spacing: 4px;
   text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
-  z-index: 2; /* säkrar att texten ligger ovanpå videon */
+  z-index: 2;
 }
+
 
 
 /* For smartphones */
