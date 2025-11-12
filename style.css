@@ -1,7 +1,7 @@
 .logobg {
   position: relative;     /* viktigt för att overlay ska kunna positioneras relativt videon */
   width: 100vw;           /* fyller hela fönstrets bredd */
-  height: 300px;          /* fast höjd */
+  height: 100%;          /* fast höjd */
   overflow: hidden;       /* beskär videon utanför ramen */
   margin: 0;
   padding: 0;
