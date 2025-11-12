@@ -322,6 +322,10 @@ p {
 font-size: 1.3em;
 }
 }
+
+
+
+
 /* For smaller displays like laptops */
 @media (min-width: 768px) and (max-width: 1149px) {
 .arrowleft {
@@ -344,7 +348,7 @@ position:relative;
 left:0px;
 }
 .head {
-top:15px;
+top:0px;
 }
 body {
 margin-left:0px;
@@ -356,10 +360,10 @@ top:130px;
 }
 #search {
 position:relative;
-left:510px;
+left:0px;
 z-index:3;
-top:20px;
-width:250px;
+top:0px;
+height:100%;
 }
 #searchCast {
 position:relative;
@@ -369,8 +373,8 @@ top:-40px;
 width:250px;
 }
 .sokcss {
-width:250px;
-height:35px;
+width:100vw;
+height:100px;
 background-color:white;
 opacity:0.4;
 border:solid 1px #ccc;
@@ -456,7 +460,7 @@ position:relative;
 left:0px;
 }
 .head {
-top:10px;
+top:0px;
 }
 .browsemenu {
 width:800px;
@@ -468,10 +472,10 @@ z-index:0;
 }
 #search {
 position:relative;
-left:550px;
+left:0px;
 z-index:3;
-width:250px;
-top:23px;
+width:100vw;
+top:0px;
 }
 #searchCast {
 position:relative;
@@ -481,8 +485,8 @@ width:250px;
 top:-50px;
 }
 .sokcss {
-width:250px;
-height:35px;
+width:100vw;
+height:100px;
 background-color:white;
 opacity:0.4;
 border:solid 1px #ccc;
