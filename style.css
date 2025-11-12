@@ -11,7 +11,7 @@
   object-fit: cover;  /* fyller hela rutan, bibehåller proportioner */
 }
 
-.logovideo {
+.logobg {
   width: 100vw;          /* fyller hela fönstrets bredd */
   height: 300px;         /* fast höjd */
   object-fit: cover;     /* beskär så att den fyller */
