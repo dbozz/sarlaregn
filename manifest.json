@@ -1,43 +1,55 @@
 {
-  "name": "SärlaRegn",
+  "name": "Särlaregn",
   "icons": [
-    {
-      "src": "/images/SR36.png",
-      "sizes": "36x36",
-      "type": "image/png",
-      "density": "0.75"
-    },
-    {
-      "src": "/images/SR48.png",
-      "sizes": "48x48",
-      "type": "image/png",
-      "density": "1.0"
-    },
-    {
-      "src": "/images/SR72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "density": "1.5"
-    },
-    {
-      "src": "/images/SR96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "density": "2.0"
-    },
-    {
-      "src": "/images/SR144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "density": "3.0"
-    },
-    {
-      "src": "/images/SR192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "density": "4.0"
-    }
-  ],
+  {
+    "purpose": "maskable",
+    "sizes": "1080x1080",
+    "src": "maskable_icon.png",
+    "type": "image/png"
+  },
+  {
+    "purpose": "maskable",
+    "sizes": "48x48",
+    "src": "maskable_icon_x48.png",
+    "type": "image/png"
+  },
+  {
+    "purpose": "maskable",
+    "sizes": "72x72",
+    "src": "maskable_icon_x72.png",
+    "type": "image/png"
+  },
+  {
+    "purpose": "maskable",
+    "sizes": "96x96",
+    "src": "maskable_icon_x96.png",
+    "type": "image/png"
+  },
+  {
+    "purpose": "maskable",
+    "sizes": "128x128",
+    "src": "maskable_icon_x128.png",
+    "type": "image/png"
+  },
+  {
+    "purpose": "maskable",
+    "sizes": "192x192",
+    "src": "maskable_icon_x192.png",
+    "type": "image/png"
+  },
+  {
+    "purpose": "maskable",
+    "sizes": "384x384",
+    "src": "maskable_icon_x384.png",
+    "type": "image/png"
+  },
+  {
+    "purpose": "maskable",
+    "sizes": "512x512",
+    "src": "maskable_icon_x512.png",
+    "type": "image/png"
+  }
+],
   "start_url": "/",
   "display": "standalone"
 }

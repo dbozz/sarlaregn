@@ -67,45 +67,59 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
           SÄRLAREGN
         </div>
 	</div>
-	<div id=bottom2></div>
-	<!--div id=line></div-->
+	<!--div id=bottom2></div-->
 	<div class=head>
-		<!--div id=headercontainer>
-			<div id=logo><span class=logo>  
-			</span>
-			</div>
-		</div-->
 		<div id=search>
 		<input onclick="this.value=''; setFocusTo('sok');" id=sok type=text name=sok class="sokcss typeahead tt-query" autocomplete=off placeholder="Nr eller fritext">
 		</div>
-	<div class="browsemenu"><a href="javascript:selectPrev(5000);" class=navPrev id=sPrev><img src=images/arrowleft.png class=arrowleft></a> <!--a href="javascript:bookmarks();" class=navBookmarks>Bokmärken</a--> <a href="javascript:selectNext(1000);" class=navNext id=sNext><img src=images/arrowright.png class=arrowright></a></div>
+	<!--div class="browsemenu"><a href="javascript:selectPrev(5000);" class=navPrev id=sPrev><img src=images/arrowleft.png class=arrowleft></a><a href="javascript:selectNext(1000);" class=navNext id=sNext><img src=images/arrowright.png class=arrowright></a></div-->
 	</div>
 	</div>
+
+
 	<div class="body">
 
 	<div class="container">
-		<div id=lyric_head style="float:right; margin-right:30px; margin-top:10px;"></div>
-		<div class="fontSize">
-		<a class=decreaseFont><img style="width:20px; margin-left:10px; margin-top:10px;" src=images/fontsizedown.png></a>&nbsp;&nbsp;&nbsp;
-		<a class=increaseFont><img style="width:20px; margin-left:5px; margin-top:10px;" src=images/fontsizeup.png></a>
-                <!--img id=toggle style="width:25px; margin-left:5px; margin-top:10px;" src=images/off.png-->
+
+
+
+		<div id=lyric_head style="border:0.5px solid;padding:10px;background-color:lightyellow;width:fit-content; ">
+			<a href="javascript:bookmarks();"><strong>Bokmärken</strong></a><br>
+			<span id="bm_field"></span>
+
+			<p>
+			<strong>Kopiera:</strong><br>
+			<a href="javascript:ttc()">text</a> | <a href="javascript:copyLink()">länk</a><br>
+			</p>
+
+			<p>
+			<strong>Bläddra:</strong><br>
+			<a href="javascript:selectPrev(5000);" class=1navPrev id=sPrev>bakåt</a> | <a href="javascript:selectNext(1000);" class=1navNext id=sNext>framåt</a>	
+			</p>	
+			<div class="fontSize">
+
+
+				<p>
+				<strong>Textstorlek:</strong><br>
+				<a href="javascript:changeFontSize();">mindre</a> | <a href="javascript:changeFontSize(1);">större</a><br>
+				</p>
+
+				<p>
+			<a href="javascript:loadPage('about');"><strong>Om Särlaregn</strong></a><br> 
+			<a href="javascript:loadPage('help');"><strong>Hjälp</strong></a><br>
+			<a href="javascript:loadPage('settings');"><strong>Inst&auml;llningar</strong></a>
+				</p>
+
+			</div>
 		</div>
-		<div id=lyric><h2>Välkommen!</h2> <p>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan. <br><br>
+
+
+		<div id=lyric>
+			<h2>Välkommen!</h2> <p>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan. <br><br>
 		</div>	
+
 	</div>
 
-	<div id=moten>
-		<div class="textwidget">
-		<h3>
-        	<a href="javascript:bookmarks();">Bokmärken</a><br>
-			<a href="javascript:loadPage('about');">Om Särlaregn</a><br> 
-			<a href="javascript:loadPage('help');">Hjälp</a><br>
-			<a href="javascript:loadPage('settings');">Inst&auml;llningar</a><br>
-			<a id=sNext href="javascript:selectNext(1000);"></a>
-			<a id=sPrev href="javascript:selectPrev(5000);"></a>
-		</h3>
-		</div>
-	</div>
 	</div>
 </div>
 <script>

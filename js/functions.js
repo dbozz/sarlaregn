@@ -271,7 +271,7 @@ function decryptField(encryptedValue, password) {
 db.on('ready', function () {
     return db.lyrics.count(function (count) {
         if (count == 0) {
-	    $( '#lyric' ).html("Databasen är tom. Laddar ner från särlaregn.se. Vänligen vänta...");
+	    $( '#lyric' ).html("Databasen är tom. Laddar, vänligen vänta...");
 	    var key1 = Cookies.get('key1');
             
             // Check if online before attempting to load
@@ -386,9 +386,9 @@ function getLyric(id) {
 	history.pushState({}, "", "/?" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr; 
         if(item.bookmarked == "true") {
-            $( '#lyric_head').html('<a href=\"javascript:delete_bookmark(\'' + id + '\');\">Ta bort bokmärke</a><br>Kopiera <a href=\"javascript:ttc()\">text</a> | <a href=\"javascript:copyLink()\">länk</a>');
+            $( '#bm_field').html('<a href=\"javascript:delete_bookmark(\'' + id + '\');\">Ta bort bokmärke</a><br>');
         } else {
-            $( '#lyric_head').html('<a href=\"javascript:add_bookmark(\'' + id + '\');\">Lägg till bokmärke</a><br>Kopiera <a href=\"javascript:ttc()\">text</a> | <a href=\"javascript:copyLink()\">länk</a>');
+            $( '#bm_field').html('<a href=\"javascript:add_bookmark(\'' + id + '\');\">Lägg till bokmärke</a><br>');
         }
     })
 }
@@ -483,7 +483,7 @@ function bookmarks() {
 	bm_list.push(link);
     }).then(function() { 
 	$( '#lyric' ).html(bm_list.join(''))
-	$( '#lyric_head' ).html("");
+	$( '#bm_field' ).html("");
     }).catch(function (error) {
 	console.error(error);
     });
@@ -505,7 +505,7 @@ function delete_bookmark(id) {
 // Function for loading html page into div 	
 function loadPage(page){
     var htmlpage = page + ".html";
-    $( '#lyric_head' ).html("");
+    $( '#bm_field' ).html("");
     $( '#lyric' ).load(htmlpage).attr("href");
 }
 
@@ -543,3 +543,39 @@ $(function() {
         }
     });
 });
+/*
+// Ensure .body is positioned under #bottom even if #bottom height changes
+function adjustBodySpacing() {
+    try {
+        var bottom = document.getElementById('bottom');
+        var bodyEl = document.querySelector('.body');
+        if (!bottom || !bodyEl) return;
+        // Use offsetHeight which excludes margins but gives actual element height
+        var spacing = bottom.offsetHeight + 10; // 10px gap
+        bodyEl.style.marginTop = spacing + 'px';
+    } catch (e) {
+        console.warn('adjustBodySpacing error:', e);
+    }
+}*/
+
+// Run on initial load and on resize
+window.addEventListener('load', adjustBodySpacing);
+window.addEventListener('resize', adjustBodySpacing);
+
+// If browser supports ResizeObserver, use it to react to changes in #bottom
+if (window.ResizeObserver) {
+    var ro = new ResizeObserver(function() {
+        adjustBodySpacing();
+    });
+    var bottomEl = document.getElementById('bottom');
+    if (bottomEl) ro.observe(bottomEl);
+}
+
+// Fallback: observe DOM mutations inside #bottom
+if (window.MutationObserver) {
+    var mo = new MutationObserver(function() {
+        adjustBodySpacing();
+    });
+    var bottomNode = document.getElementById('bottom');
+    if (bottomNode) mo.observe(bottomNode, { childList: true, subtree: true, attributes: true });
+}
