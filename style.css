@@ -103,7 +103,7 @@ height:30px;
 height:30px;
 }
 .ui-menu .ui-menu-item {
-width: 150px!important;
+width: 100vw;
 font-size:0.8em!important;
 padding-right:0px;
 }
