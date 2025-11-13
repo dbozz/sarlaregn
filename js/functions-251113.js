@@ -2,45 +2,6 @@
 // Base URL for DB:
 const base_url = "https://script.google.com/macros/s/AKfycbwbFsR030BbU2PHHWmHrEJWxMjXDihCbGXz3tVNZNCeDKXxnDYPobwjEjjcjawPt2ZG/exec"
 
-// Register Service Worker for offline support
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('Service Worker registered successfully:', registration);
-      })
-      .catch(error => {
-        console.log('Service Worker registration failed:', error);
-      });
-  });
-}
-
-// Track online/offline status
-window.addEventListener('online', () => {
-  console.log('App is now online');
-  updateOnlineStatus(true);
-  updateLyrics();
-});
-
-window.addEventListener('offline', () => {
-  console.log('App is now offline');
-  updateOnlineStatus(false);
-});
-
-// Update UI to show online/offline status
-function updateOnlineStatus(isOnline) {
-  const statusElement = document.getElementById('online-status');
-  if (statusElement) {
-    if (isOnline) {
-      statusElement.textContent = 'Online';
-      statusElement.className = 'online';
-    } else {
-      statusElement.textContent = 'Offline';
-      statusElement.className = 'offline';
-    }
-  }
-}
-
 var b = {
   "js": 6,
   6: "js",
@@ -94,6 +55,11 @@ var changeFontSize = function (increaseFont) {
     date.setTime(date.getTime() + (100 * 365 * 24 * 60 * 60 * 1000));  // 100 years
     var expires = "expires=" + date.toUTCString();
     document.cookie = "FontSize=" + newFontSize + "; " + expires + "; path=/; SameSite=None; Secure";
+
+
+    /*Cookies.set('FontSize', newFontSize, { 
+      expires: 3650 
+    });*/
     console.log(newFontSize); 
   });
 };
@@ -118,7 +84,11 @@ $(document).ready(function () {
         var FontSize = 14;
     } finally {
         console.log("Font Size is: " + FontSize)
+
     }
+    //var originalFontSize = $('html').css('font-size');
+
+
     console.log("Original fontsize: " + FontSize);
     $(".resetFont").click(function () {
         $('html').css('font-size', FontSize);
@@ -145,13 +115,17 @@ function getBookID(nr) {
 
 // Create a query from URI
 function createSearchArray(nr, sb) {
+//    console.log("Songbook: " + sb);
     if ( sb != undefined ) { 
+        // console.log("sb not undefined");
         var bsb = b[sb];
     } else {
+        // console.log("sb is undefined");
         var bsb = getBookID(nr);
     } 
     var entries = {};
     db.lyrics.where("nr").equals(nr).each(function (item) {
+        // console.log("Iterrating " + item.sb + " and " + item.id);
         entries[item.sb] = item.id;
     }).then(function () {
         getLyric(entries[bsb]);
@@ -166,15 +140,30 @@ function clearSite() {
     db.delete();
     window.localStorage.clear();
     location.reload();
+    //window.applicationCache.update();
 }
 
 // IndexedDB functions ------------------------------------------------
 var db = new Dexie("SR");
+/*db.version(1).stores({
+	lyrics: "id, nr, search, ts"
+	});
+db.version(2).stores({
+	lyrics: "id, nr, search, ts",
+	bookmarks: "++id, &lyrics_id, excerpt"
+	});
+db.version(3).stores({
+	lyrics: "id, nr, search, ts, sb",
+	bookmarks: "++id, &lyrics_id, excerpt"
+	});*/
 db.version(6).stores( {
     lyrics: "id, nr, search, ts, sb, browse, bookmarked",
     bookmarks: "++id, lyrics_id, excerpt"
 });
-// Function to set timestamp cookie
+
+
+// Function to populate Indexed DB from sql
+
 function setTimestampCookie(cookieName) {
     var timestamp = Math.floor(Date.now() / 1000);
     var date = new Date();
@@ -192,7 +181,51 @@ function updateDbVersionCookie(version) {
     console.log('Cookie db_version updated successfully');
 }
 
-function ajaxSR(key1, version) {
+/*
+function ajaxSR(key1) {
+    return new Dexie.Promise(function (resolve, reject) {
+        var now = Math.floor(Date.now() / 1000);
+        $.ajax("/sr.json" , {
+            type: 'get',
+            dataType: 'json',
+            error: function (xhr, textStatus) {
+                reject(textStatus);
+            },
+            success: function (data) {
+                resolve(data);
+            }
+        });
+    }).then(function (data) {
+        $('#lyric').html("Databasen uppdateras nu... var god vänta...");
+        return db.transaction('rw', db.lyrics, function () {
+            data.forEach(function (item) {
+                // Check if the item has encrypted fields
+                if (item.encrypted) {
+                    try {
+                        // Attempt to decrypt specific fields
+                        item.label = decryptField(item.label, key1);  // Decrypt label
+                        item.value = decryptField(item.value, key1);  // Decrypt value
+                        item.search = decryptField(item.search, key1);  // Decrypt search
+                    } catch (error) {
+                        // If decryption fails, skip adding this item
+                        console.log("Valid nyckel saknas för att låsa upp sång med id: ", item.id);
+                        //console.error("Decryption failed for item:", item, "Error:", error);
+                        return;  // Skip to the next item
+                    }
+                }
+                // Add the item to the database after processing
+                db.lyrics.add(item);
+            });
+        });
+    }).then(function () {
+        //setTimestampCookie('db_version');
+        updateDbVersionCookie();
+        console.log('Done inserting data into DB.')
+        $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
+    });
+}
+*/
+function ajaxSR(key1) {
     return new Dexie.Promise(function (resolve, reject) {
         var now = Math.floor(Date.now() / 1000);
 
@@ -202,14 +235,7 @@ function ajaxSR(key1, version) {
         $.ajax(url, {
             type: 'get',
             dataType: 'json',
-            timeout: 15000,
-            error: function (xhr, textStatus, errorThrown) {
-                console.error('Error loading lyrics:', textStatus, errorThrown);
-                if (textStatus === 'timeout') {
-                    console.log('Request timed out - checking if offline');
-                } else if (textStatus === 'error') {
-                    console.log('Network error - offline mode activated');
-                }
+            error: function (xhr, textStatus) {
                 reject(textStatus);
             },
             success: function (data) {
@@ -219,27 +245,30 @@ function ajaxSR(key1, version) {
     }).then(function (data) {
         $('#lyric').html("Databasen uppdateras nu... var god vänta...");
         
+        // Extrahera versionen från data om den finns
+        var version = data.version || Math.floor(Date.now() / 1000);
+        
         return db.transaction('rw', db.lyrics, function () {
             data.forEach(function (item) {
+                /*if (item.encrypted) {
+                    try {
+                        item.label = decryptField(item.label, key1);
+                        item.value = decryptField(item.value, key1);
+                        item.search = decryptField(item.search, key1);
+                    } catch (error) {
+                        console.log("Valid nyckel saknas för att låsa upp sång med id: ", item.id);
+                        return;  // Skip this item
+                    }
+                }*/
                 console.log("Inserting item with id: ", item.id); 
                 db.lyrics.add(item);
             });
         }).then(function() {
-            // Uppdatera cookie med versionen som hämtades från servern
-            if (version) {
-                updateDbVersionCookie(version);
-            }
+            // Uppdatera cookie med versionen som hämtades
+            updateDbVersionCookie(version);
             console.log('Done inserting data into DB.')
             $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
         });
-    }).catch(function (error) {
-        console.error('Failed to load database:', error);
-        if (navigator.onLine === false) {
-            $('#lyric').html("<h3>Du är offline</h3><p>Databasen kunde inte laddas ner. Använd sångorna som redan finns sparade i webbläsaren.</p>");
-        } else {
-            $('#lyric').html("<h3>Fel vid laddning</h3><p>Det uppstod ett problem vid hämtning av databasen. Försök igen senare.</p>");
-        }
-        reject(error);
     });
 }
 
@@ -273,32 +302,7 @@ db.on('ready', function () {
         if (count == 0) {
 	    $( '#lyric' ).html("Databasen är tom. Laddar ner från särlaregn.se. Vänligen vänta...");
 	    var key1 = Cookies.get('key1');
-            
-            // Check if online before attempting to load
-            if (!navigator.onLine) {
-                $( '#lyric' ).html("<h3>Du är offline</h3><p>Databasen kunde inte laddas eftersom du inte är ansluten till internet. Försök igen när du är online.</p>");
-                return;
-            }
-            
-            // Hämta versionen först, sedan ladda databasen
-            $.ajax(base_url + "?action=ts&key=" + key1, {
-                type: 'get',
-                dataType: 'json',
-                timeout: 10000,
-                error: function (xhr, textStatus, errorThrown) {
-                    console.error('Failed to fetch version:', textStatus, errorThrown);
-                    if (navigator.onLine) {
-                        $( '#lyric' ).html("<h3>Anslutningsfel</h3><p>Det gick inte att ansluta till servern. Försök igen senare.</p>");
-                    } else {
-                        $( '#lyric' ).html("<h3>Du är offline</h3><p>Databasen kunde inte laddas eftersom du inte är ansluten till internet.</p>");
-                    }
-                },
-                success: function (data) {
-                    var version = data.version;
-                    console.log('Fetched DB version from server: ' + version);
-                    ajaxSR(key1, version);
-                }
-            });
+	    ajaxSR(key1);
         }
     });
 });
@@ -310,9 +314,7 @@ function ajaxUpdateSR(key1, curVer) {
         $.ajax(base_url + "?action=ts&key=" + key1, {
             type: 'get',
             dataType: 'json',
-            timeout: 10000,
-            error: function (xhr, textStatus, errorThrown) {
-                console.error('Error checking for updates:', textStatus, errorThrown);
+            error: function (xhr, textStatus) {
                 reject(textStatus);
             },
             success: function (data) {
@@ -320,14 +322,16 @@ function ajaxUpdateSR(key1, curVer) {
             }
         });
     }).then(function (data) {
-        var newVersion = parseInt(data.version, 10);
+        // Assuming db_version.json contains an object like { "version": "unixtimestamp" }
+        var newVersion = parseInt(data.version, 10); // Convert the version to an integer (Unix timestamp)
         console.log("Current Online DB version is: " + newVersion)
         if (newVersion > curVer) {
-            $( '#lyric' ).html('<p><strong><a href="javascript:clearSite();">Det finns en ny sångdatabas. Klicka här för att uppdatera.</a></strong></p>');
+            // The new version is newer than the current version, update the page
+            $( '#lyric' ).html('<p><p><strong><a href="javascript:clearSite();">Det finns en ny sångdatabas. Klicka här för att uppdatera.</a></strong>');
         }
+        // If the new version is not newer, do nothing
     }).catch(function (error) {
-        console.log('Could not check for updates (offline?):', error);
-        // Silently fail - don't show error to user if offline
+        console.log(error);
     });
 }
 
@@ -343,6 +347,17 @@ function updateLyrics() {
         ajaxUpdateSR(key1, curVer);
     }
 }
+
+/*function updateLyrics() {
+    db.lyrics.orderBy("ts").reverse().limit(1).toArray(function(version) {
+        var curVer = version.map(function (v) { return v.ts });
+//        console.log ("Browser database version: " + curVer);
+        if (navigator.onLine) {
+	    console.log("Navigator is online and current downloaded DB version is " + curVer);
+	    ajaxUpdateSR(Cookies.get('key1'),curVer);
+        }
+    });
+}*/
 
 updateLyrics();
 
@@ -492,7 +507,10 @@ function bookmarks() {
 
 // Add bookmark
 function add_bookmark(id) {
-    db.lyrics.update(id, {bookmarked: "true"});
+//    db.lyrics.where("id").equals(id).each(function(item){
+        db.lyrics.update(id, {bookmarked: "true"});
+//    });
+//    console.log("Testar..." + id);
     getLyric(id);
 }
 
