@@ -162,9 +162,71 @@ function createSearchArray(nr, sb) {
 
 
 // Clear LocalStorage and DB
-function clearSite() {
-    db.delete();
-    window.localStorage.clear();
+async function clearSite() {
+    // Unregister all Service Workers
+    if ('serviceWorker' in navigator) {
+        try {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+                await registration.unregister();
+                console.log('Service Worker unregistered:', registration.scope);
+            }
+        } catch (error) {
+            console.error('Error unregistering Service Workers:', error);
+        }
+    }
+
+    // Clear all caches
+    if ('caches' in window) {
+        try {
+            const cacheNames = await caches.keys();
+            for (const cacheName of cacheNames) {
+                await caches.delete(cacheName);
+                console.log('Cache cleared:', cacheName);
+            }
+        } catch (error) {
+            console.error('Error clearing caches:', error);
+        }
+    }
+
+    // Delete IndexedDB
+    try {
+        await db.delete();
+        console.log('IndexedDB deleted');
+    } catch (error) {
+        console.error('Error deleting IndexedDB:', error);
+    }
+
+    // Clear localStorage
+    try {
+        window.localStorage.clear();
+        console.log('LocalStorage cleared');
+    } catch (error) {
+        console.error('Error clearing localStorage:', error);
+    }
+
+    // Clear sessionStorage
+    try {
+        window.sessionStorage.clear();
+        console.log('SessionStorage cleared');
+    } catch (error) {
+        console.error('Error clearing sessionStorage:', error);
+    }
+
+    // Clear all cookies
+    try {
+        document.cookie.split(";").forEach(function(c) {
+            document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+        console.log('All cookies cleared');
+    } catch (error) {
+        console.error('Error clearing cookies:', error);
+    }
+
+    // Reload page
+    console.log('Clearing complete. Reloading page...');
     location.reload();
 }
 
