@@ -1,10 +1,12 @@
 <br><br>	
-<h4>Nyckel</h4>
+<div>Nyckel<br>
 <input onclick="setFocusTo('key1');" style="border:none;" type=password id=key1 placeholder="Nyckel" name=autkey>
 <br><em>Om du f&aring;tt en nyckel, ange den h&auml;r</em>
-<p>
+</div>
+<div>
 Då du angett din nyckel så måste du ladda om databasen.
 <br><a href="javascript:reloadDatabase();">Ladda om</a>
+</div>
 <script>
 var thekey = Cookies.get('key1');
 $("#key1").val(thekey);
