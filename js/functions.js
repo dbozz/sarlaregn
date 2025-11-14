@@ -161,6 +161,28 @@ function createSearchArray(nr, sb) {
 }
 
 
+// Reload IndexedDB only (keep everything else)
+async function reloadDatabase() {
+    try {
+        $( '#lyric' ).html("Databasen laddar om... var god vänta...");
+        
+        // Delete IndexedDB
+        try {
+            await db.delete();
+            console.log('IndexedDB deleted');
+        } catch (error) {
+            console.error('Error deleting IndexedDB:', error);
+        }
+
+        // Reload page to trigger fresh database load
+        console.log('Database reload complete. Reloading page...');
+        location.reload();
+    } catch (error) {
+        console.error('Error reloading database:', error);
+        $( '#lyric' ).html("<h3>Fel vid omstart</h3><p>Det uppstod ett problem vid omstart av databasen.</p>");
+    }
+}
+
 // Clear LocalStorage and DB
 async function clearSite() {
     // Unregister all Service Workers
