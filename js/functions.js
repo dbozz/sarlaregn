@@ -470,9 +470,9 @@ function getLyric(id) {
 	history.pushState({}, "", "/?" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr; 
         if(item.bookmarked == "true") {
-            $( '#bm_field').html('<a href=\"javascript:delete_bookmark(\'' + id + '\');\">Ta bort bokmärke</a><br>');
+            $( '#bm_field').html('<a href=\"javascript:delete_bookmark(\'' + id + '\');\">Ta bort</a><br>');
         } else {
-            $( '#bm_field').html('<a href=\"javascript:add_bookmark(\'' + id + '\');\">Lägg till bokmärke</a><br>');
+            $( '#bm_field').html('<a href=\"javascript:add_bookmark(\'' + id + '\');\">Lägg till</a><br>');
         }
     })
 }
