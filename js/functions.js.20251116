@@ -2,36 +2,6 @@
 // Base URL for DB:
 const base_url = "https://script.google.com/macros/s/AKfycbwbFsR030BbU2PHHWmHrEJWxMjXDihCbGXz3tVNZNCeDKXxnDYPobwjEjjcjawPt2ZG/exec"
 
-// DOM Cache
-const DOM = {
-  lyric: null,
-  thelyric: null,
-  bmField: null,
-  sNext: null,
-  sPrev: null
-};
-
-// Initialize DOM cache when ready
-function initDOMCache() {
-  DOM.lyric = document.getElementById('lyric');
-  DOM.thelyric = document.getElementById('thelyric');
-  DOM.bmField = document.getElementById('bm_field');
-  DOM.sNext = document.getElementById('sNext');
-  DOM.sPrev = document.getElementById('sPrev');
-}
-
-// Cookie helper functions
-function getCookie(name) {
-  return Cookies.get(name);
-}
-
-function setCookie(name, value, days = 36500) {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  const expires = "expires=" + date.toUTCString();
-  document.cookie = name + "=" + value + "; " + expires + "; path=/; SameSite=None; Secure";
-}
-
 // Register Service Worker for offline support
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -61,8 +31,13 @@ window.addEventListener('offline', () => {
 function updateOnlineStatus(isOnline) {
   const statusElement = document.getElementById('online-status');
   if (statusElement) {
-    statusElement.textContent = isOnline ? 'Online' : 'Offline';
-    statusElement.className = isOnline ? 'online' : 'offline';
+    if (isOnline) {
+      statusElement.textContent = 'Online';
+      statusElement.className = 'online';
+    } else {
+      statusElement.textContent = 'Offline';
+      statusElement.className = 'offline';
+    }
   }
 }
 
@@ -100,28 +75,32 @@ function copyLink() {
 
 // Font resize function-----------------------------------------------
 var changeFontSize = function (increaseFont, step) {
-  step = step || 1;
-  if (!DOM.thelyric) return;
-  
-  const currentFontSize = parseFloat(window.getComputedStyle(DOM.thelyric).fontSize, 10);
-  let newFontSize;
+  step = step || 1; // Default to 1px if not specified
+  var fontTargets = new Array('#thelyric');
+  fontTargets.forEach(function (element) {
+    var $element = $(element);
+    var newFontSize;
+    var currentFontSize = $element.css('font-size');
+    var currentFontSizeNum = parseFloat(currentFontSize, 10);
 
-  if (increaseFont) {
-    newFontSize = currentFontSize + step;
-  } else {
-    newFontSize = Math.max(10, currentFontSize - step);
-  }
+    if (increaseFont) {
+      $element.css('font-size', 0);
+      newFontSize = currentFontSizeNum + step;
+    } else {
+      newFontSize = Math.max(10, currentFontSizeNum - step); // Min 10px
+    }
 
-  DOM.thelyric.style.fontSize = newFontSize + 'px';
-  setCookie('FontSize', newFontSize);
-  console.log('Font size:', newFontSize);
+    $element.css('font-size', newFontSize);
+    var date = new Date();
+    date.setTime(date.getTime() + (100 * 365 * 24 * 60 * 60 * 1000));  // 100 years
+    var expires = "expires=" + date.toUTCString();
+    document.cookie = "FontSize=" + newFontSize + "; " + expires + "; path=/; SameSite=None; Secure";
+    console.log(newFontSize); 
+  });
 };
 
 
 $(document).ready(function () {
-    // Initialize DOM cache
-    initDOMCache();
-    
     // Open lyric specified in URL
     const pathName = window.location.search;
     try { 
@@ -186,14 +165,22 @@ function createSearchArray(nr, sb) {
 // Reload IndexedDB only (keep everything else)
 async function reloadDatabase() {
     try {
-        if (DOM.lyric) DOM.lyric.innerHTML = "Databasen laddar om... var god vänta...";
+        $( '#lyric' ).html("Databasen laddar om... var god vänta...");
         
-        await db.delete();
-        console.log('IndexedDB deleted. Reloading page...');
+        // Delete IndexedDB
+        try {
+            await db.delete();
+            console.log('IndexedDB deleted');
+        } catch (error) {
+            console.error('Error deleting IndexedDB:', error);
+        }
+
+        // Reload page to trigger fresh database load
+        console.log('Database reload complete. Reloading page...');
         location.reload();
     } catch (error) {
         console.error('Error reloading database:', error);
-        if (DOM.lyric) DOM.lyric.innerHTML = "<h3>Fel vid omstart</h3><p>Det uppstod ett problem vid omstart av databasen.</p>";
+        $( '#lyric' ).html("<h3>Fel vid omstart</h3><p>Det uppstod ett problem vid omstart av databasen.</p>");
     }
 }
 
@@ -433,28 +420,36 @@ function ajaxUpdateSR(key1, curVer) {
 
 // Version check and update lyrics db
 function updateLyrics() {
-    if (!navigator.onLine) return;
-    
-    const curVer = getCookie('db_version');
-    const key1 = getCookie('key1');
-    console.log("Online. Current DB version:", curVer);
-    ajaxUpdateSR(key1, curVer);
+    // Get the current version from the 'db_version' cookie
+    var curVer = Cookies.get('db_version');
+    var key1 = Cookies.get('key1');
+
+    if (navigator.onLine) {
+        console.log("Navigator is online and current downloaded DB version is " + curVer);
+        ajaxUpdateSR(key1, curVer);
+    }
 }
 
 updateLyrics();
 
-async function checkBookmark(id) {
-    try {
-        const count = await db.bookmarks.where("lyrics_id").equals(id).count();
-        if (count < 1) {
-            return null;
-        }
-        const bookmark = await db.bookmarks.where("lyrics_id").equals(id).first();
-        return bookmark ? bookmark.id : null;
-    } catch (error) {
-        console.error("Dexie error:", error);
-        return null;
-    }
+function checkBookmark(id) {
+    // Return bookmark id if bookmark exist
+    db.transaction('r', db.bookmarks, function() {
+	console.log("Preparing...");
+        db.bookmarks.where("lyrics_id").equals(id).count(function(count){
+	    console.log("Thinking..." + count);
+            if ( count < 1 ) {
+		console.log("False...");
+                return false;
+            } else {
+                db.bookmarks.where("lyrics_id").equals(id).each(function(item) {
+		    return item.id;
+                });
+            }
+        });
+    }).catch(function(error) {
+        console.error("Dexie transaction error: " + error.stack || error);
+    }); 
 }
 
 function gAnalytics(nr,sb,event) {
@@ -467,42 +462,42 @@ function gAnalytics(nr,sb,event) {
 // Load lyric into div
 function getLyric(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
-	let content = item.value;
+	var content = item.value;
 	
 	// Check if line breaks should be removed
-	const noLineBreaks = getCookie('noLineBreaks');
+	var noLineBreaks = Cookies.get('noLineBreaks');
 	if (noLineBreaks === '1') {
-	    const tempDiv = document.createElement('div');
-	    tempDiv.innerHTML = content;
-	    const verses = tempDiv.querySelectorAll('div.pt');
-	    verses.forEach(verse => {
-		let verseHtml = verse.innerHTML;
-		verseHtml = verseHtml.replace(/<br\s*\/?>/gi, ' ').replace(/\s{2,}/g, ' ');
-		verse.innerHTML = verseHtml;
+	    // Create a temporary div to parse HTML
+	    var tempDiv = $('<div>').html(content);
+	    // Find all divs with class "pt" and remove their br tags
+	    tempDiv.find('div.pt').each(function() {
+		var verseHtml = $(this).html();
+		// Replace <br> and <br/> and <br /> with space
+		verseHtml = verseHtml.replace(/<br\s*\/?>/gi, ' ');
+		// Remove multiple consecutive spaces
+		verseHtml = verseHtml.replace(/\s{2,}/g, ' ');
+		$(this).html(verseHtml);
 	    });
-	    content = tempDiv.innerHTML;
+	    content = tempDiv.html();
 	}
 	
-	if (DOM.lyric) DOM.lyric.innerHTML = content;
-	if (DOM.sNext) DOM.sNext.href = "javascript:selectNext(" + item.browse + ");";
-	if (DOM.sPrev) DOM.sPrev.href = "javascript:selectPrev(" + item.browse + ");";
-	
-	const fs = getCookie('FontSize') || 14;
-	if (DOM.thelyric) DOM.thelyric.style.fontSize = fs + 'px';
-	
-	const upt2 = (item.sb == "1" || item.sb == "2") ? "" : "," + b[item.sb];
+	$( '#lyric' ).html(content);
+	$( '#sNext' ).attr("href", "javascript:selectNext(" + item.browse + ");");
+	$( '#sPrev' ).attr("href", "javascript:selectPrev(" + item.browse + ");");
+	var fs = Cookies.get('FontSize');
+    console.log("Fontsize in cookie: " + fs)
+	$( '#thelyric' ).css("font-size", fs + "px");
+	if ( item.sb == "1" || item.sb == "2" ) { var upt2 = ""; } else { var upt2 = "," + b[item.sb]; }
 	history.pushState({}, "", "/?" + item.nr + upt2);
-	document.title = "Särlaregn nr. " + item.nr;
-	
-	const star = item.bookmarked == "true" ? '★' : '☆';
-	const action = item.bookmarked == "true" ? 'delete_bookmark' : 'add_bookmark';
-	const title = item.bookmarked == "true" ? 'Ta bort bokmärke' : 'Lägg till bokmärke';
-	
-	const menu1 = `
-	    <a href="javascript:${action}('${id}');" style="width:50%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
-	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:50%;" title="Bokmärken">bm</a>
-	`;
-	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
+	document.title = "Särlaregn nr. " + item.nr; 
+        if(item.bookmarked == "true") {
+            menu1 = '<a href="javascript:delete_bookmark(\'' + id + '\');" style="width:50%;" class="menu-btn menu-btn-small" title="Ta bort bokmärke">★</a>';
+        } else {
+            menu1 = '<a href="javascript:add_bookmark(\'' + id + '\');" style="width:50%;" class="menu-btn menu-btn-small" title="Lägg till bokmärke">☆</a>';            
+        }
+        menu1 += '<a href="javascript:bookmarks();" style="width:50%;" class="menu-btn">bm</a>'
+    $( '#bm_field' ).html(menu1);
+
     })
 }
 

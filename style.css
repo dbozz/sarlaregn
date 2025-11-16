@@ -52,7 +52,9 @@
   }
 
 
-
+  #lyric {
+    padding-bottom: 20vh;
+  }
 
 .logobg {
   position: relative;     /* viktigt för att overlay ska kunna positioneras relativt videon */
@@ -569,9 +571,6 @@ outline:none;
 #headercontainer {
 top: 10px;
 position: absolute;
-}
-#thelyric {
-/*font-size:1em;*/
 }
 .arrowleft {
 opacity:0.6;
