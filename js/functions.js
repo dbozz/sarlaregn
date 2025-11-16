@@ -491,13 +491,12 @@ function getLyric(id) {
 	history.pushState({}, "", "/?" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr; 
         if(item.bookmarked == "true") {
-            menu1 = '<a href="javascript:delete_bookmark(\'' + id + '\');" style="width:33%;" class="menu-btn menu-btn-small" title="Ta bort bokmärke">★</a>';
+            menu1 = '<a href="javascript:delete_bookmark(\'' + id + '\');" style="width:50%;" class="menu-btn menu-btn-small" title="Ta bort bokmärke">★</a>';
         } else {
-            menu1 = '<a href="javascript:add_bookmark(\'' + id + '\');" style="width:33%;" class="menu-btn menu-btn-small" title="Lägg till bokmärke">☆</a>';            
+            menu1 = '<a href="javascript:add_bookmark(\'' + id + '\');" style="width:50%;" class="menu-btn menu-btn-small" title="Lägg till bokmärke">☆</a>';            
         }
-        menu1 += '<a href="javascript:ttc()" class="menu-btn menu-btn-small" style="width:33%;" title="Kopiera text">📋</a>';
-        menu1 += '<a href="javascript:copyLink()" class="menu-btn menu-btn-small" style="width:33%;" title="Kopiera URL">🔗</a>';
-        $( '#bm_field' ).html(menu1);
+        menu1 += '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bm</a>'
+    $( '#bm_field' ).html(menu1);
 
     })
 }

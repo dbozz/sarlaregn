@@ -85,11 +85,16 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 		<div id=lyric_head style="border:0.5px solid;padding:10px;background-color:lightyellow;width:fit-content; float:right;margin:10px;" >
 			<div class="menu-section">
-				<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">📑</a>
+				<div class="menu-btn-group" id="bm_field">
+					<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bokmärken</a>
+				</div>
 			</div>
 
-			<div class="menu-btn-group" id="bm_field">
-
+			<div class="menu-section">
+				<div class="menu-btn-group">
+					<a href="javascript:ttc()" class="menu-btn menu-btn-small" style="width:50%;" title="Kopiera text">txt</a>
+					<a href="javascript:copyLink()" class="menu-btn menu-btn-small" style="width:50%;" title="Kopiera URL">url</a>
+				</div>
 			</div>
 
 			<div class="menu-section">
@@ -111,7 +116,7 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 			<div class="menu-section">
 			<div class="menu-btn-group">
-				<a href="javascript:loadPage('about');" class="menu-btn" style="width:50%;">ℹ️</a>
+				<a href="javascript:loadPage('about');" class="menu-btn" style="width:50%;">ℹ</a>
 				<a href="javascript:loadPage('help');" class="menu-btn" style="width:50%;">❓</a><br>
 				</div>
 				<div class="menu-btn-group">
