@@ -7,6 +7,13 @@
 Då du angett din nyckel så måste du ladda om databasen.
 <br><a href="javascript:reloadDatabase();">Ladda om</a>
 </div>
+<br><br>
+<div>
+<label>
+<input type="checkbox" id="noLineBreaks" onchange="toggleLineBreaks(this);">
+Stäng av radbrytningar i versar
+</label>
+</div>
 <script>
 var thekey = Cookies.get('key1');
 $("#key1").val(thekey);
@@ -24,5 +31,15 @@ $(document).ready(function() {
 function updateKey2() {
         var key1 = $('#key1').val();
         Cookies.set('key1', key1, { expires: 3650 });
+        }
+
+function toggleLineBreaks(checkbox) {
+        Cookies.set('noLineBreaks', checkbox.checked ? '1' : '0', { expires: 3650 });
+        }
+
+// Initialize checkbox state
+var noLineBreaks = Cookies.get('noLineBreaks');
+if (noLineBreaks === '1') {
+        $('#noLineBreaks').prop('checked', true);
         }
 </script>

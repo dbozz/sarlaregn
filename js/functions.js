@@ -335,7 +335,7 @@ function generateKey(password) {
     return key;
 }
 
-// Decryption function using the Fernet algorithm
+/* // Decryption function using the Fernet algorithm
 function decryptField(encryptedValue, password) {
     let key = generateKey(password);  // Generate the key based on the password
     let secret = new fernet.Secret(key);  // Create a Fernet Secret using the key
@@ -347,7 +347,7 @@ function decryptField(encryptedValue, password) {
     });
 
     return token.decode();  // Return the decrypted value
-}
+} */
 
 
 
@@ -460,7 +460,29 @@ function gAnalytics(nr,sb,event) {
 // Load lyric into div
 function getLyric(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
-	$( '#lyric' ).html(item.value);
+	var content = item.value;
+	
+	// Check if line breaks should be removed
+	var noLineBreaks = Cookies.get('noLineBreaks');
+	if (noLineBreaks === '1') {
+	    // Create a temporary div to parse HTML
+	    var tempDiv = $('<div>').html(content);
+	    // Find #thelyric and process its verse divs
+	    var theLyric = tempDiv.find('#thelyric');
+	    if (theLyric.length > 0) {
+		theLyric.find('div').each(function() {
+		    var verseHtml = $(this).html();
+		    // Replace <br> and <br/> and <br /> with space
+		    verseHtml = verseHtml.replace(/<br\s*\/?>/gi, ' ');
+		    // Remove multiple consecutive spaces
+		    verseHtml = verseHtml.replace(/\s{2,}/g, ' ');
+		    $(this).html(verseHtml);
+		});
+		content = tempDiv.html();
+	    }
+	}
+	
+	$( '#lyric' ).html(content);
 	$( '#sNext' ).attr("href", "javascript:selectNext(" + item.browse + ");");
 	$( '#sPrev' ).attr("href", "javascript:selectPrev(" + item.browse + ");");
 	var fs = Cookies.get('FontSize');
