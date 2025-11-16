@@ -74,7 +74,8 @@ function copyLink() {
 }
 
 // Font resize function-----------------------------------------------
-var changeFontSize = function (increaseFont) {
+var changeFontSize = function (increaseFont, step) {
+  step = step || 1; // Default to 1px if not specified
   var fontTargets = new Array('#thelyric');
   fontTargets.forEach(function (element) {
     var $element = $(element);
@@ -84,9 +85,9 @@ var changeFontSize = function (increaseFont) {
 
     if (increaseFont) {
       $element.css('font-size', 0);
-      newFontSize = currentFontSizeNum + 1;
+      newFontSize = currentFontSizeNum + step;
     } else {
-      newFontSize = currentFontSizeNum - 1;
+      newFontSize = Math.max(10, currentFontSizeNum - step); // Min 10px
     }
 
     $element.css('font-size', newFontSize);
@@ -525,17 +526,31 @@ $(function() {
 
 
 
-// Zoom
+// Zoom with improved pinch gesture
+var lastPinchScale = 1;
 $(function(){
     $( 'html' ).swipe( {
-        pinchIn:function(event) {
-	    changeFontSize(true);
+        pinchIn:function(event, scale) {
+            var scaleChange = Math.abs(scale - lastPinchScale);
+            if (scaleChange > 0.1) {
+                changeFontSize(false, 2); // Decrease by 2px for smoother feel
+                lastPinchScale = scale;
+            }
         },
-        pinchOut:function(event) {
-            changeFontSize(false);
+        pinchOut:function(event, scale) {
+            var scaleChange = Math.abs(scale - lastPinchScale);
+            if (scaleChange > 0.1) {
+                changeFontSize(true, 2); // Increase by 2px for smoother feel
+                lastPinchScale = scale;
+            }
+        },
+        pinchStatus:function(event, phase, direction, distance, duration, fingerCount, pinchZoom) {
+            if (phase === 'end') {
+                lastPinchScale = 1; // Reset on gesture end
+            }
         },
 	fingers:2,
-	pinchTreshold:0
+	pinchThreshold:0
     });
 });
 
@@ -544,7 +559,7 @@ $(function(){
 
 // Swipe to next or prev
 $(function(){
-    $( '.body' ).swipe( {
+    $( '#everything' ).swipe( {
         swipeLeft:function(event, direction, distance, duration, fingerCount) { 
             $( '#sNext' )[0].click();
 	},
@@ -552,7 +567,7 @@ $(function(){
             $( '#sPrev' )[0].click();
 	},
 	fingers:1,
-	treshold:25
+	threshold:25
     });
 });
 
