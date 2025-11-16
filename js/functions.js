@@ -492,13 +492,11 @@ function getLyric(id) {
 	document.title = "Särlaregn nr. " + item.nr; 
         if(item.bookmarked == "true") {
             menu1 = '<a href="javascript:delete_bookmark(\'' + id + '\');" style="width:33%;" class="menu-btn menu-btn-small" title="Ta bort bokmärke">★</a>';
-            menu1 += '<a href="javascript:ttc()" class="menu-btn menu-btn-small" style="width:33%;">txt</a>';
-            menu1 += '<a href="javascript:copyLink()" class="menu-btn menu-btn-small" style="width:33%;">url</a>';
         } else {
-            menu1 = '<a href="javascript:add_bookmark(\'' + id + '\');" style="width:33%;" class="menu-btn menu-btn-small" title="Lägg till bokmärke">☆</a>';
-            menu1 += '<a href="javascript:ttc()" class="menu-btn menu-btn-small" style="width:33%;">txt</a>';
-            menu1 += '<a href="javascript:copyLink()" class="menu-btn menu-btn-small" style="width:33%;">url</a>';
+            menu1 = '<a href="javascript:add_bookmark(\'' + id + '\');" style="width:33%;" class="menu-btn menu-btn-small" title="Lägg till bokmärke">☆</a>';            
         }
+        menu1 += '<a href="javascript:ttc()" class="menu-btn menu-btn-small" style="width:33%;">txt</a>';
+        menu1 += '<a href="javascript:copyLink()" class="menu-btn menu-btn-small" style="width:33%;">url</a>';
         $( '#bm_field' ).html(menu1);
 
     })
