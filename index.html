@@ -84,14 +84,16 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 
 		<div id=lyric_head style="border:0.5px solid;padding:10px;background-color:lightyellow;width:fit-content; float:right;margin:10px;" >
-			<a href="javascript:bookmarks();" class="menu-btn">Bokmärken</a>
-			<span id="bm_field"></span>
+			<div class="menu-section">
+				<a href="javascript:bookmarks();" class="menu-btn">Bokmärken</a>
+				<span id="bm_field"></span>
+			</div>
 
 			<div class="menu-section">
 			<strong>Kopiera:</strong>
 			<div class="menu-btn-group">
-				<a href="javascript:ttc()" class="menu-btn menu-btn-small">Text</a>
-				<a href="javascript:copyLink()" class="menu-btn menu-btn-small">Länk</a>
+				<a href="javascript:ttc()" class="menu-btn menu-btn-small">txt</a>
+				<a href="javascript:copyLink()" class="menu-btn menu-btn-small">url</a>
 			</div>
 			</div>
 
@@ -113,7 +115,7 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 			<div class="menu-section">
 				<a href="javascript:loadPage('about');" class="menu-btn">Om</a>
-				<a href="javascript:loadPage('help');" class="menu-btn">Hjälp</a><br>
+				<a href="javascript:loadPage('help');" class="menu-btn">?</a><br>
 				<a href="javascript:loadPage('settings');" class="menu-btn">Inställningar</a>
 			</div>
 		</div>
