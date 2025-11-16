@@ -826,7 +826,7 @@ background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 /* Menu button styles */
 .menu-btn {
   display: inline-block;
-  padding: 8px 0;
+  padding: 8px 8px;
   margin: 0;
   background-color: #f5f5dc;
   border: 1px solid #d4d4a8;
