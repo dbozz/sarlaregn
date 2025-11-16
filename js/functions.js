@@ -247,8 +247,9 @@ async function clearSite() {
         console.error('Error clearing cookies:', error);
     }
 
-    // Reload page
-    console.log('Clearing complete. Reloading page...');
+    // Reset URL to root before reloading
+    console.log('Clearing complete. Resetting URL and reloading page...');
+    window.history.replaceState({}, '', '/');
     location.reload();
 }
 

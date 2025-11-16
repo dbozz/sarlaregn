@@ -139,15 +139,24 @@ function updateKey1() {
         }
 </script>
 <script>
-  // Klick på videon eller var som helst på introt
+  // Only show intro if on root page
   const intro = document.getElementById('intro');
-  intro.addEventListener('click', () => {
-    intro.classList.add('fade-out');
-    setTimeout(() => {
-      intro.style.display = 'none';
-      document.body.style.overflow = 'auto'; // återaktivera scroll
-    }, 800); // matchar transition-tiden
-  });
+  const isRootPage = window.location.pathname === '/' && window.location.search === '';
+  
+  if (!isRootPage) {
+    // Hide intro immediately if not on root
+    intro.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  } else {
+    // Show intro and setup click handler
+    intro.addEventListener('click', () => {
+      intro.classList.add('fade-out');
+      setTimeout(() => {
+        intro.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }, 800);
+    });
+  }
 </script>
 
 </body>
