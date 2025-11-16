@@ -467,10 +467,10 @@ function getLyric(id) {
 	if (noLineBreaks === '1') {
 	    // Create a temporary div to parse HTML
 	    var tempDiv = $('<div>').html(content);
-	    // Find #thelyric and process its verse divs
+	    // Find #thelyric and process only its direct child divs
 	    var theLyric = tempDiv.find('#thelyric');
 	    if (theLyric.length > 0) {
-		theLyric.find('div').each(function() {
+		theLyric.children('div').each(function() {
 		    var verseHtml = $(this).html();
 		    // Replace <br> and <br/> and <br /> with space
 		    verseHtml = verseHtml.replace(/<br\s*\/?>/gi, ' ');
