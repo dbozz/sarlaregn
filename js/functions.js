@@ -604,8 +604,9 @@ function bookmarks() {
         var link = '<p><a href="javascript:getLyric(\'' + bookmark.id + '\');">' + bookmark.label + '</a>';
 	bm_list.push(link);
     }).then(function() { 
+    menu1 = '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bokmärken</a>'
 	$( '#lyric' ).html(bm_list.join(''))
-	$( '#bm_field' ).html("");
+	$( '#bm_field' ).html(menu1);
     }).catch(function (error) {
 	console.error(error);
     });

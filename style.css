@@ -869,6 +869,14 @@ background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 
 .menu-section:last-child {
   border-bottom: none;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+
+.menu-section:last-child .menu-btn-group:last-child{
+  border-bottom: none;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
 }
 
 .menu-section strong {
