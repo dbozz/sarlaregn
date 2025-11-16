@@ -467,19 +467,16 @@ function getLyric(id) {
 	if (noLineBreaks === '1') {
 	    // Create a temporary div to parse HTML
 	    var tempDiv = $('<div>').html(content);
-	    // Find #thelyric and process only its direct child divs
-	    var theLyric = tempDiv.find('#thelyric');
-	    if (theLyric.length > 0) {
-		theLyric.children('div').each(function() {
-		    var verseHtml = $(this).html();
-		    // Replace <br> and <br/> and <br /> with space
-		    verseHtml = verseHtml.replace(/<br\s*\/?>/gi, ' ');
-		    // Remove multiple consecutive spaces
-		    verseHtml = verseHtml.replace(/\s{2,}/g, ' ');
-		    $(this).html(verseHtml);
-		});
-		content = tempDiv.html();
-	    }
+	    // Find all divs with class "pt" and remove their br tags
+	    tempDiv.find('div.pt').each(function() {
+		var verseHtml = $(this).html();
+		// Replace <br> and <br/> and <br /> with space
+		verseHtml = verseHtml.replace(/<br\s*\/?>/gi, ' ');
+		// Remove multiple consecutive spaces
+		verseHtml = verseHtml.replace(/\s{2,}/g, ' ');
+		$(this).html(verseHtml);
+	    });
+	    content = tempDiv.html();
 	}
 	
 	$( '#lyric' ).html(content);

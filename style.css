@@ -817,3 +817,8 @@ height:100%;
 background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 }
 #city { width: 25em; }
+
+/* Verse/paragraph styling */
+.pt {
+  margin-bottom: 15px;
+}
