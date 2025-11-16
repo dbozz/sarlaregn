@@ -495,7 +495,7 @@ function getLyric(id) {
         } else {
             menu1 = '<a href="javascript:add_bookmark(\'' + id + '\');" style="width:50%;" class="menu-btn menu-btn-small" title="Lägg till bokmärke">☆</a>';            
         }
-        menu1 += '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bm</a>'
+        menu1 += '<a href="javascript:bookmarks();" style="width:50%;" class="menu-btn">bm</a>'
     $( '#bm_field' ).html(menu1);
 
     })
@@ -627,7 +627,9 @@ function delete_bookmark(id) {
 // Function for loading html page into div 	
 function loadPage(page){
     var htmlpage = page + ".html";
-    $( '#bm_field' ).html("");
+    menu1 = '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bm</a>'
+
+    $( '#bm_field' ).html(menu1);
     $( '#lyric' ).load(htmlpage).attr("href");
 }
 

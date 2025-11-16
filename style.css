@@ -851,7 +851,7 @@ background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 }
 
 .menu-btn-small {
-  padding: 6px 0;
+  padding: 6px 8px;
   font-size: 13px;
 }
 
