@@ -495,8 +495,8 @@ function getLyric(id) {
         } else {
             menu1 = '<a href="javascript:add_bookmark(\'' + id + '\');" style="width:33%;" class="menu-btn menu-btn-small" title="Lägg till bokmärke">☆</a>';            
         }
-        menu1 += '<a href="javascript:ttc()" class="menu-btn menu-btn-small" style="width:33%;">txt</a>';
-        menu1 += '<a href="javascript:copyLink()" class="menu-btn menu-btn-small" style="width:33%;">url</a>';
+        menu1 += '<a href="javascript:ttc()" class="menu-btn menu-btn-small" style="width:33%;" title="Kopiera text">📋</a>';
+        menu1 += '<a href="javascript:copyLink()" class="menu-btn menu-btn-small" style="width:33%;" title="Kopiera URL">🔗</a>';
         $( '#bm_field' ).html(menu1);
 
     })
