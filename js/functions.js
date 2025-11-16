@@ -677,6 +677,9 @@ function adjustBodySpacing() {
     }
 }*/
 
+// Note: adjustBodySpacing function is commented out above
+// Removed event listeners that reference it to prevent errors
+/*
 // Run on initial load and on resize
 window.addEventListener('load', adjustBodySpacing);
 window.addEventListener('resize', adjustBodySpacing);
@@ -698,3 +701,4 @@ if (window.MutationObserver) {
     var bottomNode = document.getElementById('bottom');
     if (bottomNode) mo.observe(bottomNode, { childList: true, subtree: true, attributes: true });
 }
+*/
