@@ -84,32 +84,37 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 
 		<div id=lyric_head style="border:0.5px solid;padding:10px;background-color:lightyellow;width:fit-content; float:right;margin:10px;" >
-			<a href="javascript:bookmarks();"><strong>Bokmärken</strong></a><br>
+			<a href="javascript:bookmarks();" class="menu-btn">Bokmärken</a><br>
 			<span id="bm_field"></span>
 
-			<div>
-			<strong>Kopiera:</strong><br>
-			<a href="javascript:ttc()">text</a> | <a href="javascript:copyLink()">länk</a><br>
+			<div class="menu-section">
+			<strong>Kopiera:</strong>
+			<div class="menu-btn-group">
+				<a href="javascript:ttc()" class="menu-btn menu-btn-small">Text</a>
+				<a href="javascript:copyLink()" class="menu-btn menu-btn-small">Länk</a>
+			</div>
 			</div>
 
-			<div>
-			<strong>Bläddra:</strong><br>
-			<a href="javascript:selectPrev(5000);" class=1navPrev id=sPrev><<<</a> | <a href="javascript:selectNext(1000);" class=1navNext id=sNext>>>></a>	
-			</div>	
-			<div class="fontSize">
+			<div class="menu-section">
+			<strong>Bläddra:</strong>
+			<div class="menu-btn-group">
+				<a href="javascript:selectPrev(5000);" class="menu-btn menu-btn-small" id=sPrev>« Bakåt</a>
+				<a href="javascript:selectNext(1000);" class="menu-btn menu-btn-small" id=sNext>Framåt »</a>
+			</div>
+			</div>
 
+			<div class="menu-section">
+			<strong>Textstorlek:</strong>
+			<div class="menu-btn-group">
+				<a href="javascript:changeFontSize(false);" class="menu-btn menu-btn-small">A–</a>
+				<a href="javascript:changeFontSize(true);" class="menu-btn menu-btn-small">A+</a>
+			</div>
+			</div>
 
-				<div>
-				<strong>Textstorlek:</strong><br>
-				<a href="javascript:changeFontSize(false);">[-]</a> | <a href="javascript:changeFontSize(true);">[+]</a><br>
-				</div>
-
-				<div>
-			<a href="javascript:loadPage('about');"><strong>Om</strong></a><br> 
-			<a href="javascript:loadPage('help');"><strong>Hjälp</strong></a><br>
-			<a href="javascript:loadPage('settings');"><strong>Inst&auml;llningar</strong></a>
-				</div>
-
+			<div class="menu-section">
+				<a href="javascript:loadPage('about');" class="menu-btn">Om</a>
+				<a href="javascript:loadPage('help');" class="menu-btn">Hjälp</a>
+				<a href="javascript:loadPage('settings');" class="menu-btn">Inställningar</a>
 			</div>
 		</div>
 
