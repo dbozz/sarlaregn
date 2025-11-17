@@ -101,9 +101,15 @@ function copyLink() {
 // Font resize function-----------------------------------------------
 var changeFontSize = function (increaseFont, step) {
   step = step || 1;
-  if (!DOM.thelyric) return;
   
-  const currentFontSize = parseFloat(window.getComputedStyle(DOM.thelyric).fontSize, 10);
+  // Get element from cache or DOM directly
+  const thelyric = DOM.thelyric || document.getElementById('thelyric');
+  if (!thelyric) {
+    console.warn('thelyric element not found');
+    return;
+  }
+  
+  const currentFontSize = parseFloat(window.getComputedStyle(thelyric).fontSize, 10);
   let newFontSize;
 
   if (increaseFont) {
@@ -112,7 +118,7 @@ var changeFontSize = function (increaseFont, step) {
     newFontSize = Math.max(10, currentFontSize - step);
   }
 
-  DOM.thelyric.style.fontSize = newFontSize + 'px';
+  thelyric.style.fontSize = newFontSize + 'px';
   setCookie('FontSize', newFontSize);
   console.log('Font size:', newFontSize);
 };
@@ -133,26 +139,6 @@ $(document).ready(function () {
 	console.log("It's an Error: " + e);
     }
 
-    // Reset Font Size
-    try {
-        var FontSize = Cookies.get('FontSize');
-    } catch {
-        var FontSize = 14;
-    } finally {
-        console.log("Font Size is: " + FontSize)
-    }
-    console.log("Original fontsize: " + FontSize);
-    $(".resetFont").click(function () {
-        $('html').css('font-size', FontSize);
-    });
-    // Increase Font Size
-    $(".increaseFont").on('click', function () {
-        changeFontSize(true);
-    });
-    // Decrease Font Size
-    $(".decreaseFont").on('click', function () {
-        changeFontSize(false);
-    });
 });
 
 var key = null;
