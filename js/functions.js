@@ -102,10 +102,10 @@ function copyLink() {
 var changeFontSize = function (increaseFont, step) {
   step = step || 1;
   
-  // Get element from cache or DOM directly
-  const thelyric = DOM.thelyric || document.getElementById('thelyric');
+  // Always get element fresh from DOM (not cached) since #thelyric is loaded dynamically
+  const thelyric = document.getElementById('thelyric');
   if (!thelyric) {
-    console.warn('thelyric element not found');
+    console.warn('thelyric element not found - no song loaded yet');
     return;
   }
   
@@ -120,7 +120,7 @@ var changeFontSize = function (increaseFont, step) {
 
   thelyric.style.fontSize = newFontSize + 'px';
   setCookie('FontSize', newFontSize);
-  console.log('Font size:', newFontSize);
+  console.log('Font size changed to:', newFontSize);
 };
 
 
@@ -473,8 +473,12 @@ function getLyric(id) {
 	if (DOM.sNext) DOM.sNext.href = "javascript:selectNext(" + item.browse + ");";
 	if (DOM.sPrev) DOM.sPrev.href = "javascript:selectPrev(" + item.browse + ");";
 	
+	// Apply saved font size to thelyric element after it's loaded
 	const fs = getCookie('FontSize') || 14;
-	if (DOM.thelyric) DOM.thelyric.style.fontSize = fs + 'px';
+	const thelyricElement = document.getElementById('thelyric');
+	if (thelyricElement) {
+	    thelyricElement.style.fontSize = fs + 'px';
+	}
 	
 	const upt2 = (item.sb == "1" || item.sb == "2") ? "" : "," + b[item.sb];
 	history.pushState({}, "", "/?" + item.nr + upt2);
@@ -523,33 +527,30 @@ $(function() {
 // Zoom with improved pinch gesture
 var lastPinchScale = 1;
 $(document).ready(function(){
-    console.log('Setting up pinch-to-zoom on body');
     $( 'body' ).swipe( {
         pinchIn:function(event, scale) {
-            console.log('Pinch in detected, scale:', scale);
             var scaleChange = Math.abs(scale - lastPinchScale);
-            if (scaleChange > 0.05) { // Lower threshold for better responsiveness
+            if (scaleChange > 0.05) {
                 changeFontSize(false, 2);
                 lastPinchScale = scale;
             }
         },
         pinchOut:function(event, scale) {
-            console.log('Pinch out detected, scale:', scale);
             var scaleChange = Math.abs(scale - lastPinchScale);
-            if (scaleChange > 0.05) { // Lower threshold for better responsiveness
+            if (scaleChange > 0.05) {
                 changeFontSize(true, 2);
                 lastPinchScale = scale;
             }
         },
         pinchStatus:function(event, phase, direction, distance, duration, fingerCount, pinchZoom) {
-            console.log('Pinch status:', phase, 'scale:', pinchZoom);
             if (phase === 'end') {
                 lastPinchScale = 1;
             }
         },
 	fingers:2,
 	pinchThreshold:0,
-	allowPageScroll: 'auto'
+	allowPageScroll: 'auto',
+	preventDefaultEvents: false
     });
 });
 
