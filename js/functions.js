@@ -522,29 +522,34 @@ $(function() {
 
 // Zoom with improved pinch gesture
 var lastPinchScale = 1;
-$(function(){
-    $( 'html' ).swipe( {
+$(document).ready(function(){
+    console.log('Setting up pinch-to-zoom on body');
+    $( 'body' ).swipe( {
         pinchIn:function(event, scale) {
+            console.log('Pinch in detected, scale:', scale);
             var scaleChange = Math.abs(scale - lastPinchScale);
-            if (scaleChange > 0.1) {
-                changeFontSize(false, 2); // Decrease by 2px for smoother feel
+            if (scaleChange > 0.05) { // Lower threshold for better responsiveness
+                changeFontSize(false, 2);
                 lastPinchScale = scale;
             }
         },
         pinchOut:function(event, scale) {
+            console.log('Pinch out detected, scale:', scale);
             var scaleChange = Math.abs(scale - lastPinchScale);
-            if (scaleChange > 0.1) {
-                changeFontSize(true, 2); // Increase by 2px for smoother feel
+            if (scaleChange > 0.05) { // Lower threshold for better responsiveness
+                changeFontSize(true, 2);
                 lastPinchScale = scale;
             }
         },
         pinchStatus:function(event, phase, direction, distance, duration, fingerCount, pinchZoom) {
+            console.log('Pinch status:', phase, 'scale:', pinchZoom);
             if (phase === 'end') {
-                lastPinchScale = 1; // Reset on gesture end
+                lastPinchScale = 1;
             }
         },
 	fingers:2,
-	pinchThreshold:0
+	pinchThreshold:0,
+	allowPageScroll: 'auto'
     });
 });
 
