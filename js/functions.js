@@ -474,7 +474,7 @@ function getLyric(id) {
 	if (DOM.sPrev) DOM.sPrev.href = "javascript:selectPrev(" + item.browse + ");";
 	
 	// Apply saved font size to thelyric element after it's loaded
-	const fs = getCookie('FontSize') || 14;
+	const fs = parseFloat(getCookie('FontSize')) || 14;
 	const thelyricElement = document.getElementById('thelyric');
 	if (thelyricElement) {
 	    thelyricElement.style.fontSize = fs + 'px';
