@@ -928,8 +928,8 @@ background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 }
 
 .menu-section {
-  margin-bottom: 12px;
-  padding-bottom: 8px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
   border-bottom: 1px solid #e8e8d0;
 }
 
