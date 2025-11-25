@@ -105,6 +105,9 @@ function exportOpenSong(id) {
         const title = item.label.replace(/\{[^}]*\}/g, '').trim();
         const songNumber = item.nr;
         
+        // Get song key from database if available
+        const songKey = item.key || '';
+        
         // Parse HTML content and extract lyrics with chords
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = item.value;
@@ -140,8 +143,15 @@ function exportOpenSong(id) {
                 
                 // Collect all chords and their positions
                 while ((chordMatch = chordPattern.exec(line)) !== null) {
+                    // Convert chord to uppercase, but preserve 'm' for minor chords
+                    let chord = chordMatch[1];
+                    // Convert to uppercase but keep lowercase 'm' when it appears after a note
+                    chord = chord.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
+                        return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+                    });
+                    
                     chords.push({
-                        chord: chordMatch[1],
+                        chord: chord,
                         position: chordMatch.index
                     });
                 }
@@ -196,8 +206,8 @@ function exportOpenSong(id) {
   <user3></user3>
   <beatbuddysong></beatbuddysong>
   <beatbuddykit></beatbuddykit>
-  <key></key>
-  <keyoriginal></keyoriginal>
+  <key>${escapeXml(songKey)}</key>
+  <keyoriginal>${escapeXml(songKey)}</keyoriginal>
   <aka></aka>
   <midi></midi>
   <midi_index></midi_index>
