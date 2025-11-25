@@ -737,13 +737,13 @@ function processNodeChords(node) {
         const text = node.textContent;
         const chordPattern = /\{([^}]*)\}/g;
         
-        if (chordPattern.test(text)) {
+        // Check if text contains chords without affecting regex state
+        if (text.indexOf('{') !== -1) {
             const span = document.createElement('span');
             span.style.position = 'relative';
             
             let lastIndex = 0;
             let match;
-            chordPattern.lastIndex = 0;
             
             while ((match = chordPattern.exec(text)) !== null) {
                 // Add text before chord
@@ -942,7 +942,7 @@ function bookmarks() {
     var bm_list = new Array();
     bm_list.push("<h2>Bokmärken</h2>");
     db.lyrics.where("bookmarked").equals("true").each(function(bookmark) {
-        var link = '<p><a href="javascript:getLyric(\'' + bookmark.id + '\');">' + bookmark.label + '</a>';
+        var link = '<p><a href="javascript:delete_bookmark(\'' + bookmark.id + '\', true);" style="color:#d9534f;text-decoration:none;font-weight:bold;margin-right:8px;" title="Ta bort bokmärke">✖</a><a href="javascript:getLyric(\'' + bookmark.id + '\');">' + bookmark.label + '</a></p>';
 	bm_list.push(link);
     }).then(function() { 
     menu1 = '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bokmärken</a>'
@@ -961,9 +961,16 @@ function add_bookmark(id) {
 }
 
 // Delete bookmark
-function delete_bookmark(id) {
-    db.lyrics.update(id, {bookmarked: "false"});
-    getLyric(id);
+function delete_bookmark(id, fromBookmarksList = false) {
+    db.lyrics.update(id, {bookmarked: "false"}).then(function() {
+        if (fromBookmarksList) {
+            // Reload bookmarks list
+            bookmarks();
+        } else {
+            // Reload current song
+            getLyric(id);
+        }
+    });
 }
 
 // Function for loading html page into div 	
