@@ -717,66 +717,16 @@ function processChords(content) {
         return content.replace(/\{[^}]*\}/g, '');
     }
     
-    // Create temporary div to work with HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
-    
-    // Process each verse
-    const verses = tempDiv.querySelectorAll('div.pt');
-    verses.forEach(verse => {
-        // Get all text nodes and process them
-        processNodeChords(verse);
+    // Replace chords with span bubbles using regex
+    content = content.replace(/\{([^}]*)\}/g, function(match, chord) {
+        // Normalize chord (uppercase with lowercase 'm')
+        chord = chord.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
+            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+        });
+        return '<span class="chord-bubble">' + chord + '</span>';
     });
     
-    return tempDiv.innerHTML;
-}
-
-// Recursively process text nodes to add chord bubbles
-function processNodeChords(node) {
-    if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.textContent;
-        const chordPattern = /\{([^}]*)\}/g;
-        
-        // Check if text contains chords without affecting regex state
-        if (text.indexOf('{') !== -1) {
-            const span = document.createElement('span');
-            span.style.position = 'relative';
-            
-            let lastIndex = 0;
-            let match;
-            
-            while ((match = chordPattern.exec(text)) !== null) {
-                // Add text before chord
-                if (match.index > lastIndex) {
-                    span.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
-                }
-                
-                // Create chord bubble
-                const chordBubble = document.createElement('span');
-                chordBubble.className = 'chord-bubble';
-                let chord = match[1];
-                // Normalize chord (uppercase with lowercase 'm')
-                chord = chord.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
-                    return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
-                });
-                chordBubble.textContent = chord;
-                span.appendChild(chordBubble);
-                
-                lastIndex = match.index + match[0].length;
-            }
-            
-            // Add remaining text
-            if (lastIndex < text.length) {
-                span.appendChild(document.createTextNode(text.substring(lastIndex)));
-            }
-            
-            node.parentNode.replaceChild(span, node);
-        }
-    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
-        // Process child nodes
-        const children = Array.from(node.childNodes);
-        children.forEach(child => processNodeChords(child));
-    }
+    return content;
 }
 
 // Load lyric into div
