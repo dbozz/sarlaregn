@@ -688,13 +688,104 @@ function gAnalytics(nr,sb,event) {
     });
 }
 
+// Toggle chord display
+function toggleChords() {
+    const showChords = getCookie('showChords');
+    const newValue = showChords === '1' ? '0' : '1';
+    setCookie('showChords', newValue);
+    
+    // Reload current song to apply changes
+    const urlParams = new URLSearchParams(window.location.search);
+    const pathName = window.location.search;
+    if (pathName) {
+        try {
+            const sbnr = pathName.split(",");
+            const nSbnr = sbnr[0].replace("?", "");
+            createSearchArray(nSbnr, sbnr[1]);
+        } catch (e) {
+            console.log("Error reloading song: " + e);
+        }
+    }
+}
+
+// Process chords in content
+function processChords(content) {
+    const showChords = getCookie('showChords');
+    
+    if (showChords !== '1') {
+        // Just remove chords if not showing them
+        return content.replace(/\{[^}]*\}/g, '');
+    }
+    
+    // Create temporary div to work with HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
+    
+    // Process each verse
+    const verses = tempDiv.querySelectorAll('div.pt');
+    verses.forEach(verse => {
+        // Get all text nodes and process them
+        processNodeChords(verse);
+    });
+    
+    return tempDiv.innerHTML;
+}
+
+// Recursively process text nodes to add chord bubbles
+function processNodeChords(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent;
+        const chordPattern = /\{([^}]*)\}/g;
+        
+        if (chordPattern.test(text)) {
+            const span = document.createElement('span');
+            span.style.position = 'relative';
+            
+            let lastIndex = 0;
+            let match;
+            chordPattern.lastIndex = 0;
+            
+            while ((match = chordPattern.exec(text)) !== null) {
+                // Add text before chord
+                if (match.index > lastIndex) {
+                    span.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+                }
+                
+                // Create chord bubble
+                const chordBubble = document.createElement('span');
+                chordBubble.className = 'chord-bubble';
+                let chord = match[1];
+                // Normalize chord (uppercase with lowercase 'm')
+                chord = chord.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
+                    return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+                });
+                chordBubble.textContent = chord;
+                span.appendChild(chordBubble);
+                
+                lastIndex = match.index + match[0].length;
+            }
+            
+            // Add remaining text
+            if (lastIndex < text.length) {
+                span.appendChild(document.createTextNode(text.substring(lastIndex)));
+            }
+            
+            node.parentNode.replaceChild(span, node);
+        }
+    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+        // Process child nodes
+        const children = Array.from(node.childNodes);
+        children.forEach(child => processNodeChords(child));
+    }
+}
+
 // Load lyric into div
 function getLyric(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
 	let content = item.value;
 	
-	// Remove chords in curly braces (for future chord display feature)
-	content = content.replace(/\{[^}]*\}/g, '');
+	// Process chords (show or hide based on setting)
+	content = processChords(content);
 	
 	// Check if line breaks should be removed
 	const noLineBreaks = getCookie('noLineBreaks');
@@ -714,11 +805,18 @@ function getLyric(id) {
 	if (DOM.sNext) DOM.sNext.href = "javascript:selectNext(" + item.browse + ");";
 	if (DOM.sPrev) DOM.sPrev.href = "javascript:selectPrev(" + item.browse + ");";
 	
-	// Apply saved font size to thelyric element after it's loaded
+	// Apply saved font size and chord visibility to thelyric element after it's loaded
 	const fs = parseFloat(getCookie('FontSize')) || 14;
+	const showChords = getCookie('showChords');
 	const thelyricElement = document.getElementById('thelyric');
 	if (thelyricElement) {
 	    thelyricElement.style.fontSize = fs + 'px';
+	    
+	    if (showChords === '1') {
+	        thelyricElement.classList.add('chords-visible');
+	    } else {
+	        thelyricElement.classList.remove('chords-visible');
+	    }
 	}
 	
 	const upt2 = (item.sb == "1" || item.sb == "2") ? "" : "," + b[item.sb];
@@ -729,10 +827,14 @@ function getLyric(id) {
 	const action = item.bookmarked == "true" ? 'delete_bookmark' : 'add_bookmark';
 	const title = item.bookmarked == "true" ? 'Ta bort bokmärke' : 'Lägg till bokmärke';
 	
+	const chordIcon = showChords === '1' ? '🎸' : '🎵';
+	const chordTitle = showChords === '1' ? 'Dölj ackord' : 'Visa ackord';
+	
 	const menu1 = `
-	    <a href="javascript:${action}('${id}');" style="width:33.33%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
-	    <a href="javascript:exportOpenSong('${id}');" style="width:33.33%;" class="menu-btn menu-btn-small" title="Ladda ner som OpenSong">⬇</a>
-	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:33.33%;" title="Bokmärken">bm</a>
+	    <a href="javascript:${action}('${id}');" style="width:25%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
+	    <a href="javascript:toggleChords();" style="width:25%;" class="menu-btn menu-btn-small" title="${chordTitle}">${chordIcon}</a>
+	    <a href="javascript:exportOpenSong('${id}');" style="width:25%;" class="menu-btn menu-btn-small" title="Ladda ner som OpenSong">⬇</a>
+	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:25%;" title="Bokmärken">bm</a>
 	`;
 	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
     })
