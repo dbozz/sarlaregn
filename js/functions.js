@@ -98,6 +98,85 @@ function copyLink() {
   window.navigator.clipboard.writeText(window.location.href);
 }
 
+// Export song as OpenSong XML file
+function exportOpenSong(id) {
+    db.lyrics.where("id").equals(id).each(function(item) {
+        // Extract song title and number
+        const title = item.label.replace(/\{[^}]*\}/g, '').trim();
+        const songNumber = item.nr;
+        
+        // Parse HTML content and extract lyrics with chords
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = item.value;
+        
+        let lyrics = '';
+        const verses = tempDiv.querySelectorAll('div.pt');
+        
+        verses.forEach((verse, index) => {
+            // Get verse content with chords intact
+            let verseText = verse.innerHTML;
+            
+            // Convert <br> tags to newlines
+            verseText = verseText.replace(/<br\s*\/?>/gi, '\n');
+            
+            // Remove HTML tags but keep chords in curly braces
+            verseText = verseText.replace(/<[^>]*>/g, '');
+            
+            // Convert {chord} to [chord] for OpenSong format
+            verseText = verseText.replace(/\{([^}]*)\}/g, '[$1]');
+            
+            // Decode HTML entities
+            const textArea = document.createElement('textarea');
+            textArea.innerHTML = verseText;
+            verseText = textArea.value;
+            
+            lyrics += verseText.trim() + '\n\n';
+        });
+        
+        // Create OpenSong XML structure
+        const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<song>
+  <title>${escapeXml(title)}</title>
+  <author></author>
+  <copyright></copyright>
+  <presentation></presentation>
+  <ccli></ccli>
+  <capo print="false"></capo>
+  <key></key>
+  <aka></aka>
+  <key_line></key_line>
+  <user1>Särlaregn ${songNumber}</user1>
+  <user2></user2>
+  <user3></user3>
+  <theme></theme>
+  <tempo></tempo>
+  <time_sig></time_sig>
+  <lyrics>${escapeXml(lyrics.trim())}</lyrics>
+</song>`;
+        
+        // Create blob and download
+        const blob = new Blob([xmlContent], { type: 'application/xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `sarlaregn_${songNumber}.xml`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
+
+// Helper function to escape XML special characters
+function escapeXml(text) {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
 // Font resize function-----------------------------------------------
 var changeFontSize = function (increaseFont, step) {
   step = step || 1;
@@ -492,8 +571,9 @@ function getLyric(id) {
 	const title = item.bookmarked == "true" ? 'Ta bort bokmärke' : 'Lägg till bokmärke';
 	
 	const menu1 = `
-	    <a href="javascript:${action}('${id}');" style="width:50%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
-	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:50%;" title="Bokmärken">bm</a>
+	    <a href="javascript:${action}('${id}');" style="width:33.33%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
+	    <a href="javascript:exportOpenSong('${id}');" style="width:33.33%;" class="menu-btn menu-btn-small" title="Ladda ner som OpenSong">⬇</a>
+	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:33.33%;" title="Bokmärken">bm</a>
 	`;
 	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
     })
