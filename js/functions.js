@@ -873,7 +873,7 @@ function getLyric(id) {
 	const action = item.bookmarked == "true" ? 'delete_bookmark' : 'add_bookmark';
 	const title = item.bookmarked == "true" ? 'Ta bort bokmärke' : 'Lägg till bokmärke';
 	
-	const chordIcon = showChords === '1' ? '🎸' : '🎵';
+	const chordIcon = showChords === '1' ? '♪' : '♫';
 	const chordTitle = showChords === '1' ? 'Dölj ackord' : 'Visa ackord';
 	
 	// Build menu with conditional transpose buttons
