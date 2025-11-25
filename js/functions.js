@@ -752,8 +752,20 @@ function getLyric(id) {
 	}
 	
 	if (DOM.lyric) DOM.lyric.innerHTML = content;
-	if (DOM.sNext) DOM.sNext.href = "javascript:selectNext(" + item.browse + ");";
-	if (DOM.sPrev) DOM.sPrev.href = "javascript:selectPrev(" + item.browse + ");";
+	
+	// Update navigation buttons with onclick handlers
+	if (DOM.sNext) {
+	    DOM.sNext.onclick = function(e) {
+	        e.preventDefault();
+	        selectNext(item.browse);
+	    };
+	}
+	if (DOM.sPrev) {
+	    DOM.sPrev.onclick = function(e) {
+	        e.preventDefault();
+	        selectPrev(item.browse);
+	    };
+	}
 	
 	// Apply saved font size and chord visibility to thelyric element after it's loaded
 	const fs = parseFloat(getCookie('FontSize')) || 14;
