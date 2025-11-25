@@ -862,7 +862,7 @@ function getLyric(id) {
 	history.pushState({}, "", "/?" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr;
 	
-    
+
 	// Update search field with song number and title
 	const searchField = document.getElementById('sok');
 	if (searchField) {
@@ -1028,7 +1028,7 @@ function bookmarks() {
         var link = '<p><a href="javascript:delete_bookmark(\'' + bookmark.id + '\', true);" style="color:#d9534f;text-decoration:none;font-weight:bold;margin-right:8px;" title="Ta bort bokmärke">✖</a><a href="javascript:getLyric(\'' + bookmark.id + '\');">' + bookmark.label + '</a></p>';
 	bm_list.push(link);
     }).then(function() { 
-    menu1 = '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bokmärken</a>'
+    menu1 = ''
 	$( '#lyric' ).html(bm_list.join(''))
 	$( '#bm_field' ).html(menu1);
     }).catch(function (error) {
