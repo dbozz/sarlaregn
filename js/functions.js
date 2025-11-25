@@ -1,7 +1,7 @@
 
 // Base URL for DB:
 const base_url = "https://script.google.com/macros/s/AKfycbwbFsR030BbU2PHHWmHrEJWxMjXDihCbGXz3tVNZNCeDKXxnDYPobwjEjjcjawPt2ZG/exec"
-
+//https://script.google.com/macros/s/AKfycbwbFsR030BbU2PHHWmHrEJWxMjXDihCbGXz3tVNZNCeDKXxnDYPobwjEjjcjawPt2ZG/exec
 // DOM Cache
 const DOM = {
   lyric: null,
@@ -105,8 +105,13 @@ function exportOpenSong(id) {
         const title = item.label.replace(/\{[^}]*\}/g, '').trim();
         const songNumber = item.nr;
         
-        // Get song key from database if available
-        const songKey = item.key || '';
+        // Get song key from database if available and normalize it (uppercase with lowercase 'm')
+        let songKey = item.key || '';
+        if (songKey) {
+            songKey = songKey.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
+                return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+            });
+        }
         
         // Parse HTML content and extract lyrics with chords
         const tempDiv = document.createElement('div');
