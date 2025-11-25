@@ -1004,17 +1004,31 @@ $(function(){
 
 // Select next lyric
 function selectNext(curLyric) {
-    db.lyrics.where("browse").above(curLyric).limit(1).each(function(item){
-        getLyric(item.id);
-    });
+    if (!curLyric) {
+        // Om ingen sång är vald, börja från 10001
+        db.lyrics.where("browse").aboveOrEqual(10001).limit(1).each(function(item){
+            getLyric(item.id);
+        });
+    } else {
+        db.lyrics.where("browse").above(curLyric).limit(1).each(function(item){
+            getLyric(item.id);
+        });
+    }
 }
 
 
 // Select previous lyric 
 function selectPrev(curLyric) {
-    db.lyrics.where("browse").below(curLyric).reverse().limit(1).each(function(item){
-        getLyric(item.id);
-    });
+    if (!curLyric) {
+        // Om ingen sång är vald, börja från högsta browse-värdet
+        db.lyrics.orderBy("browse").reverse().limit(1).each(function(item){
+            getLyric(item.id);
+        });
+    } else {
+        db.lyrics.where("browse").below(curLyric).reverse().limit(1).each(function(item){
+            getLyric(item.id);
+        });
+    }
 }
 
 
