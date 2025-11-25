@@ -455,6 +455,9 @@ function getLyric(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
 	let content = item.value;
 	
+	// Remove chords in curly braces (for future chord display feature)
+	content = content.replace(/\{[^}]*\}/g, '');
+	
 	// Check if line breaks should be removed
 	const noLineBreaks = getCookie('noLineBreaks');
 	if (noLineBreaks === '1') {
@@ -644,15 +647,19 @@ $(function() {
 		    if (item && i < 10) {
 		        if (item.search.indexOf(theSearchLC) !== -1) {
 			    i++;
-			    thearray.push({ id : item.id, value : item.label, label : item.label });
+			    // Remove chords from label in search results
+			    const cleanLabel = item.label.replace(/\{[^}]*\}/g, '');
+			    thearray.push({ id : item.id, value : cleanLabel, label : cleanLabel });
 			}
 		    }
 		}).then(function() { 
 		    response(thearray); thearray = [];
 		}) 
 	    } else {
-		db.lyrics.where("nr").equals(theSearchLC).each(function(item) {	
-		    thearray.push({ id : item.id, value : item.label, label : item.label });
+		db.lyrics.where("nr").equals(theSearchLC).each(function(item) {
+		    // Remove chords from label in search results
+		    const cleanLabel = item.label.replace(/\{[^}]*\}/g, '');
+		    thearray.push({ id : item.id, value : cleanLabel, label : cleanLabel });
 		}).then(function() { 
 		    response(thearray); thearray = [];
 		})
