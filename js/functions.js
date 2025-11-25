@@ -114,44 +114,101 @@ function exportOpenSong(id) {
         
         verses.forEach((verse, index) => {
             // Get verse content with chords intact
-            let verseText = verse.innerHTML;
+            let verseHtml = verse.innerHTML;
             
-            // Convert <br> tags to newlines
-            verseText = verseText.replace(/<br\s*\/?>/gi, '\n');
+            // Split by <br> tags to get individual lines
+            const lines = verseHtml.split(/<br\s*\/?>/gi);
             
-            // Remove HTML tags but keep chords in curly braces
-            verseText = verseText.replace(/<[^>]*>/g, '');
+            // Add verse marker
+            lyrics += `[V${index + 1}]\n`;
             
-            // Convert {chord} to [chord] for OpenSong format
-            verseText = verseText.replace(/\{([^}]*)\}/g, '[$1]');
+            lines.forEach(line => {
+                // Remove HTML tags but keep chords in curly braces
+                line = line.replace(/<[^>]*>/g, '');
+                
+                // Decode HTML entities
+                const textArea = document.createElement('textarea');
+                textArea.innerHTML = line;
+                line = textArea.value.trim();
+                
+                if (!line) return; // Skip empty lines
+                
+                // Extract chords and text
+                const chordPattern = /\{([^}]*)\}/g;
+                const chords = [];
+                let chordMatch;
+                
+                // Collect all chords and their positions
+                while ((chordMatch = chordPattern.exec(line)) !== null) {
+                    chords.push({
+                        chord: chordMatch[1],
+                        position: chordMatch.index
+                    });
+                }
+                
+                // Remove chords from text line
+                const textLine = line.replace(/\{[^}]*\}/g, '');
+                
+                // If there are chords, create chord line with dots and spaces
+                if (chords.length > 0) {
+                    let chordLine = '.';
+                    let lastPos = 0;
+                    
+                    chords.forEach(({chord, position}) => {
+                        // Calculate position in text (accounting for removed chord markers)
+                        const textPos = position - (line.substring(0, position).match(/\{[^}]*\}/g) || []).join('').length;
+                        // Add spaces before chord (no brackets on chord line)
+                        chordLine += ' '.repeat(Math.max(0, textPos - lastPos)) + chord;
+                        lastPos = textPos + chord.length;
+                    });
+                    
+                    lyrics += chordLine + '\n';
+                }
+                
+                // Add text line (without leading dot)
+                lyrics += textLine + '\n';
+            });
             
-            // Decode HTML entities
-            const textArea = document.createElement('textarea');
-            textArea.innerHTML = verseText;
-            verseText = textArea.value;
-            
-            lyrics += verseText.trim() + '\n\n';
+            lyrics += '\n'; // Empty line after verse
         });
         
-        // Create OpenSong XML structure
+        // Create OpenSong XML structure with all required fields
         const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <song>
   <title>${escapeXml(title)}</title>
   <author></author>
   <copyright></copyright>
   <presentation></presentation>
-  <ccli></ccli>
+  <hymn_number>${songNumber}</hymn_number>
   <capo print="false"></capo>
-  <key></key>
-  <aka></aka>
-  <key_line></key_line>
+  <tempo></tempo>
+  <time_sig></time_sig>
+  <duration>0</duration>
+  <predelay></predelay>
+  <ccli></ccli>
+  <theme></theme>
+  <alttheme></alttheme>
   <user1>Särlaregn ${songNumber}</user1>
   <user2></user2>
   <user3></user3>
-  <theme></theme>
-  <tempo></tempo>
-  <time_sig></time_sig>
+  <beatbuddysong></beatbuddysong>
+  <beatbuddykit></beatbuddykit>
+  <key></key>
+  <keyoriginal></keyoriginal>
+  <aka></aka>
+  <midi></midi>
+  <midi_index></midi_index>
+  <notes></notes>
   <lyrics>${escapeXml(lyrics.trim())}</lyrics>
+  <pad_file>auto</pad_file>
+  <custom_chords></custom_chords>
+  <link_youtube></link_youtube>
+  <link_web></link_web>
+  <link_audio></link_audio>
+  <loop_audio></loop_audio>
+  <link_other></link_other>
+  <abcnotation></abcnotation>
+  <abctranspose>0</abctranspose>
 </song>`;
         
         // Create blob and download
