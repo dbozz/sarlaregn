@@ -781,12 +781,26 @@ function getLyric(id) {
 	const chordTitle = showChords === '1' ? 'Dölj ackord' : 'Visa ackord';
 	
 	const menu1 = `
-	    <a href="javascript:${action}('${id}');" style="width:25%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
-	    <a href="javascript:toggleChords();" style="width:25%;" class="menu-btn menu-btn-small" title="${chordTitle}">${chordIcon}</a>
-	    <a href="javascript:exportOpenSong('${id}');" style="width:25%;" class="menu-btn menu-btn-small" title="Ladda ner som OpenSong">⬇</a>
-	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:25%;" title="Bokmärken">bm</a>
+	    <a href="javascript:${action}('${id}');" style="width:33.33%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
+	    <a href="javascript:toggleChords();" style="width:33.33%;" class="menu-btn menu-btn-small" title="${chordTitle}">${chordIcon}</a>
+	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:33.33%;" title="Bokmärken">bm</a>
 	`;
 	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
+	
+	// Show song actions section
+	const songActions = document.getElementById('song-actions');
+	if (songActions) {
+	    songActions.style.display = 'block';
+	}
+	
+	// Update OpenSong download button
+	const openSongBtn = document.getElementById('opensong-download');
+	if (openSongBtn) {
+	    openSongBtn.onclick = function(e) {
+	        e.preventDefault();
+	        exportOpenSong('${id}');
+	    };
+	}
     })
 }
 
