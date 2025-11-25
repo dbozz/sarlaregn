@@ -147,7 +147,7 @@ function exportOpenSong(id) {
                 }
                 
                 // Remove chords from text line
-                const textLine = line.replace(/\{[^}]*\}/g, '');
+                let textLine = line.replace(/\{[^}]*\}/g, '');
                 
                 // If there are chords, create chord line with dots and spaces
                 if (chords.length > 0) {
@@ -163,9 +163,12 @@ function exportOpenSong(id) {
                     });
                     
                     lyrics += chordLine + '\n';
+                    
+                    // Add space at the beginning of text line to align with chord line
+                    textLine = ' ' + textLine;
                 }
                 
-                // Add text line (without leading dot)
+                // Add text line (with leading space if there are chords)
                 lyrics += textLine + '\n';
             });
             
