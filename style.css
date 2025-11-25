@@ -963,7 +963,7 @@ background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
 .chord-bubble {
   display: inline-block;
   position: absolute;
-  background-color: #fffae6;
+  background-color: #fcf9ef;
   border-radius: 6px;
   padding: 2px 2px;
   font-size: 0.65em;
@@ -972,7 +972,7 @@ background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;
   white-space: nowrap;
   transform: translate(-50%, -20%);
   margin-top: -5px;
-  z-index: 0;
+  z-index: -1;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   pointer-events: none;
 }
