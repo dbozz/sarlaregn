@@ -705,7 +705,7 @@ position:fixed;
 z-index: 1;
 }
 #bottom {
-/* z-index:1; */
+z-index:1;
 }
 #bottom2 {
 z-index: 1;
