@@ -688,6 +688,38 @@ function gAnalytics(nr,sb,event) {
     });
 }
 
+// Chord array for transposition
+const CHORDS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const CHORD_ALTERNATES = {
+    'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#'
+};
+
+// Transpose a single chord
+function transposeChord(chord, steps) {
+    if (!chord) return chord;
+    
+    // Extract the root note and the rest (m, 7, sus, etc.)
+    const match = chord.match(/^([A-G][b#]?)(.*?)$/);
+    if (!match) return chord;
+    
+    let root = match[1];
+    const suffix = match[2];
+    
+    // Convert flat notation to sharp
+    if (CHORD_ALTERNATES[root]) {
+        root = CHORD_ALTERNATES[root];
+    }
+    
+    // Find current position
+    let index = CHORDS.indexOf(root);
+    if (index === -1) return chord;
+    
+    // Transpose
+    index = (index + steps + 12) % 12;
+    
+    return CHORDS[index] + suffix;
+}
+
 // Toggle chord display
 function toggleChords() {
     const showChords = getCookie('showChords');
@@ -708,9 +740,48 @@ function toggleChords() {
     }
 }
 
+// Transpose up
+function transposeUp() {
+    let transpose = parseInt(getCookie('transpose') || '0');
+    transpose = (transpose + 1) % 12;
+    setCookie('transpose', transpose);
+    
+    // Reload current song
+    const pathName = window.location.search;
+    if (pathName) {
+        try {
+            const sbnr = pathName.split(",");
+            const nSbnr = sbnr[0].replace("?", "");
+            createSearchArray(nSbnr, sbnr[1]);
+        } catch (e) {
+            console.log("Error reloading song: " + e);
+        }
+    }
+}
+
+// Transpose down
+function transposeDown() {
+    let transpose = parseInt(getCookie('transpose') || '0');
+    transpose = (transpose - 1 + 12) % 12;
+    setCookie('transpose', transpose);
+    
+    // Reload current song
+    const pathName = window.location.search;
+    if (pathName) {
+        try {
+            const sbnr = pathName.split(",");
+            const nSbnr = sbnr[0].replace("?", "");
+            createSearchArray(nSbnr, sbnr[1]);
+        } catch (e) {
+            console.log("Error reloading song: " + e);
+        }
+    }
+}
+
 // Process chords in content
 function processChords(content) {
     const showChords = getCookie('showChords');
+    const transpose = parseInt(getCookie('transpose') || '0');
     
     if (showChords !== '1') {
         // Just remove chords if not showing them
@@ -723,6 +794,12 @@ function processChords(content) {
         chord = chord.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
             return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
         });
+        
+        // Transpose if needed
+        if (transpose !== 0) {
+            chord = transposeChord(chord, transpose);
+        }
+        
         return '<span class="chord-bubble">' + chord + '</span>';
     });
     
@@ -792,9 +869,23 @@ function getLyric(id) {
 	const chordIcon = showChords === '1' ? '🎸' : '🎵';
 	const chordTitle = showChords === '1' ? 'Dölj ackord' : 'Visa ackord';
 	
+	// Calculate transposed key
+	const transpose = parseInt(getCookie('transpose') || '0');
+	let displayKey = item.key || '';
+	if (displayKey && transpose !== 0) {
+	    // Normalize the key first
+	    displayKey = displayKey.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
+	        return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+	    });
+	    displayKey = transposeChord(displayKey, transpose);
+	}
+	
 	const menu1 = `
 	    <a href="javascript:${action}('${id}');" class="menu-btn" title="${title}">${star}</a>
 	    <a href="javascript:toggleChords();" class="menu-btn" title="${chordTitle}">${chordIcon}</a>
+	    <a href="javascript:transposeUp();" class="menu-btn" title="Transponera upp">▲</a>
+	    <a href="javascript:void(0);" class="menu-btn menu-btn-key" style="cursor:default;">${displayKey || '-'}</a>
+	    <a href="javascript:transposeDown();" class="menu-btn" title="Transponera ned">▼</a>
 	`;
 	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
 	

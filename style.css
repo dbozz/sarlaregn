@@ -113,6 +113,17 @@
     border-bottom: none;
   }
 
+  /* Key display button - non-interactive */
+  #lyric_head .menu-btn-key {
+    background-color: #fffacd;
+    font-weight: 600;
+    cursor: default !important;
+  }
+
+  #lyric_head .menu-btn-key:hover {
+    background-color: #fffacd;
+  }
+
   /* Content area - leave space for sidebar */
   #lyric-container {
     margin-right: 40px;
