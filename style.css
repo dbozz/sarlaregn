@@ -575,6 +575,7 @@ top:150px;
 z-index:0;
 padding:10px;
 height:100vh;
+width:800px;
 }
 #search {
 position:relative;
