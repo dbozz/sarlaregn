@@ -866,7 +866,7 @@ function getLyric(id) {
 	const searchField = document.getElementById('sok');
 	if (searchField) {
 	    const cleanTitle = item.label.replace(/\{[^}]*\}/g, '').trim();
-	    searchField.value = item.nr + ' - ' + cleanTitle;
+	    searchField.value = cleanTitle;
 	}
 	
 	const star = item.bookmarked == "true" ? '★' : '☆';
