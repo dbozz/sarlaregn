@@ -101,97 +101,132 @@ function copyLink() {
 // Export song as OpenSong XML file
 function exportOpenSong(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
-        // Extract song title and number
+        const xmlContent = generateOpenSongXML(item);
         const title = item.label.replace(/\{[^}]*\}/g, '').trim();
         const songNumber = item.nr;
         
-        // Get song key from database if available and normalize it (uppercase with lowercase 'm')
-        let songKey = item.key || '';
-        if (songKey) {
-            songKey = songKey.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
-                return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
-            });
-        }
+        // Create blob and download
+        const blob = new Blob([xmlContent], { type: 'application/xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
         
-        // Parse HTML content and extract lyrics with chords
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = item.value;
+        // Detect if Android and adjust filename accordingly
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
+        const fileExtension = isAndroid ? '' : '.xml';
+        a.download = `SR-${songNumber}-${cleanTitle}${fileExtension}`;
         
-        let lyrics = '';
-        const verses = tempDiv.querySelectorAll('div.pt');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
+
+// Helper function to escape XML special characters
+function escapeXml(text) {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+// Helper function to generate OpenSong XML content for a song
+function generateOpenSongXML(item) {
+    // Extract song title and number
+    const title = item.label.replace(/\{[^}]*\}/g, '').trim();
+    const songNumber = item.nr;
+    
+    // Get song key from database if available and normalize it (uppercase with lowercase 'm')
+    let songKey = item.key || '';
+    if (songKey) {
+        songKey = songKey.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
+            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+        });
+    }
+    
+    // Parse HTML content and extract lyrics with chords
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = item.value;
+    
+    let lyrics = '';
+    const verses = tempDiv.querySelectorAll('div.pt');
+    
+    verses.forEach((verse, index) => {
+        // Get verse content with chords intact
+        let verseHtml = verse.innerHTML;
         
-        verses.forEach((verse, index) => {
-            // Get verse content with chords intact
-            let verseHtml = verse.innerHTML;
+        // Split by <br> tags to get individual lines
+        const lines = verseHtml.split(/<br\s*\/?>/gi);
+        
+        // Add verse marker
+        lyrics += `[V${index + 1}]\n`;
+        
+        lines.forEach(line => {
+            // Remove HTML tags but keep chords in curly braces
+            line = line.replace(/<[^>]*>/g, '');
             
-            // Split by <br> tags to get individual lines
-            const lines = verseHtml.split(/<br\s*\/?>/gi);
+            // Decode HTML entities
+            const textArea = document.createElement('textarea');
+            textArea.innerHTML = line;
+            line = textArea.value.trim();
             
-            // Add verse marker
-            lyrics += `[V${index + 1}]\n`;
+            if (!line) return; // Skip empty lines
             
-            lines.forEach(line => {
-                // Remove HTML tags but keep chords in curly braces
-                line = line.replace(/<[^>]*>/g, '');
-                
-                // Decode HTML entities
-                const textArea = document.createElement('textarea');
-                textArea.innerHTML = line;
-                line = textArea.value.trim();
-                
-                if (!line) return; // Skip empty lines
-                
-                // Extract chords and text
-                const chordPattern = /\{([^}]*)\}/g;
-                const chords = [];
-                let chordMatch;
-                
-                // Collect all chords and their positions
-                while ((chordMatch = chordPattern.exec(line)) !== null) {
-                    // Convert chord to uppercase, but preserve 'm' for minor chords
-                    let chord = chordMatch[1];
-                    // Convert to uppercase but keep lowercase 'm' when it appears after a note
-                    chord = chord.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
-                        return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
-                    });
-                    
-                    chords.push({
-                        chord: chord,
-                        position: chordMatch.index
-                    });
-                }
-                
-                // Remove chords from text line
-                let textLine = line.replace(/\{[^}]*\}/g, '');
-                
-                // If there are chords, create chord line with dots and spaces
-                if (chords.length > 0) {
-                    let chordLine = '.';
-                    let lastPos = 0;
-                    
-                    chords.forEach(({chord, position}) => {
-                        // Calculate position in text (accounting for removed chord markers)
-                        const textPos = position - (line.substring(0, position).match(/\{[^}]*\}/g) || []).join('').length;
-                        // Add spaces before chord (no brackets on chord line)
-                        chordLine += ' '.repeat(Math.max(0, textPos - lastPos)) + chord;
-                        lastPos = textPos + chord.length;
-                    });
-                    
-                    lyrics += chordLine + '\n';
-                    
-                    // Add space at the beginning of text line to align with chord line
-                    textLine = ' ' + textLine;
-                }
-                
-                // Add text line (with leading space if there are chords)
-                lyrics += textLine + '\n';
-            });
+            // Extract chords and text
+            const chordPattern = /\{([^}]*)\}/g;
+            const chords = [];
+            let chordMatch;
             
-            lyrics += '\n'; // Empty line after verse
+            // Collect all chords and their positions
+            while ((chordMatch = chordPattern.exec(line)) !== null) {
+                // Convert chord to uppercase, but preserve 'm' for minor chords
+                let chord = chordMatch[1];
+                // Convert to uppercase but keep lowercase 'm' when it appears after a note
+                chord = chord.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
+                    return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+                });
+                
+                chords.push({
+                    chord: chord,
+                    position: chordMatch.index
+                });
+            }
+            
+            // Remove chords from text line
+            let textLine = line.replace(/\{[^}]*\}/g, '');
+            
+            // If there are chords, create chord line with dots and spaces
+            if (chords.length > 0) {
+                let chordLine = '.';
+                let lastPos = 0;
+                
+                chords.forEach(({chord, position}) => {
+                    // Calculate position in text (accounting for removed chord markers)
+                    const textPos = position - (line.substring(0, position).match(/\{[^}]*\}/g) || []).join('').length;
+                    // Add spaces before chord (no brackets on chord line)
+                    chordLine += ' '.repeat(Math.max(0, textPos - lastPos)) + chord;
+                    lastPos = textPos + chord.length;
+                });
+                
+                lyrics += chordLine + '\n';
+                
+                // Add space at the beginning of text line to align with chord line
+                textLine = ' ' + textLine;
+            }
+            
+            // Add text line (with leading space if there are chords)
+            lyrics += textLine + '\n';
         });
         
-        // Create OpenSong XML structure with all required fields
-        const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+        lyrics += '\n'; // Empty line after verse
+    });
+    
+    // Create OpenSong XML structure with all required fields
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <song>
   <title>${escapeXml(title)}</title>
   <author></author>
@@ -228,29 +263,77 @@ function exportOpenSong(id) {
   <abcnotation></abcnotation>
   <abctranspose>0</abctranspose>
 </song>`;
+}
+
+// Export all songs as a ZIP file
+async function exportAllSongs() {
+    try {
+        // Check if JSZip is loaded
+        if (typeof JSZip === 'undefined') {
+            alert('JSZip biblioteket kunde inte laddas. Ladda om sidan och försök igen.');
+            return;
+        }
         
-        // Create blob and download
-        const blob = new Blob([xmlContent], { type: 'application/xml' });
+        // Show progress message
+        if (DOM.lyric) DOM.lyric.innerHTML = '<h2>Förbereder nedladdning...</h2><p>Detta kan ta en stund, var god vänta...</p>';
+        
+        const zip = new JSZip();
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const fileExtension = isAndroid ? '' : '.xml';
+        
+        // Get all songs from database
+        const allSongs = await db.lyrics.toArray();
+        
+        let processed = 0;
+        const total = allSongs.length;
+        
+        // Process each song
+        for (const item of allSongs) {
+            const xmlContent = generateOpenSongXML(item);
+            const title = item.label.replace(/\{[^}]*\}/g, '').trim();
+            const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
+            const filename = `SR-${item.nr}-${cleanTitle}${fileExtension}`;
+            
+            zip.file(filename, xmlContent);
+            
+            processed++;
+            if (processed % 50 === 0 && DOM.lyric) {
+                DOM.lyric.innerHTML = `<h2>Förbereder nedladdning...</h2><p>Bearbetar sånger: ${processed}/${total}</p>`;
+            }
+        }
+        
+        // Generate ZIP file
+        if (DOM.lyric) DOM.lyric.innerHTML = '<h2>Skapar ZIP-fil...</h2><p>Nästan klart...</p>';
+        
+        const blob = await zip.generateAsync({ 
+            type: 'blob',
+            compression: 'DEFLATE',
+            compressionOptions: { level: 6 }
+        });
+        
+        // Download the ZIP file
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `sarlaregn_${songNumber}.xml`;
+        a.download = 'Sarlaregn-alla-sanger.zip';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    });
+        
+        // Show success message
+        if (DOM.lyric) {
+            DOM.lyric.innerHTML = `<h2>Klart!</h2><p>${total} sånger har laddats ner som en ZIP-fil.</p><p><a href="javascript:loadPage('help');">Tillbaka till hjälp</a></p>`;
+        }
+        
+    } catch (error) {
+        console.error('Error exporting all songs:', error);
+        if (DOM.lyric) {
+            DOM.lyric.innerHTML = '<h2>Fel</h2><p>Det uppstod ett problem vid export av sångerna. Försök igen.</p><p><a href="javascript:loadPage(\'help\');">Tillbaka till hjälp</a></p>';
+        }
+    }
 }
 
-// Helper function to escape XML special characters
-function escapeXml(text) {
-    return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
-}
 
 // Font resize function-----------------------------------------------
 var changeFontSize = function (increaseFont, step) {
