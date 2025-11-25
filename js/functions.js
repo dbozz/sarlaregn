@@ -290,7 +290,8 @@ async function exportAllSongs() {
         // Process each song
         for (const item of allSongs) {
             const xmlContent = generateOpenSongXML(item);
-            const title = item.label.replace(/\{[^}]*\}/g, '').trim();
+            // Remove song number from title (it's already in item.label)
+            const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
             const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
             const filename = `SR-${item.nr}-${cleanTitle}${fileExtension}`;
             
