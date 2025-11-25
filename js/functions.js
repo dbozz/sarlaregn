@@ -862,6 +862,7 @@ function getLyric(id) {
 	history.pushState({}, "", "/?" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr;
 	
+    
 	// Update search field with song number and title
 	const searchField = document.getElementById('sok');
 	if (searchField) {
