@@ -872,6 +872,7 @@ function getLyric(id) {
 	// Calculate transposed key
 	const transpose = parseInt(getCookie('transpose') || '0');
 	let displayKey = item.key || '';
+	console.log('Item key:', item.key, 'Display key:', displayKey, 'Transpose:', transpose);
 	if (displayKey && transpose !== 0) {
 	    // Normalize the key first
 	    displayKey = displayKey.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
@@ -887,6 +888,7 @@ function getLyric(id) {
 	    <a href="javascript:void(0);" class="menu-btn menu-btn-key" style="cursor:default;">${displayKey || '-'}</a>
 	    <a href="javascript:transposeDown();" class="menu-btn" title="Transponera ned">▼</a>
 	`;
+	console.log('Menu HTML:', menu1);
 	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
 	
 	// Show song actions section
