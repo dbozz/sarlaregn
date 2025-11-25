@@ -82,56 +82,42 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 	<div class="container">
 
-
-
-		<div id=lyric_head style="border:0.5px solid;padding:10px;background-color:lightyellow;width:fit-content; float:right;margin:10px;" >
+		<div id="lyric_head">
 			<div class="menu-section">
 				<div class="menu-btn-group" id="bm_field">
-					<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bokmärken</a>
+					<a href="javascript:bookmarks();" class="menu-btn">bm</a>
 				</div>
 			</div>
 
 			<div class="menu-section" id="song-actions" style="display:none;">
-				<div class="menu-btn-group">
-					<a href="javascript:ttc()" class="menu-btn menu-btn" style="width:33.33%;" title="Kopiera text">txt</a>
-					<a href="javascript:copyLink()" class="menu-btn menu-btn" style="width:33.33%;" title="Kopiera URL">url</a>
-					<a href="#" id="opensong-download" class="menu-btn menu-btn" style="width:33.33%;" title="Ladda ner som OpenSong">⬇</a>
-				</div>
+				<a href="javascript:ttc()" class="menu-btn" title="Kopiera text">txt</a>
+				<a href="javascript:copyLink()" class="menu-btn" title="Kopiera URL">url</a>
+				<a href="#" id="opensong-download" class="menu-btn" title="Ladda ner som OpenSong">⬇</a>
 			</div>
 
 			<div class="menu-section">
-			<!--strong>Bläddra:</strong-->
-			<div class="menu-btn-group">
-				<a href="javascript:selectPrev(5000);" class="menu-btn menu-btn-small" id=sPrev style="width:50%;">«</a>
-				<a href="javascript:selectNext(1000);" class="menu-btn menu-btn-small" id=sNext style="width:50%;">»</a>
-			</div>
+				<a href="javascript:selectPrev(5000);" class="menu-btn" id="sPrev" title="Föregående">«</a>
+				<a href="javascript:selectNext(1000);" class="menu-btn" id="sNext" title="Nästa">»</a>
 			</div>
 
 			<div class="menu-section">
-			<!--strong>Textstorlek:</strong-->
-			<div class="menu-btn-group">
-				<a href="javascript:changeFontSize(false);" class="menu-btn menu-btn" style="width:50%;">A–</a>
-				<a href="javascript:changeFontSize(true);" class="menu-btn menu-btn" style="width:50%;">A+</a>
+				<a href="javascript:changeFontSize(false);" class="menu-btn" title="Minska text">A–</a>
+				<a href="javascript:changeFontSize(true);" class="menu-btn" title="Öka text">A+</a>
 			</div>
-			</div>
-
 
 			<div class="menu-section">
-			<div class="menu-btn-group">
-				<a href="javascript:loadPage('about');" class="menu-btn" style="width:50%;">ℹ</a>
-				<a href="javascript:loadPage('help');" class="menu-btn" style="width:50%;">?</a><br>
-				</div>
-				<div class="menu-btn-group">
-					<a href="javascript:loadPage('settings');" class="menu-btn" style="width:100%;">⚙️</a>
-				</div>
+				<a href="javascript:loadPage('about');" class="menu-btn" title="Om">ℹ</a>
+				<a href="javascript:loadPage('help');" class="menu-btn" title="Hjälp">?</a>
+				<a href="javascript:loadPage('settings');" class="menu-btn" title="Inställningar">⚙️</a>
 			</div>
 		</div>
 
-
-		<div id=lyric>
-			<div class="pt">Välkommen!</div> <div>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan. </div>
-			<div>Ny funktion: Under Inställningar kan du nu stänga av radbrytningar i versar.</div>
-		</div>	
+		<div id="lyric-container">
+			<div id="lyric">
+				<div class="pt">Välkommen!</div> <div>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan. </div>
+				<div>Ny funktion: Under Inställningar kan du nu stänga av radbrytningar i versar.</div>
+			</div>	
+		</div>
 
 	</div>
 

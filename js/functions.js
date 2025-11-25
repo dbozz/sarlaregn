@@ -781,9 +781,8 @@ function getLyric(id) {
 	const chordTitle = showChords === '1' ? 'Dölj ackord' : 'Visa ackord';
 	
 	const menu1 = `
-	    <a href="javascript:${action}('${id}');" style="width:33.33%;" class="menu-btn menu-btn-small" title="${title}">${star}</a>
-	    <a href="javascript:toggleChords();" style="width:33.33%;" class="menu-btn menu-btn-small" title="${chordTitle}">${chordIcon}</a>
-	    <a href="javascript:bookmarks()" class="menu-btn menu-btn-small" style="width:33.33%;" title="Bokmärken">bm</a>
+	    <a href="javascript:${action}('${id}');" class="menu-btn" title="${title}">${star}</a>
+	    <a href="javascript:toggleChords();" class="menu-btn" title="${chordTitle}">${chordIcon}</a>
 	`;
 	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
 	
