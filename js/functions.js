@@ -873,13 +873,14 @@ function getLyric(id) {
 	const action = item.bookmarked == "true" ? 'delete_bookmark' : 'add_bookmark';
 	const title = item.bookmarked == "true" ? 'Ta bort bokmärke' : 'Lägg till bokmärke';
 	
-	const chordIcon = showChords === '1' ? '♪' : '♫';
+	const chordIcon = '♪';
+	const chordClass = showChords === '1' ? 'chord-active' : '';
 	const chordTitle = showChords === '1' ? 'Dölj ackord' : 'Visa ackord';
 	
 	// Build menu with conditional transpose buttons
 	let menu1 = `
 	    <a href="javascript:${action}('${id}');" class="menu-btn" title="${title}">${star}</a>
-	    <a href="javascript:toggleChords();" class="menu-btn" title="${chordTitle}">${chordIcon}</a>
+	    <a href="javascript:toggleChords();" class="menu-btn ${chordClass}" title="${chordTitle}">${chordIcon}</a>
 	`;
 	
 	// Only show transpose controls if chords are visible

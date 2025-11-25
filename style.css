@@ -113,6 +113,15 @@
     border-bottom: none;
   }
 
+  /* Active chord button - lighter background */
+  #lyric_head .menu-btn.chord-active {
+    background-color: #fffacd;
+  }
+
+  #lyric_head .menu-btn.chord-active:hover {
+    background-color: #fff8b3;
+  }
+
   /* Key display button - non-interactive */
   #lyric_head .menu-btn-key {
     background-color: #fffacd;
