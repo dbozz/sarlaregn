@@ -65,7 +65,7 @@
     align-items: center;
     box-sizing: border-box;
     z-index: 1000;
-    overflow-y: auto;
+    /* overflow-y: auto; */
   }
 
   #lyric_head .menu-section {
