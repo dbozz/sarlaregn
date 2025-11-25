@@ -809,7 +809,7 @@ function getLyric(id) {
 	if (openSongBtn) {
 	    openSongBtn.onclick = function(e) {
 	        e.preventDefault();
-	        exportOpenSong('${id}');
+	        exportOpenSong(id);
 	    };
 	}
     })
