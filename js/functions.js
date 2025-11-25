@@ -862,6 +862,13 @@ function getLyric(id) {
 	history.pushState({}, "", "/?" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr;
 	
+	// Update search field with song number and title
+	const searchField = document.getElementById('sok');
+	if (searchField) {
+	    const cleanTitle = item.label.replace(/\{[^}]*\}/g, '').trim();
+	    searchField.value = item.nr + ' - ' + cleanTitle;
+	}
+	
 	const star = item.bookmarked == "true" ? '★' : '☆';
 	const action = item.bookmarked == "true" ? 'delete_bookmark' : 'add_bookmark';
 	const title = item.bookmarked == "true" ? 'Ta bort bokmärke' : 'Lägg till bokmärke';
@@ -869,26 +876,31 @@ function getLyric(id) {
 	const chordIcon = showChords === '1' ? '🎸' : '🎵';
 	const chordTitle = showChords === '1' ? 'Dölj ackord' : 'Visa ackord';
 	
-	// Calculate transposed key
-	const transpose = parseInt(getCookie('transpose') || '0');
-	let displayKey = item.key || '';
-	console.log('Item key:', item.key, 'Display key:', displayKey, 'Transpose:', transpose);
-	if (displayKey && transpose !== 0) {
-	    // Normalize the key first
-	    displayKey = displayKey.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
-	        return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
-	    });
-	    displayKey = transposeChord(displayKey, transpose);
-	}
-	
-	const menu1 = `
+	// Build menu with conditional transpose buttons
+	let menu1 = `
 	    <a href="javascript:${action}('${id}');" class="menu-btn" title="${title}">${star}</a>
 	    <a href="javascript:toggleChords();" class="menu-btn" title="${chordTitle}">${chordIcon}</a>
-	    <a href="javascript:transposeUp();" class="menu-btn" title="Transponera upp">▲</a>
-	    <a href="javascript:void(0);" class="menu-btn menu-btn-key" style="cursor:default;">${displayKey || '-'}</a>
-	    <a href="javascript:transposeDown();" class="menu-btn" title="Transponera ned">▼</a>
 	`;
-	console.log('Menu HTML:', menu1);
+	
+	// Only show transpose controls if chords are visible
+	if (showChords === '1') {
+	    const transpose = parseInt(getCookie('transpose') || '0');
+	    let displayKey = item.key || '';
+	    if (displayKey && transpose !== 0) {
+	        // Normalize the key first
+	        displayKey = displayKey.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
+	            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+	        });
+	        displayKey = transposeChord(displayKey, transpose);
+	    }
+	    
+	    menu1 += `
+	        <a href="javascript:transposeUp();" class="menu-btn" title="Transponera upp">▲</a>
+	        <a href="javascript:void(0);" class="menu-btn menu-btn-key" style="cursor:default;">${displayKey || '-'}</a>
+	        <a href="javascript:transposeDown();" class="menu-btn" title="Transponera ned">▼</a>
+	    `;
+	}
+	
 	if (DOM.bmField) DOM.bmField.innerHTML = menu1;
 	
 	// Show song actions section
