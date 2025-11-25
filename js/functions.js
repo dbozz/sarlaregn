@@ -872,6 +872,7 @@ function getLyric(id) {
 	const star = item.bookmarked == "true" ? '★' : '☆';
 	const action = item.bookmarked == "true" ? 'delete_bookmark' : 'add_bookmark';
 	const title = item.bookmarked == "true" ? 'Ta bort bokmärke' : 'Lägg till bokmärke';
+	const bookmarkClass = item.bookmarked == "true" ? 'bookmark-active' : '';
 	
 	const chordIcon = '♪';
 	const chordClass = showChords === '1' ? 'chord-active' : '';
@@ -879,7 +880,7 @@ function getLyric(id) {
 	
 	// Build menu with conditional transpose buttons
 	let menu1 = `
-	    <a href="javascript:${action}('${id}');" class="menu-btn" title="${title}">${star}</a>
+	    <a href="javascript:${action}('${id}');" class="menu-btn ${bookmarkClass}" title="${title}">${star}</a>
 	    <a href="javascript:toggleChords();" class="menu-btn ${chordClass}" title="${chordTitle}">${chordIcon}</a>
 	`;
 	

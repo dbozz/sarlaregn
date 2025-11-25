@@ -113,6 +113,15 @@
     border-bottom: none;
   }
 
+  /* Active bookmark button - lighter background */
+  #lyric_head .menu-btn.bookmark-active {
+    background-color: #fffacd;
+  }
+
+  #lyric_head .menu-btn.bookmark-active:hover {
+    background-color: #fff8b3;
+  }
+
   /* Active chord button - lighter background */
   #lyric_head .menu-btn.chord-active {
     background-color: #fffacd;
