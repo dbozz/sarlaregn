@@ -129,15 +129,24 @@
     background-color: #fff8b3;
   }
 
-  /* Key display button - non-interactive */
+  /* Key display button */
   #lyric_head .menu-btn-key {
-    background-color: #fffacd;
+    background-color: #f5f5dc;
     font-weight: 600;
-    cursor: default !important;
+    cursor: pointer;
   }
 
   #lyric_head .menu-btn-key:hover {
+    background-color: #e9e9c5;
+  }
+
+  /* Key display button when transposed - lighter background */
+  #lyric_head .menu-btn-key.menu-btn-key-transposed {
     background-color: #fffacd;
+  }
+
+  #lyric_head .menu-btn-key.menu-btn-key-transposed:hover {
+    background-color: #fff8b3;
   }
 
   /* Content area - leave space for sidebar */

@@ -786,6 +786,25 @@ function transposeDown() {
     }
 }
 
+// Reset transposition to 0
+function resetTranspose() {
+    if (!currentSongId) return;
+    
+    songTranspositions[currentSongId] = 0;
+    
+    // Reload current song
+    const pathName = window.location.search;
+    if (pathName) {
+        try {
+            const sbnr = pathName.split(",");
+            const nSbnr = sbnr[0].replace("?", "");
+            createSearchArray(nSbnr, sbnr[1]);
+        } catch (e) {
+            console.log("Error reloading song: " + e);
+        }
+    }
+}
+
 // Process chords in content
 function processChords(content, songId) {
     const showChords = getCookie('showChords');
@@ -908,9 +927,12 @@ function getLyric(id) {
 	        }
 	    }
 	    
+	    const keyClass = transpose !== 0 ? 'menu-btn-key-transposed' : '';
+	    const keyTitle = transpose !== 0 ? 'Nollställ transponering' : 'Ingen transponering';
+	    
 	    menu1 += `
 	        <a href="javascript:transposeUp();" class="menu-btn" title="Transponera upp">▲</a>
-	        <a href="javascript:void(0);" class="menu-btn menu-btn-key" style="cursor:default;">${displayKey || '-'}</a>
+	        <a href="javascript:resetTranspose();" class="menu-btn menu-btn-key ${keyClass}" title="${keyTitle}">${displayKey || '-'}</a>
 	        <a href="javascript:transposeDown();" class="menu-btn" title="Transponera ned">▼</a>
 	    `;
 	}
