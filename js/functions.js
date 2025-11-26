@@ -11,6 +11,10 @@ const DOM = {
   sPrev: null
 };
 
+// Store transpositions per song
+const songTranspositions = {};
+let currentSongId = null;
+
 // Initialize DOM cache when ready
 function initDOMCache() {
   DOM.lyric = document.getElementById('lyric');
@@ -742,9 +746,11 @@ function toggleChords() {
 
 // Transpose up
 function transposeUp() {
-    let transpose = parseInt(getCookie('transpose') || '0');
+    if (!currentSongId) return;
+    
+    let transpose = songTranspositions[currentSongId] || 0;
     transpose = (transpose + 1) % 12;
-    setCookie('transpose', transpose);
+    songTranspositions[currentSongId] = transpose;
     
     // Reload current song
     const pathName = window.location.search;
@@ -761,9 +767,11 @@ function transposeUp() {
 
 // Transpose down
 function transposeDown() {
-    let transpose = parseInt(getCookie('transpose') || '0');
+    if (!currentSongId) return;
+    
+    let transpose = songTranspositions[currentSongId] || 0;
     transpose = (transpose - 1 + 12) % 12;
-    setCookie('transpose', transpose);
+    songTranspositions[currentSongId] = transpose;
     
     // Reload current song
     const pathName = window.location.search;
@@ -779,9 +787,9 @@ function transposeDown() {
 }
 
 // Process chords in content
-function processChords(content) {
+function processChords(content, songId) {
     const showChords = getCookie('showChords');
-    const transpose = parseInt(getCookie('transpose') || '0');
+    const transpose = songTranspositions[songId] || 0;
     
     if (showChords !== '1') {
         // Just remove chords if not showing them
@@ -808,11 +816,12 @@ function processChords(content) {
 
 // Load lyric into div
 function getLyric(id) {
+    currentSongId = id;
     db.lyrics.where("id").equals(id).each(function(item) {
 	let content = item.value;
 	
 	// Process chords (show or hide based on setting)
-	content = processChords(content);
+	content = processChords(content, id);
 	
 	// Check if line breaks should be removed
 	const noLineBreaks = getCookie('noLineBreaks');
@@ -887,7 +896,7 @@ function getLyric(id) {
 	
 	// Only show transpose controls if chords are visible
 	if (showChords === '1') {
-	    const transpose = parseInt(getCookie('transpose') || '0');
+	    const transpose = songTranspositions[id] || 0;
 	    let displayKey = item.key || '';
 	    if (displayKey && transpose !== 0) {
 	        // Normalize the key first
