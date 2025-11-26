@@ -63,7 +63,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 70px;
     box-sizing: border-box;
     z-index: 900;
     /* overflow-y: auto; */
@@ -204,6 +203,9 @@
 
 /* For smartphones */
 @media (max-width: 480px) {
+#lyric_head {
+      padding-top: 10wv;
+    }
 .arrowleft {
 height:30px;
 }
@@ -235,6 +237,7 @@ position:relative;
 top:70px;
 padding:10px;
 min-height: calc(100vh - 70px);
+z-index: 0;
 }
 .browsemenu {
 width:100vw;
@@ -321,6 +324,9 @@ top:61px;
 
 /* For tablets & smart phones */
 @media (min-width: 479px) and (max-width: 767px) {
+#lyric_head {
+    padding-top: 20wv;
+  }
 .arrowleft {
 height:31px;
 }
@@ -344,6 +350,7 @@ left:0px;
 top:0px;
 }
 .body {
+z-index: 0;
 position:relative;
 top:120px;
 padding:10px;
@@ -442,6 +449,9 @@ font-size: 1.3em;
 
 /* For smaller displays like laptops */
 @media (min-width: 768px) and (max-width: 1149px) {
+#lyric_head {
+    padding-top: 20wv;
+  }
 .arrowleft {
 height:36px;
 }
@@ -469,7 +479,8 @@ margin-left:0px;
 margin-right:0px;
 }
 .body {
-position:relative;
+position: relative;
+z-index:0;
 top:130px;
 padding:10px;
 }
@@ -555,6 +566,9 @@ top:72px;
 }
 /* For larger displays */
 @media (min-width: 1150px) {
+#lyric_head {
+    padding-top: 20wv;
+  }
 .arrowleft {
 height:36px;
 }
