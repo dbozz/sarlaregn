@@ -106,7 +106,7 @@ function copyLink() {
 function exportOpenSong(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
         const xmlContent = generateOpenSongXML(item);
-        const title = item.label.replace(/\{[^}]*\}/g, '').trim();
+        const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
         const songNumber = item.nr;
         
         // Create blob and download
