@@ -650,7 +650,7 @@ function ajaxUpdateSR(key1, curVer) {
         var newVersion = parseInt(data.version, 10);
         console.log("Current Online DB version is: " + newVersion)
         if (newVersion > curVer) {
-            $( '#lyric' ).html('<p><strong><a href="javascript:clearSite();">Det finns en ny sångdatabas. Klicka här för att uppdatera.</a></strong></p>');
+            $( '#lyric' ).html('<p><strong><a href="javascript:reloadDatabase();">Det finns en ny sångdatabas. Klicka här för att uppdatera.</a></strong></p>');
         }
     }).catch(function (error) {
         console.log('Could not check for updates (offline?):', error);
