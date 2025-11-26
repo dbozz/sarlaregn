@@ -119,7 +119,8 @@ function exportOpenSong(id) {
         const isAndroid = /Android/i.test(navigator.userAgent);
         const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
         const fileExtension = isAndroid ? '' : '.xml';
-        a.download = `SR-${songNumber}-${cleanTitle}${fileExtension}`;
+        a.download = `SR-${cleanTitle}${fileExtension}`;
+        
         
         document.body.appendChild(a);
         a.click();
@@ -297,7 +298,7 @@ async function exportAllSongs() {
             // Remove song number from title (it's already in item.label)
             const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
             const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
-            const filename = `SR-${item.nr}-${cleanTitle}${fileExtension}`;
+            const filename = `SR-${cleanTitle}${fileExtension}`;
             
             zip.file(filename, xmlContent);
             
