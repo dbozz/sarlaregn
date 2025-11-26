@@ -898,12 +898,14 @@ function getLyric(id) {
 	if (showChords === '1') {
 	    const transpose = songTranspositions[id] || 0;
 	    let displayKey = item.key || '';
-	    if (displayKey && transpose !== 0) {
-	        // Normalize the key first
+	    if (displayKey) {
+	        // Normalize the key first (always)
 	        displayKey = displayKey.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
 	            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
 	        });
-	        displayKey = transposeChord(displayKey, transpose);
+	        if (transpose !== 0) {
+	            displayKey = transposeChord(displayKey, transpose);
+	        }
 	    }
 	    
 	    menu1 += `
