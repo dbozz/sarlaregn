@@ -704,7 +704,7 @@ function gAnalytics(nr,sb,event) {
 // Chord array for transposition
 const CHORDS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const CHORD_ALTERNATES = {
-    'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#'
+    'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#', 'H': 'B'
 };
 
 // Transpose a single chord
