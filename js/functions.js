@@ -14,6 +14,7 @@ const DOM = {
 // Store transpositions per song
 const songTranspositions = {};
 let currentSongId = null;
+let isDatabaseLoading = false;
 
 // Initialize DOM cache when ready
 function initDOMCache() {
@@ -521,6 +522,7 @@ function updateDbVersionCookie(version) {
 }
 
 function ajaxSR(key1, version) {
+    isDatabaseLoading = true;
     return new Dexie.Promise(function (resolve, reject) {
         var now = Math.floor(Date.now() / 1000);
 
@@ -559,9 +561,11 @@ function ajaxSR(key1, version) {
             }
             console.log('Done inserting data into DB.')
             $('#lyric').html("Klart! Du kan nu söka efter sånger i sökfältet längst upp på sidan.");
+            isDatabaseLoading = false;
         });
     }).catch(function (error) {
         console.error('Failed to load database:', error);
+        isDatabaseLoading = false;
         if (navigator.onLine === false) {
             $('#lyric').html("<h3>Du är offline</h3><p>Databasen kunde inte laddas ner. Använd sångorna som redan finns sparade i webbläsaren.</p>");
         } else {
@@ -663,6 +667,10 @@ function ajaxUpdateSR(key1, curVer) {
 // Version check and update lyrics db
 function updateLyrics() {
     if (!navigator.onLine) return;
+    if (isDatabaseLoading) {
+        console.log('Database loading in progress, skipping TS check');
+        return;
+    }
     
     const curVer = getCookie('db_version');
     const key1 = getCookie('key1');
