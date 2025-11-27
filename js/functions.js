@@ -1076,12 +1076,8 @@ function processChords(content, songId) {
 
 // Load lyric into div
 function getLyric(id) {
-    console.log('🎵 getLyric called for ID:', id, 'isLoadingSong:', isLoadingSong, 'currentSongId:', currentSongId);
-    console.trace('Call stack');
-    
     // Prevent duplicate loads of the SAME song
     if (isLoadingSong && currentSongId === id) {
-        console.log('⚠️ Blocked duplicate call');
         return;
     }
     
@@ -1149,17 +1145,7 @@ function getLyric(id) {
 	history.pushState({}, "", "/?" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr;
 	
-	// Track page view in Google Analytics
-	if (typeof gtag !== 'undefined') {
-	    const analyticsData = {
-	        page_title: "Särlaregn nr. " + item.nr,
-	        page_path: "/?" + item.nr + upt2,
-	        page_location: window.location.href,
-	        send_to: 'G-N8G16WFMLV'
-	    };
-	    console.log('📊 [' + new Date().toISOString() + '] Sending to GA:', analyticsData);
-	    gtag('event', 'page_view', analyticsData);
-	}
+	// Google Analytics tracks page views automatically via Enhanced Measurement (history.pushState detection)
 
 	// Update search field with song number and title
 	const searchField = document.getElementById('sok');
@@ -1234,7 +1220,6 @@ function getLyric(id) {
 	}
 	
 	// Reset loading flag after song is loaded
-	console.log('🏁 [' + new Date().toISOString() + '] Resetting isLoadingSong flag');
 	isLoadingSong = false;
     });
 }
