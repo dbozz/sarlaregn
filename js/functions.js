@@ -159,11 +159,9 @@ function exportPDF(id) {
         // Setup PDF styling
         doc.setFont("helvetica");
         doc.setFontSize(Math.min(fontSize * 1.4, 18));
-        doc.text(`Särlaregn ${songNumber}`, sideMargin, 20);
-        doc.setFontSize(Math.min(fontSize * 1.2, 16));
-        doc.text(title, sideMargin, 28);
+        doc.text(`Särlaregn nr ${songNumber}`, sideMargin, 20);
         
-        let yPosition = topMargin;
+        let yPosition = 30;
         
         doc.setFontSize(fontSize);
         
