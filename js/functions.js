@@ -1132,11 +1132,13 @@ function getLyric(id) {
 	
 	// Track page view in Google Analytics
 	if (typeof gtag !== 'undefined') {
-	    gtag('event', 'page_view', {
+	    const analyticsData = {
 	        page_title: "Särlaregn nr. " + item.nr,
 	        page_path: "/?" + item.nr + upt2,
 	        page_location: window.location.href
-	    });
+	    };
+	    console.log('📊 Sending to Google Analytics:', analyticsData);
+	    gtag('event', 'page_view', analyticsData);
 	}
 
 	// Update search field with song number and title
