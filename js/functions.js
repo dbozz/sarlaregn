@@ -112,6 +112,7 @@ function exportPDF(id) {
         // Get song details
         const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
         const songNumber = item.nr;
+        const author = item.author || ''; // Author if available
         const showChords = getCookie('showChords');
         const transpose = songTranspositions[id] || 0;
         
@@ -161,7 +162,18 @@ function exportPDF(id) {
         doc.setFontSize(Math.min(fontSize * 1.4, 18));
         doc.text(`Särlaregn nr ${songNumber}`, sideMargin, 20);
         
-        let yPosition = 30;
+        // Add author if available
+        let yPosition = 20;
+        if (author) {
+            doc.setFontSize(Math.min(fontSize * 1.1, 14));
+            doc.setTextColor(100, 100, 100);
+            yPosition = 28;
+            doc.text(author, sideMargin, yPosition);
+            doc.setTextColor(0, 0, 0);
+            yPosition = 36;
+        } else {
+            yPosition = 30;
+        }
         
         doc.setFontSize(fontSize);
         
