@@ -1076,11 +1076,8 @@ function processChords(content, songId) {
 
 // Load lyric into div
 function getLyric(id) {
-    console.log('🎵 getLyric called for ID:', id);
-    
     // Prevent duplicate loads of the SAME song
     if (isLoadingSong && currentSongId === id) {
-        console.log('⚠️ Already loading this song, skipping duplicate call');
         return;
     }
     
@@ -1090,7 +1087,6 @@ function getLyric(id) {
     // Safety timeout - reset flag after 2 seconds in case something goes wrong
     setTimeout(() => {
         if (isLoadingSong) {
-            console.log('⚠️ Timeout: Resetting loading flag');
             isLoadingSong = false;
         }
     }, 2000);
@@ -1151,16 +1147,11 @@ function getLyric(id) {
 	
 	// Track page view in Google Analytics
 	if (typeof gtag !== 'undefined') {
-	    const analyticsData = {
+	    gtag('event', 'page_view', {
 	        page_title: "Särlaregn nr. " + item.nr,
 	        page_path: "/?" + item.nr + upt2,
 	        page_location: window.location.href
-	    };
-	    console.log('📊 Sending to Google Analytics:', analyticsData);
-	    console.trace('GA call stack');
-	    gtag('event', 'page_view', analyticsData);
-	} else {
-	    console.log('⚠️ Google Analytics not loaded');
+	    });
 	}
 
 	// Update search field with song number and title

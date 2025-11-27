@@ -6,14 +6,6 @@
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
-
-// Log all gtag calls for debugging
-const originalGtag = gtag;
-gtag = function() {
-    console.log('🔍 gtag called:', arguments);
-    return originalGtag.apply(this, arguments);
-};
-
 gtag('js', new Date());
 gtag('config', 'G-N8G16WFMLV', {
     send_page_view: false
