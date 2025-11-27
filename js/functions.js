@@ -1075,6 +1075,7 @@ function processChords(content, songId) {
 
 // Load lyric into div
 function getLyric(id) {
+    console.log('🎵 getLyric called for ID:', id);
     currentSongId = id;
     db.lyrics.where("id").equals(id).each(function(item) {
 	let content = item.value;
