@@ -113,11 +113,33 @@ function exportPDF(id) {
         const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
         const songNumber = item.nr;
         
-        // Extract author from HTML content (in .meta class at bottom)
+        // Extract metadata from HTML content (in .meta class at bottom)
         const tempDivMeta = document.createElement('div');
         tempDivMeta.innerHTML = item.value;
         const metaElement = tempDivMeta.querySelector('.meta');
-        const author = metaElement ? metaElement.textContent.trim() : '';
+        let metaText = metaElement ? metaElement.textContent.trim() : '';
+        
+        // Parse meta text: format is "nr X | Särlaregn | KEY\nAuthor Name"
+        let songKey = '';
+        let author = '';
+        
+        if (metaText) {
+            // Split by newline to separate key info from author
+            const metaParts = metaText.split('\n');
+            
+            // First line contains: nr X | Särlaregn | KEY
+            if (metaParts[0]) {
+                const keyMatch = metaParts[0].match(/\|\s*([A-Ga-g][#b]?-?(?:dur|moll))\s*$/);
+                if (keyMatch) {
+                    songKey = keyMatch[1];
+                }
+            }
+            
+            // Remaining lines are author (join in case author spans multiple lines)
+            if (metaParts.length > 1) {
+                author = metaParts.slice(1).join('\n').trim();
+            }
+        }
         
         const showChords = getCookie('showChords');
         const transpose = songTranspositions[id] || 0;
@@ -166,9 +188,15 @@ function exportPDF(id) {
         // Setup PDF styling
         doc.setFont("helvetica");
         doc.setFontSize(Math.min(fontSize * 1.4, 18));
-        doc.text(`Särlaregn nr ${songNumber}`, sideMargin, 20);
         
-        // Add author if available
+        // Build header line with key info (only if not transposed)
+        let headerText = `Särlaregn nr ${songNumber}`;
+        if (songKey && transpose === 0) {
+            headerText += ` | ${songKey}`;
+        }
+        doc.text(headerText, sideMargin, 20);
+        
+        // Add author on new line if available
         let yPosition = 20;
         if (author) {
             doc.setFontSize(Math.min(fontSize * 1.1, 14));
