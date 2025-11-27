@@ -107,7 +107,7 @@ function copyLink() {
 function exportPDF(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const doc = new jsPDF('p', 'mm', 'a4');
         
         // Get song details
         const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
@@ -115,24 +115,57 @@ function exportPDF(id) {
         const showChords = getCookie('showChords');
         const transpose = songTranspositions[id] || 0;
         
-        // Parse HTML content
+        // Parse HTML content and count total lines
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = item.value;
         const verses = tempDiv.querySelectorAll('div.pt');
         
+        // Count total lines to calculate optimal font size
+        let totalLines = 0;
+        verses.forEach((verse) => {
+            const lines = verse.innerHTML.split(/<br\s*\/?>/gi);
+            lines.forEach(line => {
+                line = line.replace(/<[^>]*>/g, '');
+                const textArea = document.createElement('textarea');
+                textArea.innerHTML = line;
+                line = textArea.value.trim();
+                if (!line) return;
+                
+                // Count chord line + text line if chords are shown
+                if (showChords === '1' && /\{[^}]*\}/.test(line)) {
+                    totalLines += 2; // chord line + text line
+                } else {
+                    totalLines += 1;
+                }
+            });
+        });
+        
+        // Calculate optimal font size based on content
+        const pageHeight = doc.internal.pageSize.height;
+        const pageWidth = doc.internal.pageSize.width;
+        const topMargin = 40;
+        const bottomMargin = 20;
+        const sideMargin = 20;
+        const availableHeight = pageHeight - topMargin - bottomMargin;
+        const numberOfVerses = verses.length;
+        const verseSpacing = Math.max(numberOfVerses - 1, 0) * 1.5; // spacing between verses
+        
+        // Calculate line height and font size to fit content
+        let lineHeight = (availableHeight - verseSpacing) / totalLines;
+        let fontSize = Math.min(lineHeight * 2.5, 16); // Convert line height to font size, max 16pt
+        fontSize = Math.max(fontSize, 8); // Minimum 8pt for readability
+        lineHeight = fontSize * 0.4; // Recalculate line height based on font size
+        
         // Setup PDF styling
         doc.setFont("helvetica");
-        doc.setFontSize(16);
-        doc.text(`Särlaregn ${songNumber}`, 20, 20);
-        doc.setFontSize(14);
-        doc.text(title, 20, 28);
+        doc.setFontSize(Math.min(fontSize * 1.4, 18));
+        doc.text(`Särlaregn ${songNumber}`, sideMargin, 20);
+        doc.setFontSize(Math.min(fontSize * 1.2, 16));
+        doc.text(title, sideMargin, 28);
         
-        let yPosition = 40;
-        const lineHeight = 6;
-        const pageHeight = doc.internal.pageSize.height;
-        const margin = 20;
+        let yPosition = topMargin;
         
-        doc.setFontSize(11);
+        doc.setFontSize(fontSize);
         
         verses.forEach((verse, verseIndex) => {
             let verseHtml = verse.innerHTML;
@@ -144,12 +177,6 @@ function exportPDF(id) {
             }
             
             lines.forEach(line => {
-                // Check if we need a new page
-                if (yPosition > pageHeight - margin) {
-                    doc.addPage();
-                    yPosition = margin;
-                }
-                
                 // Remove HTML tags
                 line = line.replace(/<[^>]*>/g, '');
                 
@@ -201,21 +228,21 @@ function exportPDF(id) {
                         
                         // Print chord line
                         doc.setTextColor(100, 100, 100);
-                        doc.setFontSize(9);
-                        doc.text(chordLine, 20, yPosition);
+                        doc.setFontSize(fontSize * 0.8);
+                        doc.text(chordLine, sideMargin, yPosition);
                         yPosition += lineHeight * 0.8;
                         
                         doc.setTextColor(0, 0, 0);
-                        doc.setFontSize(11);
+                        doc.setFontSize(fontSize);
                     }
                     
                     // Print text line
-                    doc.text(textLine, 20, yPosition);
+                    doc.text(textLine, sideMargin, yPosition);
                     yPosition += lineHeight;
                 } else {
                     // No chords - just remove them and print text
                     const textLine = line.replace(/\{[^}]*\}/g, '');
-                    doc.text(textLine, 20, yPosition);
+                    doc.text(textLine, sideMargin, yPosition);
                     yPosition += lineHeight;
                 }
             });
