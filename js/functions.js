@@ -1138,7 +1138,10 @@ function getLyric(id) {
 	        page_location: window.location.href
 	    };
 	    console.log('📊 Sending to Google Analytics:', analyticsData);
+	    console.trace('GA call stack');
 	    gtag('event', 'page_view', analyticsData);
+	} else {
+	    console.log('⚠️ Google Analytics not loaded');
 	}
 
 	// Update search field with song number and title
