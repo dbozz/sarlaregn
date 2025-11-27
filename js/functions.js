@@ -119,30 +119,31 @@ function exportPDF(id) {
         const metaElement = tempDivMeta.querySelector('.meta');
         let metaText = metaElement ? metaElement.textContent.trim() : '';
         
-        // Parse meta text: format is "nr X | Särlaregn | KEY\nAuthor Name"
+        // Parse meta text: format is "nr X | Särlaregn | KEY" followed by author
         let songKey = '';
         let author = '';
         
         if (metaText) {
             console.log('Meta text found:', metaText);
             
-            // Split by newline to separate key info from author
-            const metaParts = metaText.split('\n');
-            console.log('Meta parts:', metaParts);
+            // Try to match the pattern: nr X | Särlaregn | KEY-dur/moll followed by author name
+            // The key ends with -dur or -moll, then author name follows
+            const metaMatch = metaText.match(/^(.*?\|\s*[A-Ga-g][#b]?-?(?:dur|moll))\s*(.*)$/);
             
-            // First line contains: nr X | Särlaregn | KEY
-            if (metaParts[0]) {
-                const keyMatch = metaParts[0].match(/\|\s*([A-Ga-g][#b]?-?(?:dur|moll))\s*$/);
+            if (metaMatch) {
+                const firstPart = metaMatch[1]; // Everything up to and including the key
+                author = metaMatch[2].trim(); // Everything after the key
+                
+                // Extract just the key from the first part
+                const keyMatch = firstPart.match(/\|\s*([A-Ga-g][#b]?-?(?:dur|moll))\s*$/);
                 if (keyMatch) {
                     songKey = keyMatch[1];
-                    console.log('Key found:', songKey);
                 }
-            }
-            
-            // Remaining lines are author (join in case author spans multiple lines)
-            if (metaParts.length > 1) {
-                author = metaParts.slice(1).join('\n').trim();
+                
+                console.log('Key found:', songKey);
                 console.log('Author found:', author);
+            } else {
+                console.log('Could not parse meta text with expected pattern');
             }
         } else {
             console.log('No meta element found in HTML');
