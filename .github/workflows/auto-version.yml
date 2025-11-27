@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'js/functions.js'
+      - 'style.css'
 
 jobs:
   update-version:
@@ -23,12 +24,16 @@ jobs:
           
           # Update index.html
           sed -i "s|js/functions\.js?v=[^\"]*|js/functions.js?v=$VERSION|g" index.html
+          sed -i "s|style\.css?v=[^\"]*|style.css?v=$VERSION|g" index.html
           
           # Update sw.js cache name
           sed -i "s|const CACHE_NAME = 'sarlaregn-v[^']*'|const CACHE_NAME = 'sarlaregn-v$VERSION'|g" sw.js
           
           # Update sw.js functions.js URL
           sed -i "s|'/js/functions\.js?v=[^']*'|'/js/functions.js?v=$VERSION'|g" sw.js
+          
+          # Update sw.js style.css URL
+          sed -i "s|'/style\.css?v=[^']*'|'/style.css?v=$VERSION'|g" sw.js
 
       - name: Commit and push if changed
         run: |

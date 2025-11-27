@@ -6,7 +6,7 @@ const urlsToCache = [
   '/settings.html',
   '/help.html',
   '/about.html',
-  '/style.css',
+  '/style.css?v=20251127-2',
   '/js/jquery.min.js',
   '/js/jquery-ui.min.js',
   '/js/functions.js?v=20251127-2',
