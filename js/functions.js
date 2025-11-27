@@ -1156,7 +1156,7 @@ function getLyric(id) {
 	        page_path: "/?" + item.nr + upt2,
 	        page_location: window.location.href
 	    };
-	    console.log('📊 Sending to GA:', analyticsData);
+	    console.log('📊 [' + new Date().toISOString() + '] Sending to GA:', analyticsData);
 	    gtag('event', 'page_view', analyticsData);
 	}
 
@@ -1233,6 +1233,7 @@ function getLyric(id) {
 	}
 	
 	// Reset loading flag after song is loaded
+	console.log('🏁 [' + new Date().toISOString() + '] Resetting isLoadingSong flag');
 	isLoadingSong = false;
     });
 }
