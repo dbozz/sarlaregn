@@ -324,15 +324,21 @@ function exportOpenSong(id) {
         const a = document.createElement('a');
         a.href = url;
         
-        // Detect if Android and adjust filename accordingly
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        console.log('User Agent:', navigator.userAgent);
+        // Detect if Android - check multiple indicators
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const isAndroid = /android/i.test(userAgent) || 
+                         /Linux; Android/i.test(userAgent) ||
+                         (typeof window.chrome !== 'undefined' && /Mobile/i.test(userAgent));
+        
+        console.log('User Agent:', userAgent);
+        console.log('Platform:', navigator.platform);
         console.log('Is Android detected:', isAndroid);
         
         const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
         const fileExtension = isAndroid ? '' : '.xml';
         const filename = `SR-${cleanTitle}${fileExtension}`;
         console.log('Download filename:', filename);
+        console.log('File extension:', fileExtension);
         
         a.download = filename;
         
@@ -498,7 +504,12 @@ async function exportAllSongs() {
         if (DOM.lyric) DOM.lyric.innerHTML = '<h2>Förbereder nedladdning...</h2><p>Detta kan ta en stund, var god vänta...</p>';
         
         const zip = new JSZip();
-        const isAndroid = /Android/i.test(navigator.userAgent);
+        
+        // Detect if Android - check multiple indicators
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const isAndroid = /android/i.test(userAgent) || 
+                         /Linux; Android/i.test(userAgent) ||
+                         (typeof window.chrome !== 'undefined' && /Mobile/i.test(userAgent));
         const fileExtension = isAndroid ? '' : '.xml';
         
         // Get all songs from database
