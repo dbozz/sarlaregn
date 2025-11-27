@@ -1363,7 +1363,7 @@ function delete_bookmark(id, fromBookmarksList = false) {
 // Function for loading html page into div 	
 function loadPage(page){
     var htmlpage = page + ".html";
-    menu1 = '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">bm</a>'
+    menu1 = '<a href="javascript:bookmarks();" style="width:100%;" class="menu-btn">✨</a>'
 
     $( '#bm_field' ).html(menu1);
     $( '#lyric' ).load(htmlpage).attr("href");
