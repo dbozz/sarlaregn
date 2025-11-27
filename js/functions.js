@@ -1078,14 +1078,22 @@ function processChords(content, songId) {
 function getLyric(id) {
     console.log('🎵 getLyric called for ID:', id);
     
-    // Prevent duplicate loads
-    if (isLoadingSong) {
-        console.log('⚠️ Already loading a song, skipping duplicate call');
+    // Prevent duplicate loads of the SAME song
+    if (isLoadingSong && currentSongId === id) {
+        console.log('⚠️ Already loading this song, skipping duplicate call');
         return;
     }
     
     isLoadingSong = true;
     currentSongId = id;
+    
+    // Safety timeout - reset flag after 2 seconds in case something goes wrong
+    setTimeout(() => {
+        if (isLoadingSong) {
+            console.log('⚠️ Timeout: Resetting loading flag');
+            isLoadingSong = false;
+        }
+    }, 2000);
     
     db.lyrics.where("id").equals(id).each(function(item) {
 	let content = item.value;
