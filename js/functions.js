@@ -217,20 +217,25 @@ function exportPDF(id) {
                     
                     // If there are chords, print them above the text
                     if (chords.length > 0) {
-                        let chordLine = '';
-                        let lastPos = 0;
+                        // Print each chord at exact position based on text width
+                        doc.setTextColor(100, 100, 100);
+                        doc.setFontSize(fontSize * 0.75);
                         
                         chords.forEach(({chord, position}) => {
+                            // Calculate text position (without chord markers)
                             const textPos = position - (line.substring(0, position).match(/\{[^}]*\}/g) || []).join('').length;
-                            chordLine += ' '.repeat(Math.max(0, textPos - lastPos)) + chord;
-                            lastPos = textPos + chord.length;
+                            const textBeforeChord = textLine.substring(0, textPos);
+                            
+                            // Measure actual width of text before chord in current font
+                            doc.setFontSize(fontSize);
+                            const textWidth = doc.getTextWidth(textBeforeChord);
+                            
+                            // Print chord at measured position
+                            doc.setFontSize(fontSize * 0.75);
+                            doc.text(chord, sideMargin + textWidth, yPosition);
                         });
                         
-                        // Print chord line
-                        doc.setTextColor(100, 100, 100);
-                        doc.setFontSize(fontSize * 0.8);
-                        doc.text(chordLine, sideMargin, yPosition);
-                        yPosition += lineHeight * 0.8;
+                        yPosition += lineHeight * 0.85;
                         
                         doc.setTextColor(0, 0, 0);
                         doc.setFontSize(fontSize);
