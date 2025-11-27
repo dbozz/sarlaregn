@@ -15,6 +15,7 @@ const DOM = {
 const songTranspositions = {};
 let currentSongId = null;
 let isDatabaseLoading = false;
+let isLoadingSong = false; // Prevent duplicate song loads
 
 // Initialize DOM cache when ready
 function initDOMCache() {
@@ -1076,7 +1077,16 @@ function processChords(content, songId) {
 // Load lyric into div
 function getLyric(id) {
     console.log('🎵 getLyric called for ID:', id);
+    
+    // Prevent duplicate loads
+    if (isLoadingSong) {
+        console.log('⚠️ Already loading a song, skipping duplicate call');
+        return;
+    }
+    
+    isLoadingSong = true;
     currentSongId = id;
+    
     db.lyrics.where("id").equals(id).each(function(item) {
 	let content = item.value;
 	
@@ -1216,7 +1226,10 @@ function getLyric(id) {
 	        exportPDF(id);
 	    };
 	}
-    })
+	
+	// Reset loading flag after song is loaded
+	isLoadingSong = false;
+    });
 }
 
 
