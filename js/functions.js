@@ -124,21 +124,28 @@ function exportPDF(id) {
         let author = '';
         
         if (metaText) {
+            console.log('Meta text found:', metaText);
+            
             // Split by newline to separate key info from author
             const metaParts = metaText.split('\n');
+            console.log('Meta parts:', metaParts);
             
             // First line contains: nr X | Särlaregn | KEY
             if (metaParts[0]) {
                 const keyMatch = metaParts[0].match(/\|\s*([A-Ga-g][#b]?-?(?:dur|moll))\s*$/);
                 if (keyMatch) {
                     songKey = keyMatch[1];
+                    console.log('Key found:', songKey);
                 }
             }
             
             // Remaining lines are author (join in case author spans multiple lines)
             if (metaParts.length > 1) {
                 author = metaParts.slice(1).join('\n').trim();
+                console.log('Author found:', author);
             }
+        } else {
+            console.log('No meta element found in HTML');
         }
         
         const showChords = getCookie('showChords');
