@@ -112,7 +112,13 @@ function exportPDF(id) {
         // Get song details
         const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
         const songNumber = item.nr;
-        const author = item.author || ''; // Author if available
+        
+        // Extract author from HTML content (in .meta class at bottom)
+        const tempDivMeta = document.createElement('div');
+        tempDivMeta.innerHTML = item.value;
+        const metaElement = tempDivMeta.querySelector('.meta');
+        const author = metaElement ? metaElement.textContent.trim() : '';
+        
         const showChords = getCookie('showChords');
         const transpose = songTranspositions[id] || 0;
         
