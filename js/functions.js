@@ -307,7 +307,7 @@ function exportPDF(id) {
         
         // Save PDF
         const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
-        doc.save(`SR-${songNumber}-${cleanTitle}.pdf`);
+        doc.save(`SR-${cleanTitle}.pdf`);
     });
 }
 
@@ -326,9 +326,15 @@ function exportOpenSong(id) {
         
         // Detect if Android and adjust filename accordingly
         const isAndroid = /Android/i.test(navigator.userAgent);
+        console.log('User Agent:', navigator.userAgent);
+        console.log('Is Android detected:', isAndroid);
+        
         const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
         const fileExtension = isAndroid ? '' : '.xml';
-        a.download = `SR-${cleanTitle}${fileExtension}`;
+        const filename = `SR-${cleanTitle}${fileExtension}`;
+        console.log('Download filename:', filename);
+        
+        a.download = filename;
         
         
         document.body.appendChild(a);
