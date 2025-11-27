@@ -932,13 +932,6 @@ async function checkBookmark(id) {
     }
 }
 
-function gAnalytics(nr,sb,event) {
-    gtag('event', event, {
-        'page_title': "Särlaregn nr. " + nr,
-        'page_path': "/" + nr + "" + sb
-    });
-}
-
 // Chord array for transposition
 const CHORDS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const CHORD_ALTERNATES = {
