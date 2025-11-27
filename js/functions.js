@@ -1154,7 +1154,8 @@ function getLyric(id) {
 	    const analyticsData = {
 	        page_title: "Särlaregn nr. " + item.nr,
 	        page_path: "/?" + item.nr + upt2,
-	        page_location: window.location.href
+	        page_location: window.location.href,
+	        send_to: 'G-N8G16WFMLV'
 	    };
 	    console.log('📊 [' + new Date().toISOString() + '] Sending to GA:', analyticsData);
 	    gtag('event', 'page_view', analyticsData);
