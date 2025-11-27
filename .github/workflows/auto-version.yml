@@ -1,0 +1,45 @@
+name: Auto Version Cache
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'js/functions.js'
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version numbers
+        run: |
+          # Generate timestamp-based version
+          VERSION=$(date +%Y%m%d-%H%M%S)
+          
+          # Update index.html
+          sed -i "s|js/functions\.js?v=[^\"]*|js/functions.js?v=$VERSION|g" index.html
+          
+          # Update sw.js cache name
+          sed -i "s|const CACHE_NAME = 'sarlaregn-v[^']*'|const CACHE_NAME = 'sarlaregn-v$VERSION'|g" sw.js
+          
+          # Update sw.js functions.js URL
+          sed -i "s|'/js/functions\.js?v=[^']*'|'/js/functions.js?v=$VERSION'|g" sw.js
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git add index.html sw.js
+          git commit -m "Auto-update cache version: $(date +%Y%m%d-%H%M%S)"
+          git push
