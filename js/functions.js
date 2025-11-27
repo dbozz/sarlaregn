@@ -189,8 +189,8 @@ function exportPDF(id) {
         doc.setFont("helvetica");
         doc.setFontSize(Math.min(fontSize * 1.4, 18));
         
-        // Build header line with key info (only if not transposed)
-        let headerText = `Särlaregn nr ${songNumber}`;
+        // Build header from meta content (only show key if not transposed)
+        let headerText = `nr ${songNumber} | Särlaregn`;
         if (songKey && transpose === 0) {
             headerText += ` | ${songKey}`;
         }
