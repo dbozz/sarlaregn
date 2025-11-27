@@ -177,6 +177,9 @@ function exportPDF(id) {
             });
         });
         
+        console.log('Total lines counted:', totalLines);
+        console.log('Number of verses:', verses.length);
+        
         // Calculate optimal font size based on content
         const pageHeight = doc.internal.pageSize.height;
         const pageWidth = doc.internal.pageSize.width;
@@ -185,13 +188,23 @@ function exportPDF(id) {
         const sideMargin = 20;
         const availableHeight = pageHeight - topMargin - bottomMargin;
         const numberOfVerses = verses.length;
-        const verseSpacing = Math.max(numberOfVerses - 1, 0) * 1.5; // spacing between verses
         
-        // Calculate line height and font size to fit content
-        let lineHeight = (availableHeight - verseSpacing) / totalLines;
-        let fontSize = Math.min(lineHeight * 2.5, 16); // Convert line height to font size, max 16pt
-        fontSize = Math.max(fontSize, 8); // Minimum 8pt for readability
-        lineHeight = fontSize * 0.4; // Recalculate line height based on font size
+        // Reserve space for verse spacing (in mm)
+        const verseSpacingTotal = Math.max(numberOfVerses - 1, 0) * 5; // 5mm between verses
+        const heightForText = availableHeight - verseSpacingTotal;
+        
+        // Calculate font size: available height divided by number of lines
+        // Each line needs approximately 1.4 times the font size in height (in mm)
+        // Font size in pt * 0.3527 = mm, so 1pt ≈ 0.35mm
+        let fontSize = (heightForText / totalLines) / 1.4 * 2.83; // Convert mm to pt
+        fontSize = Math.min(fontSize, 16); // Max 16pt
+        fontSize = Math.max(fontSize, 7); // Min 7pt for readability
+        
+        // Calculate line height based on final font size (in mm)
+        const lineHeight = fontSize * 0.35 * 1.4; // pt to mm, then multiply by line spacing factor
+        
+        console.log('Calculated font size:', fontSize);
+        console.log('Line height (mm):', lineHeight);
         
         // Setup PDF styling
         doc.setFont("helvetica");
@@ -223,9 +236,9 @@ function exportPDF(id) {
             let verseHtml = verse.innerHTML;
             const lines = verseHtml.split(/<br\s*\/?>/gi);
             
-            // Add verse spacing
+            // Add verse spacing (5mm between verses)
             if (verseIndex > 0) {
-                yPosition += lineHeight * 1.5;
+                yPosition += 5;
             }
             
             lines.forEach(line => {
@@ -287,7 +300,7 @@ function exportPDF(id) {
                             doc.text(chord, sideMargin + textWidth, yPosition);
                         });
                         
-                        yPosition += lineHeight * 0.85;
+                        yPosition += lineHeight * 0.6; // Reduced spacing for chords
                         
                         doc.setTextColor(0, 0, 0);
                         doc.setFontSize(fontSize);
