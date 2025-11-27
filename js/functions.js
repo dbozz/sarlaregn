@@ -103,6 +103,130 @@ function copyLink() {
   window.navigator.clipboard.writeText(window.location.href);
 }
 
+// Export song as PDF
+function exportPDF(id) {
+    db.lyrics.where("id").equals(id).each(function(item) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Get song details
+        const title = item.label.replace(/\{[^}]*\}/g, '').replace(/^\d+\s*/, '').trim();
+        const songNumber = item.nr;
+        const showChords = getCookie('showChords');
+        const transpose = songTranspositions[id] || 0;
+        
+        // Parse HTML content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = item.value;
+        const verses = tempDiv.querySelectorAll('div.pt');
+        
+        // Setup PDF styling
+        doc.setFont("helvetica");
+        doc.setFontSize(16);
+        doc.text(`Särlaregn ${songNumber}`, 20, 20);
+        doc.setFontSize(14);
+        doc.text(title, 20, 28);
+        
+        let yPosition = 40;
+        const lineHeight = 6;
+        const pageHeight = doc.internal.pageSize.height;
+        const margin = 20;
+        
+        doc.setFontSize(11);
+        
+        verses.forEach((verse, verseIndex) => {
+            let verseHtml = verse.innerHTML;
+            const lines = verseHtml.split(/<br\s*\/?>/gi);
+            
+            // Add verse spacing
+            if (verseIndex > 0) {
+                yPosition += lineHeight * 1.5;
+            }
+            
+            lines.forEach(line => {
+                // Check if we need a new page
+                if (yPosition > pageHeight - margin) {
+                    doc.addPage();
+                    yPosition = margin;
+                }
+                
+                // Remove HTML tags
+                line = line.replace(/<[^>]*>/g, '');
+                
+                // Decode HTML entities
+                const textArea = document.createElement('textarea');
+                textArea.innerHTML = line;
+                line = textArea.value.trim();
+                
+                if (!line) return;
+                
+                // Process chords if enabled
+                if (showChords === '1') {
+                    // Extract chords and their positions
+                    const chordPattern = /\{([^}]*)\}/g;
+                    const chords = [];
+                    let chordMatch;
+                    
+                    while ((chordMatch = chordPattern.exec(line)) !== null) {
+                        let chord = chordMatch[1];
+                        // Normalize chord
+                        chord = chord.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
+                            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+                        });
+                        
+                        // Transpose if needed
+                        if (transpose !== 0) {
+                            chord = transposeChord(chord, transpose);
+                        }
+                        
+                        chords.push({
+                            chord: chord,
+                            position: chordMatch.index
+                        });
+                    }
+                    
+                    // Remove chords from text
+                    let textLine = line.replace(/\{[^}]*\}/g, '');
+                    
+                    // If there are chords, print them above the text
+                    if (chords.length > 0) {
+                        let chordLine = '';
+                        let lastPos = 0;
+                        
+                        chords.forEach(({chord, position}) => {
+                            const textPos = position - (line.substring(0, position).match(/\{[^}]*\}/g) || []).join('').length;
+                            chordLine += ' '.repeat(Math.max(0, textPos - lastPos)) + chord;
+                            lastPos = textPos + chord.length;
+                        });
+                        
+                        // Print chord line
+                        doc.setTextColor(100, 100, 100);
+                        doc.setFontSize(9);
+                        doc.text(chordLine, 20, yPosition);
+                        yPosition += lineHeight * 0.8;
+                        
+                        doc.setTextColor(0, 0, 0);
+                        doc.setFontSize(11);
+                    }
+                    
+                    // Print text line
+                    doc.text(textLine, 20, yPosition);
+                    yPosition += lineHeight;
+                } else {
+                    // No chords - just remove them and print text
+                    const textLine = line.replace(/\{[^}]*\}/g, '');
+                    doc.text(textLine, 20, yPosition);
+                    yPosition += lineHeight;
+                }
+            });
+        });
+        
+        // Save PDF
+        const cleanTitle = title.replace(/[^a-zA-Z0-9åäöÅÄÖ\s-]/g, '').replace(/\s+/g, '-');
+        doc.save(`SR-${songNumber}-${cleanTitle}.pdf`);
+    });
+}
+
 // Export song as OpenSong XML file
 function exportOpenSong(id) {
     db.lyrics.where("id").equals(id).each(function(item) {
@@ -960,6 +1084,15 @@ function getLyric(id) {
 	    openSongBtn.onclick = function(e) {
 	        e.preventDefault();
 	        exportOpenSong(id);
+	    };
+	}
+	
+	// Update PDF download button
+	const pdfBtn = document.getElementById('pdf-download');
+	if (pdfBtn) {
+	    pdfBtn.onclick = function(e) {
+	        e.preventDefault();
+	        exportPDF(id);
 	    };
 	}
     })
