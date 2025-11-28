@@ -1067,9 +1067,9 @@ function processChords(content, songId) {
     
     // Replace chords with span bubbles using regex
     content = content.replace(/\{([^}]*)\}/g, function(match, chord) {
-        // Normalize chord (uppercase with lowercase 'm')
-        chord = chord.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
-            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+        // Normalize chord: uppercase note, lowercase 'm' for minor, preserve 'b' for flat
+        chord = chord.replace(/^([a-g])([b#]?)(m?)(.*)$/i, (m, note, accidental, minor, rest) => {
+            return note.toUpperCase() + accidental.toLowerCase() + minor.toLowerCase() + rest.toUpperCase();
         });
         
         // Transpose if needed
