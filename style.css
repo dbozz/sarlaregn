@@ -56,9 +56,9 @@
     position: fixed;
     right: 0;
     top: 0;
-    bottom: 0;
+    /* bottom: 0; */
     width: 15vw;
-    border: 1px solid #d4d4a8;
+    /* border: 1px solid #d4d4a8; */
     display: flex;
     flex-direction: column;
     align-items: center;
