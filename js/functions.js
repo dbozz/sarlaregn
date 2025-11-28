@@ -851,6 +851,12 @@ db.on('ready', function () {
                 return;
             }
             
+            // If no key is set, show message instead of trying to load
+            if (!key1) {
+                $( '#lyric' ).html("<div class='pt'>Välkommen!</div><div>Databasen är tom. Om du har en nyckel, ange den under Inställningar och ladda om databasen.</div>");
+                return;
+            }
+            
             // Hämta versionen först, sedan ladda databasen
             $.ajax(base_url + "?action=ts&key=" + key1, {
                 type: 'get',
