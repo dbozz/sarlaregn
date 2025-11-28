@@ -843,7 +843,7 @@ db.on('ready', function () {
     return db.lyrics.count(function (count) {
         if (count == 0) {
 	    $( '#lyric' ).html("Databasen är tom. Laddar, vänligen vänta...");
-	    var key1 = Cookies.get('key1');
+	    var key1 = Cookies.get('key1') || '';
             
             // Check if online before attempting to load
             if (!navigator.onLine) {
