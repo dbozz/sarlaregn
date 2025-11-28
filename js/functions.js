@@ -917,7 +917,16 @@ function updateLyrics() {
     ajaxUpdateSR(key1, curVer);
 }
 
-updateLyrics();
+// Wait for database to be ready before checking for updates
+db.on('ready', function() {
+    // Only check for updates if database is populated
+    return db.lyrics.count(function(count) {
+        if (count > 0) {
+            // Wait 2 seconds after page load to check for updates
+            setTimeout(updateLyrics, 2000);
+        }
+    });
+});
 
 async function checkBookmark(id) {
     try {
