@@ -912,7 +912,7 @@ function updateLyrics() {
     }
     
     const curVer = getCookie('db_version');
-    const key1 = getCookie('key1');
+    const key1 = getCookie('key1') || '';
     console.log("Online. Current DB version:", curVer);
     ajaxUpdateSR(key1, curVer);
 }
