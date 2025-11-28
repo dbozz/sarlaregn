@@ -788,12 +788,8 @@ function ajaxSR(key1, version) {
     }).then(function (data) {
         $('#lyric').html("Databasen uppdateras nu... var god vänta...");
         
-        return db.transaction('rw', db.lyrics, function () {
-            data.forEach(function (item) {
-                console.log("Inserting item with id: ", item.id); 
-                db.lyrics.put(item);  // put() uppdaterar eller lägger till
-            });
-        }).then(function() {
+        // Använd bulkPut för att uppdatera alla på en gång
+        return db.lyrics.bulkPut(data).then(function() {
             // Uppdatera cookie med versionen som hämtades från servern
             if (version) {
                 updateDbVersionCookie(version);
