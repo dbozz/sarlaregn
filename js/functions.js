@@ -851,12 +851,6 @@ db.on('ready', function () {
                 return;
             }
             
-            // If no key is set, show message instead of trying to load
-            if (!key1) {
-                $( '#lyric' ).html("<div class='pt'>Välkommen!</div><div>Databasen är tom. Om du har en nyckel, ange den under Inställningar och ladda om databasen.</div>");
-                return;
-            }
-            
             // Hämta versionen först, sedan ladda databasen
             $.ajax(base_url + "?action=ts&key=" + key1, {
                 type: 'get',
@@ -864,6 +858,13 @@ db.on('ready', function () {
                 timeout: 10000,
                 error: function (xhr, textStatus, errorThrown) {
                     console.error('Failed to fetch version:', textStatus, errorThrown);
+                    
+                    // If it's a CORS error and we have no key, show a helpful message
+                    if (xhr.status === 0 && !key1) {
+                        $( '#lyric' ).html("<div class='pt'>Välkommen!</div><div>För att använda låtdatabasen behöver du ange en nyckel under Inställningar och sedan ladda om databasen.</div>");
+                        return;
+                    }
+                    
                     if (navigator.onLine) {
                         $( '#lyric' ).html("<h3>Anslutningsfel</h3><p>Det gick inte att ansluta till servern. Försök igen senare.</p>");
                     } else {
