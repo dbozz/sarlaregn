@@ -29,11 +29,11 @@ $(document).ready(function() {
 
 function updateKey2() {
         var key1 = $('#key1').val();
-        Cookies.set('key1', key1, { expires: 3650 });
+        Cookies.set('key1', key1, { expires: 3650, sameSite: 'Lax', secure: true });
         }
 
 function toggleLineBreaks(checkbox) {
-        Cookies.set('noLineBreaks', checkbox.checked ? '1' : '0', { expires: 3650 });
+        Cookies.set('noLineBreaks', checkbox.checked ? '1' : '0', { expires: 3650, sameSite: 'Lax', secure: true });
         }
 
 // Initialize checkbox state
