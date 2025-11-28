@@ -169,7 +169,7 @@
   /* Content area - leave space for sidebar */
   #lyric-container {
     margin-right: 40px;
-    width: calc(100% - 15vw);
+    width: calc(100% - 20vw);
     box-sizing: border-box;
   }
 
@@ -617,6 +617,8 @@ z-index:0;
 padding:10px;
 height:100vh;
 width:800px;
+margin-right: auto;
+margin-left: auto;
 }
 #search {
 position:relative;
