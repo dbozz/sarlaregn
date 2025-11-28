@@ -262,9 +262,9 @@ function exportPDF(id) {
                     
                     while ((chordMatch = chordPattern.exec(line)) !== null) {
                         let chord = chordMatch[1];
-                        // Normalize chord
-                        chord = chord.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
-                            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+                        // Normalize chord: preserve 'b' for flat
+                        chord = chord.replace(/^([a-g])([b#]?)(m?)(.*)$/i, (m, note, accidental, minor, rest) => {
+                            return note.toUpperCase() + accidental.toLowerCase() + minor.toLowerCase() + rest.toUpperCase();
                         });
                         
                         // Transpose if needed
@@ -380,11 +380,11 @@ function generateOpenSongXML(item) {
     const title = item.label.replace(/\{[^}]*\}/g, '').trim();
     const songNumber = item.nr;
     
-    // Get song key from database if available and normalize it (uppercase with lowercase 'm')
+    // Get song key from database if available and normalize it (uppercase with lowercase 'm' and 'b')
     let songKey = item.key || '';
     if (songKey) {
-        songKey = songKey.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
-            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+        songKey = songKey.replace(/^([a-g])([b#]?)(m?)(.*)$/i, (match, note, accidental, minor, rest) => {
+            return note.toUpperCase() + accidental.toLowerCase() + minor.toLowerCase() + rest.toUpperCase();
         });
     }
     
@@ -423,11 +423,11 @@ function generateOpenSongXML(item) {
             
             // Collect all chords and their positions
             while ((chordMatch = chordPattern.exec(line)) !== null) {
-                // Convert chord to uppercase, but preserve 'm' for minor chords
+                // Convert chord to uppercase, but preserve 'm' for minor and 'b' for flat
                 let chord = chordMatch[1];
-                // Convert to uppercase but keep lowercase 'm' when it appears after a note
-                chord = chord.replace(/^([a-g])(m?)(.*)$/i, (match, note, minor, rest) => {
-                    return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+                // Convert to uppercase but keep lowercase 'm' and 'b'
+                chord = chord.replace(/^([a-g])([b#]?)(m?)(.*)$/i, (match, note, accidental, minor, rest) => {
+                    return note.toUpperCase() + accidental.toLowerCase() + minor.toLowerCase() + rest.toUpperCase();
                 });
                 
                 chords.push({
@@ -1183,9 +1183,9 @@ function getLyric(id) {
 	    const transpose = songTranspositions[id] || 0;
 	    let displayKey = item.key || '';
 	    if (displayKey) {
-	        // Normalize the key first (always)
-	        displayKey = displayKey.replace(/^([a-g])(m?)(.*)$/i, (m, note, minor, rest) => {
-	            return note.toUpperCase() + minor.toLowerCase() + rest.toUpperCase();
+	        // Normalize the key first (always) - preserve 'b' for flat
+	        displayKey = displayKey.replace(/^([a-g])([b#]?)(m?)(.*)$/i, (m, note, accidental, minor, rest) => {
+	            return note.toUpperCase() + accidental.toLowerCase() + minor.toLowerCase() + rest.toUpperCase();
 	        });
 	        if (transpose !== 0) {
 	            displayKey = transposeChord(displayKey, transpose);
