@@ -788,13 +788,10 @@ function ajaxSR(key1, version) {
     }).then(function (data) {
         $('#lyric').html("Databasen uppdateras nu... var god vänta...");
         
-        // Rensa först, sedan lägg till ny data
-        return db.lyrics.clear().then(function() {
-            return db.transaction('rw', db.lyrics, function () {
-                data.forEach(function (item) {
-                    console.log("Inserting item with id: ", item.id); 
-                    db.lyrics.put(item);  // Använd put() istället för add()
-                });
+        return db.transaction('rw', db.lyrics, function () {
+            data.forEach(function (item) {
+                console.log("Inserting item with id: ", item.id); 
+                db.lyrics.put(item);  // put() uppdaterar eller lägger till
             });
         }).then(function() {
             // Uppdatera cookie med versionen som hämtades från servern
