@@ -1347,7 +1347,7 @@ function selectPrev(curLyric) {
 // Print bookmarks
 function bookmarks() {
     var bm_list = new Array();
-    bm_list.push("<h2>Bokmärken</h2>");
+    bm_list.push("<strong>Bokmärken</strong><br><br>");
     db.lyrics.where("bookmarked").equals("true").each(function(bookmark) {
         var link = '<p><a href="javascript:delete_bookmark(\'' + bookmark.id + '\', true);" style="color:#d9534f;text-decoration:none;font-weight:bold;margin-right:8px;" title="Ta bort bokmärke">✖</a><a href="javascript:getLyric(\'' + bookmark.id + '\');">' + bookmark.label + '</a></p>';
 	bm_list.push(link);
