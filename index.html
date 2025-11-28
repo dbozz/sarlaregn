@@ -156,6 +156,8 @@ function updateKey1() {
       setTimeout(() => {
         intro.style.display = 'none';
         document.body.style.overflow = 'auto';
+        // Add # to URL after splash screen fades out
+        window.history.replaceState(null, '', '/#');
       }, 800);
     };
     

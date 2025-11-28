@@ -659,7 +659,7 @@ async function reloadDatabase() {
         
         await db.delete();
         console.log('IndexedDB deleted. Reloading page...');
-        window.location.href = '/#';
+        location.reload();
     } catch (error) {
         console.error('Error reloading database:', error);
         if (DOM.lyric) DOM.lyric.innerHTML = "<h3>Fel vid omstart</h3><p>Det uppstod ett problem vid omstart av databasen.</p>";
