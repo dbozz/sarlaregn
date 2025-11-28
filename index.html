@@ -138,12 +138,39 @@ function updateKey1() {
         }
 </script>
 <script>
-  // Only show intro if on root page
+  // Update activity timestamp cookie
+  function updateActivity() {
+    const now = Date.now();
+    document.cookie = `lastActivity=${now}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+  
+  // Check if user was recently active (within 1 hour)
+  function wasRecentlyActive() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'lastActivity') {
+        const lastActivity = parseInt(value);
+        const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+        return (Date.now() - lastActivity) < oneHour;
+      }
+    }
+    return false;
+  }
+  
+  // Update activity on page load and user interactions
+  updateActivity();
+  document.addEventListener('click', updateActivity);
+  document.addEventListener('keypress', updateActivity);
+  document.addEventListener('scroll', updateActivity);
+  
+  // Splash screen logic
   const intro = document.getElementById('intro');
   const isRootPage = window.location.pathname === '/' && window.location.search === '';
+  const shouldShowIntro = isRootPage && !wasRecentlyActive();
   
-  if (!isRootPage) {
-    // Hide intro immediately if not on root
+  if (!shouldShowIntro) {
+    // Hide intro immediately if not on root page or user was recently active
     intro.style.display = 'none';
     document.body.style.overflow = 'auto';
   } else {
@@ -156,8 +183,7 @@ function updateKey1() {
       setTimeout(() => {
         intro.style.display = 'none';
         document.body.style.overflow = 'auto';
-        // Add # to URL after splash screen fades out
-        window.history.replaceState(null, '', '/#');
+        updateActivity(); // Update timestamp when splash is dismissed
       }, 800);
     };
     
