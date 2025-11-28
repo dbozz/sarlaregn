@@ -61,18 +61,22 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          // Only cache successful responses
-          if (!response || response.status !== 200 || response.type === 'error') {
-            return response;
+          // Only cache successful responses with proper CORS
+          if (response && response.status === 200 && response.type !== 'error' && response.type !== 'opaque') {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => cache.put(request, responseToCache));
           }
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => cache.put(request, responseToCache));
           return response;
         })
-        .catch(() => {
-          // Fall back to cache if network fails
-          return caches.match(request);
+        .catch(error => {
+          // Don't fall back to cache for API calls - let the error propagate
+          // so the app can handle it properly
+          console.log('API fetch failed:', error);
+          return new Response(JSON.stringify({ error: 'Network error' }), {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' }
+          });
         })
     );
     return;
