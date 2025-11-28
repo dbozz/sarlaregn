@@ -53,7 +53,7 @@
 
   /* Vertical sidebar menu */
   #lyric_head {
-    position: fixed;
+    position: absolute;
     right: 0;
     top: 0;
     /* bottom: 0; */
@@ -220,7 +220,7 @@
 /* For smartphones */
 @media (max-width: 480px) {
 #lyric_head {
-      padding-top: 10vh;
+      /* padding-top: 10vh; */
     }
 .arrowleft {
 height:30px;
@@ -341,7 +341,7 @@ top:61px;
 /* For tablets & smart phones */
 @media (min-width: 479px) and (max-width: 767px) {
 #lyric_head {
-    padding-top: 20vh;
+    /* padding-top: 20vh; */
   }
 .arrowleft {
 height:31px;
@@ -466,7 +466,7 @@ font-size: 1.3em;
 /* For smaller displays like laptops */
 @media (min-width: 768px) and (max-width: 1149px) {
 #lyric_head {
-    padding-top: 20vh;
+    /* padding-top: 20vh; */
   }
 .arrowleft {
 height:36px;
@@ -583,7 +583,7 @@ top:72px;
 /* For larger displays */
 @media (min-width: 1150px) {
 #lyric_head {
-    padding-top: 20vh;
+    /* padding-top: 20vh; */
   }
 .arrowleft {
 height:36px;
