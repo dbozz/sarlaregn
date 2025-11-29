@@ -144,6 +144,21 @@
                 });
                 console.log('Cookies raderade');
                 
+                // 7. Fetch latest app version and set cookie
+                try {
+                    const versionResponse = await fetch('/db_version.json?' + Date.now());
+                    const versionData = await versionResponse.json();
+                    const appVersion = versionData.app_version || Math.floor(Date.now() / 1000);
+                    
+                    // Set app_version cookie
+                    const date = new Date();
+                    date.setTime(date.getTime() + (36500 * 24 * 60 * 60 * 1000));
+                    document.cookie = "app_version=" + appVersion + "; expires=" + date.toUTCString() + "; path=/; SameSite=None; Secure";
+                    console.log('app_version cookie satt till:', appVersion);
+                } catch (err) {
+                    console.warn('Kunde inte hämta app_version:', err);
+                }
+                
                 // Success
                 status.className = 'status success';
                 status.innerHTML = '<strong>✅ Klart!</strong><br>Särlaregn har återställts. Du kommer att omdirigeras till startsidan om 3 sekunder...';

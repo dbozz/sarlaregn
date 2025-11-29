@@ -51,6 +51,58 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Check app version on load
+async function checkAppVersion() {
+  try {
+    const localVersion = parseInt(getCookie('app_version') || '0', 10);
+    const response = await fetch('/db_version.json?' + Date.now()); // Cache bust
+    const data = await response.json();
+    const serverVersion = parseInt(data.app_version || '0', 10);
+    
+    console.log('Local app version:', localVersion, 'Server app version:', serverVersion);
+    
+    if (serverVersion > localVersion) {
+      console.log('New app version available');
+      showUpdatePrompt();
+    } else {
+      // Update cookie with current version
+      setCookie('app_version', serverVersion, 36500);
+    }
+  } catch (error) {
+    console.error('Failed to check app version:', error);
+  }
+}
+
+function showUpdatePrompt() {
+  const promptHtml = `
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+      <div style="background: white; padding: 30px; border-radius: 8px; max-width: 400px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <h2 style="margin-top: 0; color: #333;">🔄 Ny version tillgänglig</h2>
+        <p style="color: #666; line-height: 1.6;">En ny version av Särlaregn är tillgänglig. För att få de senaste funktionerna och förbättringarna rekommenderar vi att du återställer appen.</p>
+        <div style="margin-top: 20px;">
+          <button onclick="window.location.href='/reset.html'" style="background: #007bff; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Återställ nu</button>
+          <button onclick="dismissUpdatePrompt()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 4px; cursor: pointer;">Senare</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  const promptDiv = document.createElement('div');
+  promptDiv.id = 'updatePrompt';
+  promptDiv.innerHTML = promptHtml;
+  document.body.appendChild(promptDiv);
+}
+
+function dismissUpdatePrompt() {
+  const prompt = document.getElementById('updatePrompt');
+  if (prompt) {
+    prompt.remove();
+  }
+}
+
+// Run version check on page load
+window.addEventListener('load', checkAppVersion);
+
 // Track online/offline status
 window.addEventListener('online', () => {
   console.log('App is now online');
