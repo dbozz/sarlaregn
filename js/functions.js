@@ -1158,12 +1158,15 @@ function getLyric(id) {
 	document.title = "Särlaregn nr. " + item.nr;
 	
 	// Track page view in Google Analytics
-	if (typeof gtag === 'function') {
-	    gtag('event', 'page_view', {
+	if (typeof window.gtag === 'function') {
+	    console.log('Tracking GA page view for:', document.title);
+	    window.gtag('event', 'page_view', {
 	        page_title: document.title,
 	        page_location: window.location.href,
 	        page_path: window.location.pathname + window.location.search
 	    });
+	} else {
+	    console.warn('gtag is not available');
 	}
 
 	// Update search field with song number and title
