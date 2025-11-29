@@ -1,15 +1,15 @@
 // Service Worker for offline support
-const CACHE_NAME = 'sarlaregn-v20251129-010018';
+const CACHE_NAME = 'sarlaregn-v20251129-012148';
 const urlsToCache = [
   '/',
   '/index.html',
   '/settings.html',
   '/help.html',
   '/about.html',
-  '/style.css?v=20251129-010018',
+  '/style.css?v=20251129-012148',
   '/js/jquery.min.js',
   '/js/jquery-ui.min.js',
-  '/js/functions.js?v=20251129-010018',
+  '/js/functions.js?v=20251129-012148',
   '/js/Dexie.min.js',
   '/jquery-ui.min.css',
   '/js.cookie.js',
