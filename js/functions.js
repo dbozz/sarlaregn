@@ -1158,6 +1158,15 @@ function getLyric(id) {
 	document.title = "Särlaregn nr. " + item.nr;
 	
 	// Google Analytics Enhanced Measurement tracks page views automatically via history.pushState
+	
+	// Track custom song view event
+	if (typeof window.gtag === 'function') {
+	    window.gtag('event', 'view_song', {
+	        'song_number': item.nr,
+	        'songbook': b[item.sb] || 'SR',
+	        'platform': 'web'
+	    });
+	}
 
 	// Update search field with song number and title
 	const searchField = document.getElementById('sok');
