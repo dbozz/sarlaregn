@@ -98,6 +98,11 @@
 
     <script src="js/Dexie.min.js"></script>
     <script>
+        function getCookieValue(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+        
         async function resetEverything() {
             const status = document.getElementById('status');
             status.style.display = 'block';
@@ -136,13 +141,22 @@
                 sessionStorage.clear();
                 console.log('sessionStorage raderad');
                 
-                // 6. Clear all cookies
+                // 6. Clear all cookies except key1
+                const key1Value = getCookieValue('key1'); // Save key1 before clearing
                 document.cookie.split(";").forEach(function(c) {
                     document.cookie = c
                         .replace(/^ +/, "")
                         .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
                 });
-                console.log('Cookies raderade');
+                
+                // Restore key1 if it existed
+                if (key1Value) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (3650 * 24 * 60 * 60 * 1000));
+                    document.cookie = "key1=" + key1Value + "; expires=" + date.toUTCString() + "; path=/; SameSite=Lax; secure=true";
+                    console.log('key1 cookie återställd');
+                }
+                console.log('Cookies raderade (utom key1)');
                 
                 // 7. Fetch latest app version and set cookie
                 try {
