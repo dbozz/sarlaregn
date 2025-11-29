@@ -146,6 +146,15 @@
     background-color: #fff8b3;
   }
 
+  /* Active bookmarks view button - darker background */
+  #lyric_head .menu-btn.bookmark-view-active {
+    background-color: #d4d4c0;
+  }
+
+  #lyric_head .menu-btn.bookmark-view-active:hover {
+    background-color: #c9c9b5;
+  }
+
   /* Key display button */
   #lyric_head .menu-btn-key {
     background-color: #f5f5dc;

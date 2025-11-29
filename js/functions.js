@@ -16,6 +16,8 @@ const songTranspositions = {};
 let currentSongId = null;
 let isDatabaseLoading = false;
 let isLoadingSong = false; // Prevent duplicate song loads
+let isShowingBookmarks = false; // Track if bookmarks view is active
+let previousUrl = null; // Store previous URL before showing bookmarks
 
 // Initialize DOM cache when ready
 function initDOMCache() {
@@ -1145,6 +1147,13 @@ function getLyric(id) {
         return;
     }
     
+    // Exit bookmarks view when loading a song
+    if (isShowingBookmarks) {
+        isShowingBookmarks = false;
+        const bookmarkBtn = document.querySelector('a[href="javascript:bookmarks();"]');
+        if (bookmarkBtn) bookmarkBtn.classList.remove('bookmark-view-active');
+    }
+    
     isLoadingSong = true;
     currentSongId = id;
     
@@ -1410,6 +1419,37 @@ function selectPrev(curLyric) {
 
 // Print bookmarks
 function bookmarks() {
+    const bookmarkBtn = document.querySelector('a[href="javascript:bookmarks();"]');
+    
+    // If already showing bookmarks, go back to previous page
+    if (isShowingBookmarks) {
+        isShowingBookmarks = false;
+        if (bookmarkBtn) bookmarkBtn.classList.remove('bookmark-view-active');
+        
+        if (previousUrl && previousUrl !== window.location.href) {
+            // Restore previous URL and load that song
+            history.pushState({}, "", previousUrl);
+            const urlParams = new URLSearchParams(window.location.search);
+            const songNr = urlParams.keys().next().value;
+            if (songNr) {
+                db.lyrics.where("nr").equals(songNr).first().then(function(item) {
+                    if (item) {
+                        getLyric(item.id);
+                    }
+                });
+            }
+        } else if (currentSongId) {
+            // Just reload current song
+            getLyric(currentSongId);
+        }
+        return;
+    }
+    
+    // Store current URL before showing bookmarks
+    previousUrl = window.location.href;
+    isShowingBookmarks = true;
+    if (bookmarkBtn) bookmarkBtn.classList.add('bookmark-view-active');
+    
     var bm_list = new Array();
     bm_list.push("<strong>Bokmärken</strong><br><br>");
     db.lyrics.where("bookmarked").equals("true").each(function(bookmark) {
