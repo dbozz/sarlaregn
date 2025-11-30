@@ -665,8 +665,18 @@ $(document).ready(function () {
     // Initialize DOM cache
     initDOMCache();
     
-    // Open lyric specified in URL
-    const pathName = window.location.search;
+    // Open lyric specified in URL - supports both ?123 and /123 formats
+    let pathName = window.location.search; // ?123,Tillagg
+    
+    // If no search params, check pathname for direct number format /123
+    if (!pathName || pathName === '?') {
+        const pathname = window.location.pathname;
+        if (pathname && pathname !== '/' && pathname !== '/index.html') {
+            // Convert /123 or /123,Tillagg to ?123 or ?123,Tillagg format
+            pathName = '?' + pathname.substring(1);
+        }
+    }
+    
     try { 
 	const sbnr = pathName.split(",");
 	const nSbnr = sbnr[0].replace("?", "");
@@ -1215,7 +1225,7 @@ function getLyric(id) {
 	}
 	
 	const upt2 = (item.sb == "1" || item.sb == "2") ? "" : "," + b[item.sb];
-	history.pushState({}, "", "/?" + item.nr + upt2);
+	history.pushState({}, "", "/" + item.nr + upt2);
 	document.title = "Särlaregn nr. " + item.nr;
 	
 	// Google Analytics Enhanced Measurement tracks page views automatically via history.pushState
@@ -1429,8 +1439,21 @@ function bookmarks() {
         if (previousUrl && previousUrl !== window.location.href) {
             // Restore previous URL and load that song
             history.pushState({}, "", previousUrl);
-            const urlParams = new URLSearchParams(window.location.search);
-            const songNr = urlParams.keys().next().value;
+            
+            // Parse song number from both /123 and ?123 formats
+            let songNr = null;
+            const search = window.location.search;
+            const pathname = window.location.pathname;
+            
+            if (search && search !== '?') {
+                // Format: ?123 or ?123,Tillagg
+                const urlParams = new URLSearchParams(search);
+                songNr = urlParams.keys().next().value;
+            } else if (pathname && pathname !== '/' && pathname !== '/index.html') {
+                // Format: /123 or /123,Tillagg
+                songNr = pathname.substring(1).split(',')[0];
+            }
+            
             if (songNr) {
                 db.lyrics.where("nr").equals(songNr).first().then(function(item) {
                     if (item) {
