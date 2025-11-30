@@ -39,7 +39,7 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 	<link rel="apple-touch-icon" sizes="192x192" href="maskable_icon_x512.png">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="style.css?v=20251130-165309">
 	<link rel="stylesheet" href="jquery-ui.min.css">
 	<script type="text/javascript" src="js/jquery.min.js"></script>
@@ -53,6 +53,18 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 	<script type="text/javascript" src="js/functions.js?v=20251130-165309"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/fernet@0.3.2/fernetBrowser.min.js"></script>
+	<script>
+	// Apply saved font on page load
+	(function() {
+		var savedFont = document.cookie.match(/fontFamily=([^;]+)/);
+		if (savedFont) {
+			document.body.style.fontFamily = decodeURIComponent(savedFont[1]) + ', serif';
+		} else {
+			// Default to Merriweather
+			document.body.style.fontFamily = 'Merriweather, serif';
+		}
+	})();
+	</script>
 	
 </head>
 
@@ -121,8 +133,8 @@ if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
 
 		<div id="lyric-container">
 			<div id="lyric">
-				<div class="pt">Välkommen!</div> <div>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan. </div>
-				<div>Ny funktion: Under Inställningar kan du nu stänga av radbrytningar i versar.</div>
+				<div class="pt"><strong>Välkommen!</strong></div> <div>Sök efter sånger med fritext eller nummer i sökrutan längst upp på sidan. </div>
+				<div><strong>Ny funktion:</strong><br>Under Inställningar kan du nu stänga av radbrytningar i versar.</div>
 			</div>	
 		</div>
 

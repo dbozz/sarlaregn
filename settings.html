@@ -13,6 +13,17 @@ Då du angett din nyckel så måste du ladda om databasen.
 Stäng av radbrytningar i versar
 </label>
 </div>
+<br>
+<div>
+<label for="fontSelect"><strong>Typsnitt</strong></label><br>
+<select id="fontSelect" onchange="changeFont(this.value);" style="padding: 8px; font-size: 14px; width: 100%; max-width: 300px;">
+<option value="Merriweather">Merriweather (standard)</option>
+<option value="Open Sans">Open Sans</option>
+<option value="Lato">Lato</option>
+<option value="Roboto">Roboto</option>
+<option value="Source Sans Pro">Source Sans Pro</option>
+</select>
+</div>
 <script>
 var thekey = Cookies.get('key1');
 $("#key1").val(thekey);
@@ -36,9 +47,20 @@ function toggleLineBreaks(checkbox) {
         Cookies.set('noLineBreaks', checkbox.checked ? '1' : '0', { expires: 3650, sameSite: 'Lax', secure: true });
         }
 
+function changeFont(fontName) {
+        Cookies.set('fontFamily', fontName, { expires: 3650, sameSite: 'Lax', secure: true });
+        // Apply immediately to current page
+        document.body.style.fontFamily = fontName + ', serif';
+        }
+
 // Initialize checkbox state
 var noLineBreaks = Cookies.get('noLineBreaks');
 if (noLineBreaks === '1') {
         $('#noLineBreaks').prop('checked', true);
         }
+
+// Initialize font selector
+var savedFont = Cookies.get('fontFamily') || 'Merriweather';
+$('#fontSelect').val(savedFont);
+document.body.style.fontFamily = savedFont + ', serif';
 </script>
