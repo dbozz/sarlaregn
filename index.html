@@ -9,6 +9,15 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-N8G16WFMLV');
 
+// GitHub Pages SPA redirect handler
+(function() {
+    var redirect = sessionStorage.getItem('redirect');
+    if (redirect) {
+        sessionStorage.removeItem('redirect');
+        history.replaceState(null, null, redirect);
+    }
+})();
+
 if(/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
     var head = document.getElementsByTagName("head")[0];
     var script = document.createElement("script");
