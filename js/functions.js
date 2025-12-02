@@ -1047,17 +1047,9 @@ function toggleChords() {
     const newValue = showChords === '1' ? '0' : '1';
     setCookie('showChords', newValue);
     
-    // Reload current song to apply changes
-    const urlParams = new URLSearchParams(window.location.search);
-    const pathName = window.location.search;
-    if (pathName) {
-        try {
-            const sbnr = pathName.split(",");
-            const nSbnr = sbnr[0].replace("?", "");
-            createSearchArray(nSbnr, sbnr[1]);
-        } catch (e) {
-            console.log("Error reloading song: " + e);
-        }
+    // Reload current song using currentSongId
+    if (currentSongId) {
+        getLyric(currentSongId);
     }
 }
 
@@ -1070,16 +1062,7 @@ function transposeUp() {
     songTranspositions[currentSongId] = transpose;
     
     // Reload current song
-    const pathName = window.location.search;
-    if (pathName) {
-        try {
-            const sbnr = pathName.split(",");
-            const nSbnr = sbnr[0].replace("?", "");
-            createSearchArray(nSbnr, sbnr[1]);
-        } catch (e) {
-            console.log("Error reloading song: " + e);
-        }
-    }
+    getLyric(currentSongId);
 }
 
 // Transpose down
@@ -1091,16 +1074,7 @@ function transposeDown() {
     songTranspositions[currentSongId] = transpose;
     
     // Reload current song
-    const pathName = window.location.search;
-    if (pathName) {
-        try {
-            const sbnr = pathName.split(",");
-            const nSbnr = sbnr[0].replace("?", "");
-            createSearchArray(nSbnr, sbnr[1]);
-        } catch (e) {
-            console.log("Error reloading song: " + e);
-        }
-    }
+    getLyric(currentSongId);
 }
 
 // Reset transposition to 0
@@ -1110,16 +1084,7 @@ function resetTranspose() {
     songTranspositions[currentSongId] = 0;
     
     // Reload current song
-    const pathName = window.location.search;
-    if (pathName) {
-        try {
-            const sbnr = pathName.split(",");
-            const nSbnr = sbnr[0].replace("?", "");
-            createSearchArray(nSbnr, sbnr[1]);
-        } catch (e) {
-            console.log("Error reloading song: " + e);
-        }
-    }
+    getLyric(currentSongId);
 }
 
 // Process chords in content
