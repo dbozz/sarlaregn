@@ -691,7 +691,7 @@ $(document).ready(function () {
 var key = null;
 
 function getBookID(nr) {
-    if ( nr <= 684 ) {
+    if ( nr <= 712 ) {
         return "1";
     } else {
         return "2";
