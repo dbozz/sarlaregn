@@ -37,16 +37,40 @@ form{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bott
 input{flex:1;min-width:0;font:16px system-ui,sans-serif;padding:11px 14px;border-radius:22px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .send{border:0;border-radius:22px;padding:0 18px;background:var(--me);color:var(--me-ink);font:600 15px system-ui,sans-serif;cursor:pointer}
 input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.mc{float:right;display:flex;gap:2px;margin:-4px -6px 0 8px}
+.mc button{background:none;border:0;color:var(--muted);cursor:pointer;font:14px system-ui,sans-serif;padding:2px 6px;border-radius:8px}
+.me .mc button{color:var(--me-ink)}
+.mt{display:none;font:600 15px system-ui,sans-serif}
+.col .mt{display:block}.col .mb{display:none}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+#tabs button{flex:none;max-width:16ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:14px system-ui,sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:4px 12px;cursor:pointer}
+#tabs button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+#sess{flex:1;overflow-y:auto;padding:16px 14px}
+#sess .sh{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+#sess .sh b{font-size:19px;margin-right:6px}
+#sess button{font:14px system-ui,sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:3px 11px;cursor:pointer}
+#sess ol{list-style:none;margin:0;padding:0;max-width:660px}
+#sess li{display:flex;gap:8px;align-items:center;border-top:1px solid var(--line);padding:6px 0}
+#sess li .t{flex:1;text-align:left;border:0;background:none;border-radius:0;font:17px Georgia,serif;padding:6px 0}
+#sess li small{color:var(--muted);font:13px system-ui,sans-serif;margin-left:8px}
+#sess li span{display:flex;gap:4px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);font:14px system-ui,sans-serif;padding:8px 14px;border-radius:18px;z-index:5}
+#toast button{margin-left:8px;border:0;background:none;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
 @media (prefers-reduced-motion:reduce){#log{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <header>Särlaregn <a href="/">Till vanliga sidan</a></header>
+<nav id="tabs" aria-label="Sessioner"></nav>
 <main id="log" aria-live="polite"></main>
+<section id="sess" hidden></section>
+<div id="toast" hidden role="status"></div>
+<input type="file" id="imp" accept=".json,application/json" hidden>
 <div id="sug"></div>
 <form id="f" autocomplete="off">
   <input id="q" type="text" placeholder="Sökord, sångnummer eller /hjälp" aria-label="Meddelande" enterkeyhint="send">
-  <button class="send" type="submit">Skicka</button>
+  <button class="send" id="sb" type="submit">Meny</button>
 </form>
 
 <!-- Byt gärna till den Dexie-fil som din vanliga sida redan använder, så att versionerna matchar. -->
@@ -85,7 +109,7 @@ async function fetchDb(){
   await db.lyrics.bulkPut(data);
   if(v && v.version) setCk('db_version', v.version);
 }
-function index(){ ALL.forEach(s=>{s._t = norm(clean(s.label));}); }
+function index(){ ALL.forEach(s=>{ s._t = norm(clean(s.label)); s._tt = clean(s.label).replace(/^\[[^\]]*\]\s*/,''); s._ti = s._tt.toLowerCase(); }); }
 async function loadAll(){
   ALL = await db.lyrics.toArray();
   if(!ALL.length){
@@ -112,8 +136,11 @@ function search(t){
 }
 
 /* ---------- Utritning ---------- */
-function add(cls, html){
-  const d = document.createElement('div'); d.className = 'msg '+cls; d.innerHTML = html;
+function add(cls, html, title){
+  const d = document.createElement('div'); d.className = 'msg '+cls;
+  const bot = cls.includes('bot');
+  d.innerHTML = `<div class="mc">${bot?'<button data-m="col" title="Fäll ihop">▾</button>':''}<button data-m="del" title="Ta bort">✕</button></div><div class="mt"></div><div class="mb">${html}</div>`;
+  d.querySelector('.mt').textContent = title || d.querySelector('.mb').textContent.trim().slice(0,50);
   log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
 }
 const tag = s => BOOK[s.sb] ? `<small>${esc(BOOK[s.sb])}</small>` : '';
@@ -133,19 +160,19 @@ function renderBody(el){
   const fs = parseFloat(ck('FontSize')); 
   const key = st.item.key ? transposeChord(fixChord(st.item.key), st.tr) : '';
   const on = st.item.bookmarked==='true';
-  el.innerHTML = `<div${fs?` style="font-size:${fs}px"`:''}>${c}</div>
+  el.querySelector('.mb').innerHTML = `<div${fs?` style="font-size:${fs}px"`:''}>${c}</div>
   <div class="bar">
     <button data-a="bm" class="${on?'on':''}" title="Bokmärke">${on?'★':'☆'}</button>
     <button data-a="ch" class="${st.chords?'on':''}" title="Visa ackord">♪ Ackord</button>
     ${st.chords?`<button data-a="up">▲</button><button data-a="rs" title="Nollställ">${esc(key||'–')}</button><button data-a="dn">▼</button>`:''}
     <button data-a="prev">‹ Föregående</button><button data-a="next">Nästa ›</button>
-    <button data-a="cp">Kopiera</button>
+    <button data-a="ses">＋ Session</button><button data-a="cp">Kopiera</button>
   </div>`;
 }
 
-function showSong(item){
-  const el = add('bot','');
-  el._s = {item, tr:0, chords: ck('showChords')==='1'};
+function showSong(item, tr=0){
+  const el = add('bot','',clean(item.label));
+  el._s = {item, tr, chords: ck('showChords')==='1'};
   renderBody(el);
   history.replaceState({}, '', '#'+item.nr+(BOOK[item.sb]?','+BOOK[item.sb]:''));
   document.title = 'Särlaregn nr. '+item.nr;
@@ -159,6 +186,18 @@ async function step(item, dir){
 }
 
 log.addEventListener('click', async e=>{
+  const m = e.target.closest('button[data-m]');
+  if(m){
+    const box = m.closest('.msg');
+    if(m.dataset.m==='del') return del(box);
+    box.classList.toggle('col'); m.textContent = box.classList.contains('col') ? '▸' : '▾'; return;
+  }
+  const c = e.target.closest('.cmd');
+  if(c){
+    if(c.dataset.fill){ q.value = c.dataset.c+' '; syncBtn(); q.focus(); }
+    else run(c.dataset.c);
+    return;
+  }
   const h = e.target.closest('.hit');
   if(h){ const s = ALL.find(x=>x.id===h.dataset.id); if(s){ add('me', esc(clean(s.label))); showSong(s);} return; }
   const b = e.target.closest('button[data-a]'); if(!b) return;
@@ -168,6 +207,7 @@ log.addEventListener('click', async e=>{
   else if(a==='dn') st.tr=(st.tr+11)%12;
   else if(a==='rs') st.tr=0;
   else if(a==='bm'){ const v = st.item.bookmarked==='true'?'false':'true'; await db.lyrics.update(st.item.id,{bookmarked:v}); st.item.bookmarked=v; }
+  else if(a==='ses') return addToSession(st.item, st.tr);
   else if(a==='cp'){ navigator.clipboard.writeText(el.querySelector('.lyr').innerText); b.textContent='Kopierad'; return; }
   else if(a==='prev') return step(st.item,-1);
   else if(a==='next') return step(st.item,1);
@@ -175,17 +215,46 @@ log.addEventListener('click', async e=>{
 });
 
 /* ---------- Kommandon ---------- */
+function contents(p){
+  const pre = p.trim().toLowerCase();
+  const list = ALL.filter(s=>s._ti.startsWith(pre)).sort((a,b)=>a._ti.localeCompare(b._ti,'sv'));
+  if(!list.length) return add('bot sys',`Inga sånger börjar på ”${esc(p.trim())}”.`);
+  let html = `<div class="cap">${pre?`Börjar på ”${esc(p.trim())}”`:'Innehåll'} – ${list.length} sånger</div>`, last = '';
+  list.forEach((s,i)=>{
+    const L = s._ti.charAt(0).toUpperCase();
+    if(!pre && L!==last){ last = L; html += `<div class="cap" style="margin-top:10px"><b>${esc(L)}</b></div>`; }
+    html += `<button class="hit${i?'':' first'}" data-id="${esc(s.id)}"><b>${esc(s._tt)}</b><small>nr ${esc(s.nr)}</small>${tag(s)}</button>`;
+  });
+  add('bot', html, pre ? 'Innehåll: '+p.trim() : 'Innehåll');
+}
+const CMDS = [
+  ['/innehåll','Alla sångtitlar A–Ö (/innehåll A för en bokstav)'],
+  ['/nr','Öppna sång med nummer','fill'],
+  ['/slumpa','En slumpad sång'],
+  ['/bokmärken','Dina bokmärken'],
+  ['/uppdatera','Hämta ny sångdatabas'],
+  ['/rensa','Töm konversationen'],
+  ['/hjälp','Visa hjälptext']
+];
+function menu(){
+  add('bot','<div class="cap">Kommandon</div>' + CMDS.map((c,i)=>
+    `<button class="hit cmd${i?'':' first'}" data-c="${c[0]}"${c[2]?' data-fill="1"':''}><b>${c[0]}</b><small>${c[1]}</small></button>`).join(''), 'Meny');
+}
 function help(){
   add('bot sys',`Skriv ett ord, en titelrad eller ett sångnummer.<br>
 <code>/nr 46</code> eller bara <code>46</code> · <code>/slumpa</code> en slumpad sång<br>
+<code>/innehåll</code> alla titlar A–Ö · <code>/innehåll A</code> eller <code>/innehåll Ad</code> de som börjar så<br>
+Är fältet tomt öppnar knappen <b>Meny</b> en klickbar kommandolista.<br>
 <code>/bokmärken</code> dina bokmärken · <code>/uppdatera</code> hämta ny databas<br>
-<code>/rensa</code> töm konversationen`);
+<code>/rensa</code> töm konversationen<br>
+Tryck <code>＋ Session</code> på ett sångkort för att samla sånger i en session (flikarna ovan). ▾ fäller ihop ett meddelande och ✕ tar bort det.`);
 }
 async function run(raw){
   const t = raw.trim(); if(!t) return;
   add('me', esc(t));
-  const [cmd,...r] = t.split(/\s+/), arg = r.join(' ');
+  const [c0,...r] = t.split(/\s+/), cmd = c0.toLowerCase(), arg = r.join(' ');
   try{
+    if(cmd==='/innehåll'||cmd==='/innehall') return contents(arg);
     if(['/hjälp','/hjalp','/help'].includes(cmd)) return help();
     if(cmd==='/rensa'){ log.innerHTML=''; return help(); }
     if(cmd==='/slumpa') return showSong(ALL[Math.floor(Math.random()*ALL.length)]);
@@ -202,18 +271,129 @@ function handle(t){
   hits(found, `${found.length} träffar på ”${esc(t)}”`);
 }
 
-document.getElementById('f').addEventListener('submit', e=>{e.preventDefault(); const v=q.value; q.value=''; sug.innerHTML=''; run(v); q.focus();});
+const SB = document.getElementById('sb');
+const syncBtn = () => { SB.textContent = q.value.trim() ? 'Skicka' : 'Meny'; };
+document.getElementById('f').addEventListener('submit', e=>{
+  e.preventDefault(); const v = q.value;
+  if(!v.trim()) return menu();
+  q.value = ''; sug.innerHTML = ''; syncBtn(); run(v); q.focus();
+});
 q.addEventListener('input', ()=>{
+  syncBtn();
   const v = q.value; if(v.length<2 || v.startsWith('/')){ sug.innerHTML=''; return; }
   sug.innerHTML = search(v).slice(0,6).map(s=>`<button type="button" class="chip" data-id="${esc(s.id)}">${esc(clean(s.label))}</button>`).join('');
 });
 sug.addEventListener('click', e=>{
   const c = e.target.closest('.chip'); if(!c) return;
-  const s = ALL.find(x=>x.id===c.dataset.id); sug.innerHTML=''; q.value=''; add('me',esc(clean(s.label))); showSong(s); q.focus();
+  const s = ALL.find(x=>x.id===c.dataset.id); sug.innerHTML=''; q.value=''; syncBtn(); add('me',esc(clean(s.label))); showSong(s); q.focus();
+});
+
+/* ---------- Slänga meddelanden ---------- */
+const TO = document.getElementById('toast'); let tt;
+function toast(t, undo){
+  clearTimeout(tt); TO.innerHTML = esc(t) + (undo ? ' <button>Ångra</button>' : ''); TO.hidden = false;
+  if(undo) TO.querySelector('button').onclick = ()=>{ undo(); TO.hidden = true; };
+  tt = setTimeout(()=>TO.hidden = true, 5000);
+}
+function del(el){
+  const next = el.nextSibling; el.remove();
+  toast('Meddelandet togs bort', ()=>log.insertBefore(el, next && next.parentNode===log ? next : null));
+}
+
+/* ---------- Sessioner (egen databas, rör inte SR) ---------- */
+const sdb = new Dexie("SR_sessions"); sdb.version(1).stores({sessions:"id, created"});
+const P = document.getElementById('sess'), TB = document.getElementById('tabs'), F = document.getElementById('f');
+let SESS = [], cur = 'chat', act = null;
+const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const lsSet = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
+const save = s => { s.version = (s.version||0)+1; return sdb.sessions.put(s); };
+const keyOf = (it,tr) => it && it.key ? transposeChord(fixChord(it.key), tr||0) : '';
+
+async function loadSess(){
+  SESS = (await sdb.sessions.toArray()).sort((a,b)=>a.created-b.created);
+  act = lsGet('sr_act'); if(!SESS.find(s=>s.id===act)) act = SESS[0] ? SESS[0].id : null;
+  tabs();
+}
+function tabs(){
+  TB.innerHTML = `<button data-t="chat" class="${cur==='chat'?'on':''}">Sök</button>` +
+    SESS.map(s=>`<button data-t="${s.id}" class="${cur===s.id?'on':''}" title="${esc(s.namn)}">${esc(s.namn)}</button>`).join('') +
+    '<button data-t="new" title="Ny session">＋</button>';
+}
+function view(v){
+  cur = v; const chat = v==='chat';
+  log.hidden = sug.hidden = F.hidden = !chat; P.hidden = chat;
+  if(!chat){ act = v; lsSet('sr_act', v); renderSess(); }
+  tabs();
+}
+async function newSession(namn, songs=[], go=true){
+  const s = {id:Date.now().toString(36), namn, version:0, created:Date.now(), songs};
+  await save(s); SESS.push(s); if(go) view(s.id); else tabs(); return s;
+}
+async function addToSession(item, tr){
+  let s = SESS.find(x=>x.id===act);
+  if(!s){ s = await newSession('Session 1', [], false); act = s.id; lsSet('sr_act', act); }
+  const i = s.songs.findIndex(x=>x.id===item.id);
+  if(i>=0) s.songs[i].tr = tr; else s.songs.push({id:item.id, tr});
+  await save(s);
+  toast(i>=0 ? `Tonart uppdaterad i ”${s.namn}”` : `Lagd i ”${s.namn}”`);
+}
+function listText(s){
+  return s.songs.map((x,k)=>{ const it = ALL.find(a=>a.id===x.id), key = keyOf(it,x.tr);
+    return `${k+1}. ${it?clean(it.label):'(saknas)'}${key?' – '+key:''}`; }).join('\n');
+}
+function renderSess(){
+  const s = SESS.find(x=>x.id===cur); if(!s) return;
+  const rows = s.songs.map((x,i)=>{ const it = ALL.find(a=>a.id===x.id), key = keyOf(it,x.tr);
+    return `<li data-i="${i}"><button class="t" data-s="open">${it?esc(clean(it.label)):'(saknas i databasen)'}${key?`<small>${esc(key)}</small>`:''}</button>
+      <span><button data-s="up" title="Flytta upp">↑</button><button data-s="dn" title="Flytta ned">↓</button><button data-s="rm" title="Ta bort ur sessionen">✕</button></span></li>`; }).join('');
+  P.innerHTML = `<div class="sh"><b>${esc(s.namn)}</b>
+    <button data-s="ren">Byt namn</button><button data-s="cp">Kopiera lista</button><button data-s="ex">Exportera</button><button data-s="imp">Importera</button><button data-s="del">Ta bort</button></div>` +
+    (s.songs.length ? `<ol>${rows}</ol>` : `<p class="sys">Sessionen är tom. Sök en sång under Sök och tryck ＋ Session på sångkortet.</p>`);
+}
+TB.addEventListener('click', async e=>{
+  const b = e.target.closest('button[data-t]'); if(!b) return;
+  if(b.dataset.t==='new'){ const n = prompt('Namn på sessionen','Gudstjänst'); if(n && n.trim()) await newSession(n.trim()); }
+  else view(b.dataset.t);
+});
+P.addEventListener('click', async e=>{
+  const b = e.target.closest('button[data-s]'); if(!b) return;
+  const s = SESS.find(x=>x.id===cur); if(!s) return;
+  const a = b.dataset.s, li = b.closest('li'), i = li ? +li.dataset.i : -1;
+  if(a==='open'){
+    const it = ALL.find(x=>x.id===s.songs[i].id); if(!it) return toast('Sången finns inte i databasen.');
+    view('chat'); add('me', esc(clean(it.label))); return showSong(it, s.songs[i].tr);
+  }
+  if(a==='up' && i>0) [s.songs[i-1], s.songs[i]] = [s.songs[i], s.songs[i-1]];
+  else if(a==='dn' && i>=0 && i<s.songs.length-1) [s.songs[i+1], s.songs[i]] = [s.songs[i], s.songs[i+1]];
+  else if(a==='rm') s.songs.splice(i,1);
+  else if(a==='ren'){ const n = prompt('Nytt namn', s.namn); if(!n || !n.trim()) return; s.namn = n.trim(); }
+  else if(a==='cp'){ navigator.clipboard.writeText(listText(s)); return toast('Listan kopierad'); }
+  else if(a==='imp') return document.getElementById('imp').click();
+  else if(a==='ex'){
+    const blob = new Blob([JSON.stringify({namn:s.namn, songs:s.songs}, null, 1)], {type:'application/json'});
+    const l = document.createElement('a'); l.href = URL.createObjectURL(blob);
+    l.download = s.namn.replace(/[^\wåäöÅÄÖ-]+/g,'-') + '.json';
+    document.body.appendChild(l); l.click(); l.remove(); setTimeout(()=>URL.revokeObjectURL(l.href), 1000); return;
+  }
+  else if(a==='del'){
+    if(!confirm(`Ta bort ”${s.namn}”?`)) return;
+    await sdb.sessions.delete(s.id); SESS = SESS.filter(x=>x!==s);
+    if(act===s.id){ act = SESS[0] ? SESS[0].id : null; lsSet('sr_act', act||''); }
+    return view('chat');
+  }
+  await save(s); tabs(); renderSess();
+});
+document.getElementById('imp').addEventListener('change', async e=>{
+  const f = e.target.files[0]; e.target.value = ''; if(!f) return;
+  try{
+    const d = JSON.parse(await f.text()); if(!Array.isArray(d.songs)) throw 0;
+    await newSession((d.namn||'Importerad')+' (import)', d.songs.filter(x=>x && x.id).map(x=>({id:String(x.id), tr:((+x.tr||0)%12+12)%12})));
+  }catch(err){ toast('Filen gick inte att läsa som en session.'); }
 });
 
 /* ---------- Start ---------- */
 (async ()=>{
+  await loadSess().catch(()=>tabs());
   try{ await loadAll(); }
   catch(err){ add('bot sys','Kunde inte läsa databasen: '+esc(err.message||err)+'<br>Öppna först vanliga sidan och ange din nyckel under Inställningar.'); return; }
   add('bot sys',`Hej! ${ALL.length} sånger redo.`); help();
