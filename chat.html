@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Särlaregn – chatt</title>
+<style>
+:root{--bg:#eef1ee;--surface:#fbfcfb;--ink:#1c2a2a;--muted:#5d6e6d;--me:#2f5d62;--me-ink:#f3f8f7;--line:#cfd9d6;--accent:#2f5d62;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#121a1b;--surface:#1b2627;--ink:#e3ecea;--muted:#92a5a3;--me:#4f8c91;--me-ink:#0d1516;--line:#2b3a3b;--accent:#7fb7bb;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 Georgia,"Times New Roman",serif;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+header{padding:12px 18px;border-bottom:1px solid var(--line);background:var(--surface);font-weight:bold;display:flex;justify-content:space-between;align-items:baseline}
+header a{font:13px system-ui,sans-serif;color:var(--muted)}
+#log{flex:1;overflow-y:auto;padding:18px 14px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+.msg{max-width:min(660px,94%);padding:10px 14px;border-radius:16px;overflow-wrap:anywhere}
+.me{align-self:flex-end;background:var(--me);color:var(--me-ink);border-bottom-right-radius:4px;font:15px system-ui,sans-serif}
+.bot{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:4px}
+.sys{font:14.5px/1.5 system-ui,sans-serif;color:var(--muted)}
+.cap{font:13px system-ui,sans-serif;color:var(--muted);margin-bottom:6px}
+.lyr .pt{margin:0 0 .9em}
+.lyr .meta{font:13px system-ui,sans-serif;color:var(--muted)}
+.chord{font:700 .72em system-ui,sans-serif;color:var(--accent);vertical-align:super;margin:0 2px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.bar button,.chip{font:14px system-ui,sans-serif;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:14px;padding:3px 11px;cursor:pointer}
+.bar button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.hit{display:block;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:8px 0;font:inherit;color:var(--ink);cursor:pointer}
+.hit.first{border-top:0}
+.hit small{color:var(--muted);font:12.5px system-ui,sans-serif;margin-left:6px}
+.hit:hover b,.hit:focus-visible b{color:var(--accent);text-decoration:underline}
+code{font:13px ui-monospace,monospace;background:var(--bg);padding:1px 5px;border-radius:4px}
+#sug{display:flex;gap:6px;overflow-x:auto;padding:6px 12px 0;background:var(--surface)}
+#sug:empty{display:none}
+.chip{white-space:nowrap;flex:none}
+form{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--line)}
+#sug:not(:empty)+form{border-top:0}
+input{flex:1;min-width:0;font:16px system-ui,sans-serif;padding:11px 14px;border-radius:22px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.send{border:0;border-radius:22px;padding:0 18px;background:var(--me);color:var(--me-ink);font:600 15px system-ui,sans-serif;cursor:pointer}
+input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#log{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header>Särlaregn <a href="/">Till vanliga sidan</a></header>
+<main id="log" aria-live="polite"></main>
+<div id="sug"></div>
+<form id="f" autocomplete="off">
+  <input id="q" type="text" placeholder="Sökord, sångnummer eller /hjälp" aria-label="Meddelande" enterkeyhint="send">
+  <button class="send" type="submit">Skicka</button>
+</form>
+
+<!-- Byt gärna till den Dexie-fil som din vanliga sida redan använder, så att versionerna matchar. -->
+<script src="https://cdn.jsdelivr.net/npm/dexie@3.2.4/dist/dexie.min.js"></script>
+<script>
+const base_url = "https://script.google.com/macros/s/AKfycbwbFsR030BbU2PHHWmHrEJWxMjXDihCbGXz3tVNZNCeDKXxnDYPobwjEjjcjawPt2ZG/exec";
+const BOOK = {"1":"","2":"","5":"ps","3":"hm","6":"js"};
+
+// Samma databas och schema som functions.js
+const db = new Dexie("SR");
+db.version(6).stores({lyrics:"id, nr, search, ts, sb, browse, bookmarked", bookmarks:"++id, lyrics_id, excerpt"});
+
+const ck = n => { const m = document.cookie.match(new RegExp('(?:^|; )'+n+'=([^;]*)')); return m ? decodeURIComponent(m[1]) : undefined; };
+const setCk = (n,v) => document.cookie = n+"="+v+"; expires="+new Date(Date.now()+3.15e12).toUTCString()+"; path=/; SameSite=None; Secure";
+const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clean = s => (s||'').replace(/\{[^}]*\}/g,'').trim();
+const norm = s => s.toLowerCase().replace(/\s+|-/g,'');
+const fixChord = c => c.replace(/^([a-g])([b#]?)(m?)(.*)$/i,(m,n,a,mi,r)=>n.toUpperCase()+a.toLowerCase()+mi.toLowerCase()+r.toUpperCase());
+
+const CH=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'], ALT={Db:'C#',Eb:'D#',Gb:'F#',Ab:'G#',Bb:'A#',H:'B'};
+function transposeChord(ch,st){
+  const m = ch.match(/^([A-G][b#]?)(.*)$/); if(!m) return ch;
+  let i = CH.indexOf(ALT[m[1]]||m[1]); if(i<0) return ch;
+  return CH[(i+st+12)%12]+m[2];
+}
+
+const log = document.getElementById('log'), q = document.getElementById('q'), sug = document.getElementById('sug');
+let ALL = [];
+
+/* ---------- Data ---------- */
+async function fetchDb(){
+  if(!navigator.onLine) throw new Error('Du är offline.');
+  const key = ck('key1')||'';
+  const v = await (await fetch(base_url+"?action=ts&key="+key)).json();
+  const data = await (await fetch(base_url+"?action=lyrics&key="+key)).json();
+  await db.lyrics.bulkPut(data);
+  if(v && v.version) setCk('db_version', v.version);
+}
+function index(){ ALL.forEach(s=>{s._t = norm(clean(s.label));}); }
+async function loadAll(){
+  ALL = await db.lyrics.toArray();
+  if(!ALL.length){
+    add('bot sys','Databasen är tom. Hämtar sånger …');
+    await fetchDb(); ALL = await db.lyrics.toArray();
+  }
+  index();
+}
+async function updateDb(){
+  const v = await (await fetch(base_url+"?action=ts&key="+(ck('key1')||''))).json();
+  if(parseInt(v.version,10) > parseInt(ck('db_version')||'0',10)){
+    add('bot sys','Ny sångdatabas finns. Hämtar …');
+    await db.lyrics.clear(); await fetchDb(); ALL = await db.lyrics.toArray(); index();
+    add('bot sys',`Klart. ${ALL.length} sånger.`);
+  } else add('bot sys','Du har redan den senaste databasen.');
+}
+
+function search(t){
+  const n = norm(t); if(!n) return [];
+  if(/^\d+$/.test(n)) return ALL.filter(s=>s.nr===n);
+  const a=[], b=[];
+  for(const s of ALL){ if(s._t.includes(n)) a.push(s); else if(s.search && s.search.includes(n)) b.push(s); }
+  return a.concat(b);
+}
+
+/* ---------- Utritning ---------- */
+function add(cls, html){
+  const d = document.createElement('div'); d.className = 'msg '+cls; d.innerHTML = html;
+  log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
+}
+const tag = s => BOOK[s.sb] ? `<small>${esc(BOOK[s.sb])}</small>` : '';
+
+function hits(list, cap){
+  if(!list.length) return add('bot sys','Inga träffar. Prova ett annat ord eller skriv <code>/hjälp</code>.');
+  const shown = list.slice(0,15);
+  add('bot', `<div class="cap">${cap}${list.length>15?` – visar 15 av ${list.length}`:''}</div>` +
+    shown.map((s,i)=>`<button class="hit${i?'':' first'}" data-id="${esc(s.id)}"><b>${esc(clean(s.label))}</b>${tag(s)}</button>`).join(''));
+}
+
+function renderBody(el){
+  const st = el._s; let c = st.item.value.replace('id="thelyric"','class="lyr"');
+  if(st.chords){
+    c = c.replace(/\{([^}]*)\}/g,(m,ch)=>{ ch = fixChord(ch); if(st.tr) ch = transposeChord(ch, st.tr); return `<span class="chord">${esc(ch)}</span>`; });
+  } else c = c.replace(/\{[^}]*\}/g,'');
+  const fs = parseFloat(ck('FontSize')); 
+  const key = st.item.key ? transposeChord(fixChord(st.item.key), st.tr) : '';
+  const on = st.item.bookmarked==='true';
+  el.innerHTML = `<div${fs?` style="font-size:${fs}px"`:''}>${c}</div>
+  <div class="bar">
+    <button data-a="bm" class="${on?'on':''}" title="Bokmärke">${on?'★':'☆'}</button>
+    <button data-a="ch" class="${st.chords?'on':''}" title="Visa ackord">♪ Ackord</button>
+    ${st.chords?`<button data-a="up">▲</button><button data-a="rs" title="Nollställ">${esc(key||'–')}</button><button data-a="dn">▼</button>`:''}
+    <button data-a="prev">‹ Föregående</button><button data-a="next">Nästa ›</button>
+    <button data-a="cp">Kopiera</button>
+  </div>`;
+}
+
+function showSong(item){
+  const el = add('bot','');
+  el._s = {item, tr:0, chords: ck('showChords')==='1'};
+  renderBody(el);
+  history.replaceState({}, '', '#'+item.nr+(BOOK[item.sb]?','+BOOK[item.sb]:''));
+  document.title = 'Särlaregn nr. '+item.nr;
+  log.scrollTop = log.scrollHeight - el.offsetHeight - 24;
+}
+
+async function step(item, dir){
+  const col = db.lyrics.where('browse');
+  const n = await (dir>0 ? col.above(item.browse).first() : col.below(item.browse).reverse().first());
+  if(n) showSong(ALL.find(s=>s.id===n.id)||n); else add('bot sys','Det finns ingen sång åt det hållet.');
+}
+
+log.addEventListener('click', async e=>{
+  const h = e.target.closest('.hit');
+  if(h){ const s = ALL.find(x=>x.id===h.dataset.id); if(s){ add('me', esc(clean(s.label))); showSong(s);} return; }
+  const b = e.target.closest('button[data-a]'); if(!b) return;
+  const el = b.closest('.msg'), st = el._s, a = b.dataset.a;
+  if(a==='ch'){ st.chords=!st.chords; setCk('showChords', st.chords?'1':'0'); }
+  else if(a==='up') st.tr=(st.tr+1)%12;
+  else if(a==='dn') st.tr=(st.tr+11)%12;
+  else if(a==='rs') st.tr=0;
+  else if(a==='bm'){ const v = st.item.bookmarked==='true'?'false':'true'; await db.lyrics.update(st.item.id,{bookmarked:v}); st.item.bookmarked=v; }
+  else if(a==='cp'){ navigator.clipboard.writeText(el.querySelector('.lyr').innerText); b.textContent='Kopierad'; return; }
+  else if(a==='prev') return step(st.item,-1);
+  else if(a==='next') return step(st.item,1);
+  renderBody(el);
+});
+
+/* ---------- Kommandon ---------- */
+function help(){
+  add('bot sys',`Skriv ett ord, en titelrad eller ett sångnummer.<br>
+<code>/nr 46</code> eller bara <code>46</code> · <code>/slumpa</code> en slumpad sång<br>
+<code>/bokmärken</code> dina bokmärken · <code>/uppdatera</code> hämta ny databas<br>
+<code>/rensa</code> töm konversationen`);
+}
+async function run(raw){
+  const t = raw.trim(); if(!t) return;
+  add('me', esc(t));
+  const [cmd,...r] = t.split(/\s+/), arg = r.join(' ');
+  try{
+    if(['/hjälp','/hjalp','/help'].includes(cmd)) return help();
+    if(cmd==='/rensa'){ log.innerHTML=''; return help(); }
+    if(cmd==='/slumpa') return showSong(ALL[Math.floor(Math.random()*ALL.length)]);
+    if(cmd==='/bokmärken'||cmd==='/bokmarken'){ return hits(ALL.filter(s=>s.bookmarked==='true'),'Bokmärken'); }
+    if(cmd==='/uppdatera') return await updateDb();
+    if(cmd==='/nr') return handle(arg);
+    if(cmd.startsWith('/')) return add('bot sys',`Okänt kommando <code>${esc(cmd)}</code>. Skriv <code>/hjälp</code>.`);
+    handle(t);
+  }catch(err){ add('bot sys','Något gick fel: '+esc(err.message||err)); }
+}
+function handle(t){
+  const found = search(t);
+  if(/^\d+$/.test(norm(t)) && found.length===1) return showSong(found[0]);
+  hits(found, `${found.length} träffar på ”${esc(t)}”`);
+}
+
+document.getElementById('f').addEventListener('submit', e=>{e.preventDefault(); const v=q.value; q.value=''; sug.innerHTML=''; run(v); q.focus();});
+q.addEventListener('input', ()=>{
+  const v = q.value; if(v.length<2 || v.startsWith('/')){ sug.innerHTML=''; return; }
+  sug.innerHTML = search(v).slice(0,6).map(s=>`<button type="button" class="chip" data-id="${esc(s.id)}">${esc(clean(s.label))}</button>`).join('');
+});
+sug.addEventListener('click', e=>{
+  const c = e.target.closest('.chip'); if(!c) return;
+  const s = ALL.find(x=>x.id===c.dataset.id); sug.innerHTML=''; q.value=''; add('me',esc(clean(s.label))); showSong(s); q.focus();
+});
+
+/* ---------- Start ---------- */
+(async ()=>{
+  try{ await loadAll(); }
+  catch(err){ add('bot sys','Kunde inte läsa databasen: '+esc(err.message||err)+'<br>Öppna först vanliga sidan och ange din nyckel under Inställningar.'); return; }
+  add('bot sys',`Hej! ${ALL.length} sånger redo.`); help();
+  const h = decodeURIComponent(location.hash.slice(1)); if(h){ const [n,bk]=h.split(','); 
+    const f = search(n).filter(s=>!bk || BOOK[s.sb]===bk || (!BOOK[s.sb] && !bk)); if(f[0]){ add('me',esc(n)); showSong(f[0]); } }
+})();
+</script>
+</body>
+</html>
