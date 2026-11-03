@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Särlaregn – chatt</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+.source-sans-3-header {
+  font-family: "Source Sans 3", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal; }
 :root{--bg:#eef1ee;--surface:#fbfcfb;--ink:#1c2a2a;--muted:#5d6e6d;--me:#2f5d62;--me-ink:#f3f8f7;--line:#cfd9d6;--accent:#2f5d62;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#121a1b;--surface:#1b2627;--ink:#e3ecea;--muted:#92a5a3;--me:#4f8c91;--me-ink:#0d1516;--line:#2b3a3b;--accent:#7fb7bb;color-scheme:dark}}
 *{box-sizing:border-box}
@@ -61,7 +67,7 @@ input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline
 </style>
 </head>
 <body>
-<header>Särlaregn <a href="/">Till vanliga sidan</a></header>
+<header id=source-sans-3-header>Särlaregn <a href="/">Tillbaka till webb</a></header>
 <nav id="tabs" aria-label="Sessioner"></nav>
 <main id="log" aria-live="polite"></main>
 <section id="sess" hidden></section>
