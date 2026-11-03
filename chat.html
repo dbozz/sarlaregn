@@ -4,14 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Särlaregn – chatt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
-.source-sans-3-header {
-  font-family: "Source Sans 3", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
-  font-style: normal;
-  text-transform: uppercase; }
 :root{--bg:#eef1ee;--surface:#fbfcfb;--ink:#1c2a2a;--muted:#5d6e6d;--me:#2f5d62;--me-ink:#f3f8f7;--line:#cfd9d6;--accent:#2f5d62;color-scheme:light}
 @media (prefers-color-scheme:dark){:root{--bg:#121a1b;--surface:#1b2627;--ink:#e3ecea;--muted:#92a5a3;--me:#4f8c91;--me-ink:#0d1516;--line:#2b3a3b;--accent:#7fb7bb;color-scheme:dark}}
 *{box-sizing:border-box}
@@ -44,6 +40,7 @@ form{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bott
 input{flex:1;min-width:0;font:16px system-ui,sans-serif;padding:11px 14px;border-radius:22px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
 .send{border:0;border-radius:22px;padding:0 18px;background:var(--me);color:var(--me-ink);font:600 15px system-ui,sans-serif;cursor:pointer}
 input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ttl{font:700 20px/1.2 "Source Sans 3",system-ui,sans-serif;text-transform:uppercase;letter-spacing:.04em}
 [hidden]{display:none!important}
 .mc{float:right;display:flex;gap:2px;margin:-4px -6px 0 8px}
 .mc button{background:none;border:0;color:var(--muted);cursor:pointer;font:14px system-ui,sans-serif;padding:2px 6px;border-radius:8px}
@@ -68,7 +65,7 @@ input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline
 </style>
 </head>
 <body>
-<header class=source-sans-3-header>Särlaregn <a href="/">Tillbaka till webb</a></header>
+<header><span class="ttl">Särlaregn</span> <a href="/">Till vanliga sidan</a></header>
 <nav id="tabs" aria-label="Sessioner"></nav>
 <main id="log" aria-live="polite"></main>
 <section id="sess" hidden></section>
@@ -132,6 +129,19 @@ async function updateDb(){
     await db.lyrics.clear(); await fetchDb(); ALL = await db.lyrics.toArray(); index();
     add('bot sys',`Klart. ${ALL.length} sånger.`);
   } else add('bot sys','Du har redan den senaste databasen.');
+}
+
+async function reloadDb(){
+  if(!navigator.onLine) throw new Error('Du är offline.');
+  const key = ck('key1')||'';
+  const v = await (await fetch(base_url+"?action=ts&key="+key)).json();
+  const data = await (await fetch(base_url+"?action=lyrics&key="+key)).json();
+  if(!Array.isArray(data) || !data.length) throw new Error('Servern svarade utan sånger. Kontrollera nyckeln. Din gamla databas är orörd.');
+  const keep = new Set(ALL.filter(s=>s.bookmarked==='true').map(s=>s.id));
+  data.forEach(s=>{ if(keep.has(s.id)) s.bookmarked = 'true'; });
+  await db.lyrics.clear(); await db.lyrics.bulkPut(data);
+  if(v && v.version) setCk('db_version', v.version);
+  ALL = await db.lyrics.toArray(); index();
 }
 
 function search(t){
@@ -239,7 +249,9 @@ const CMDS = [
   ['/nr','Öppna sång med nummer','fill'],
   ['/slumpa','En slumpad sång'],
   ['/bokmärken','Dina bokmärken'],
-  ['/uppdatera','Hämta ny sångdatabas'],
+  ['/uppdatera','Hämta ny sångdatabas om det finns en'],
+  ['/laddaom','Hämta om hela databasen'],
+  ['/nyckel','Ange din nyckel','fill'],
   ['/rensa','Töm konversationen'],
   ['/hjälp','Visa hjälptext']
 ];
@@ -252,15 +264,23 @@ function help(){
 <code>/nr 46</code> eller bara <code>46</code> · <code>/slumpa</code> en slumpad sång<br>
 <code>/innehåll</code> alla titlar A–Ö · <code>/innehåll A</code> eller <code>/innehåll Ad</code> de som börjar så<br>
 Är fältet tomt öppnar knappen <b>Meny</b> en klickbar kommandolista.<br>
-<code>/bokmärken</code> dina bokmärken · <code>/uppdatera</code> hämta ny databas<br>
+<code>/bokmärken</code> dina bokmärken · <code>/uppdatera</code> hämta ny databas om det finns en<br>
+<code>/nyckel [nyckel]</code> ställ in din nyckel · <code>/laddaom</code> hämta om hela databasen<br>
 <code>/rensa</code> töm konversationen<br>
 Tryck <code>＋ Session</code> på ett sångkort för att samla sånger i en session (flikarna ovan). ▾ fäller ihop ett meddelande och ✕ tar bort det.`);
 }
 async function run(raw){
   const t = raw.trim(); if(!t) return;
-  add('me', esc(t));
-  const [c0,...r] = t.split(/\s+/), cmd = c0.toLowerCase(), arg = r.join(' ');
+  const [c0,...r] = t.split(/\s+/), cmd = c0.toLowerCase(), arg = r.join(' ').trim();
+  add('me', cmd==='/nyckel' && arg ? '/nyckel ••••' : esc(t));
   try{
+    if(cmd==='/nyckel'){
+      if(!arg) return add('bot sys', ck('key1') ? 'En nyckel är sparad. Skriv <code>/nyckel [ny nyckel]</code> för att byta.' : 'Ingen nyckel är sparad. Skriv <code>/nyckel [nyckel]</code>.');
+      setCk('key1', encodeURIComponent(arg));
+      if(ck('key1')!==arg) return add('bot sys','Kunde inte spara nyckeln. Cookies kräver https och samma domän som vanliga sidan.');
+      return add('bot','<div class="cap">Nyckeln är sparad. Vill du ladda om databasen så att den matchar?</div><button class="hit cmd first" data-c="/laddaom"><b>Ladda om databasen</b><small>bokmärken behålls</small></button>','Nyckel sparad');
+    }
+    if(cmd==='/laddaom'){ add('bot sys','Hämtar databasen …'); await reloadDb(); return add('bot sys',`Klart. ${ALL.length} sånger.`); }
     if(cmd==='/innehåll'||cmd==='/innehall') return contents(arg);
     if(['/hjälp','/hjalp','/help'].includes(cmd)) return help();
     if(cmd==='/rensa'){ log.innerHTML=''; return help(); }
