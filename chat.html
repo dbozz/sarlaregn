@@ -423,7 +423,7 @@ document.getElementById('imp').addEventListener('change', async e=>{
   await loadSess().catch(()=>tabs());
   try{ await loadAll(); }
   catch(err){ add('bot sys','Kunde inte läsa databasen: '+esc(err.message||err)+'<br>Öppna först vanliga sidan och ange din nyckel under Inställningar.'); return; }
-  add('bot sys',`Hej! ${ALL.length} sånger redo.`); help();
+  add('bot sys',`Hej! ${ALL.length - 1} sånger redo.`); help();
   const h = decodeURIComponent(location.hash.slice(1)); if(h){ const [n,bk]=h.split(','); 
     const f = search(n).filter(s=>!bk || BOOK[s.sb]===bk || (!BOOK[s.sb] && !bk)); if(f[0]){ add('me',esc(n)); showSong(f[0]); } }
 })();
